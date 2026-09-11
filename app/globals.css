@@ -137,6 +137,8 @@ main:has(.cta-band){display:flex;flex-direction:column}main:has(.cta-band)>.topb
 .business-grid > div:nth-child(1)::before { background-image: url('/business-pickups.png'); }
 .business-grid > div:nth-child(2)::before { background-image: url('/business-movement.png'); }
 .business-grid > div:nth-child(3)::before { background-image: url('/business-assistance.png'); }
+.rate-picture { background: #f4f7fb !important; height: 360px !important; }
+.rate-picture img { content: url('/rate-3d.png') !important; object-fit: cover !important; object-position: center 58% !important; }
 @media (max-width: 760px) {
   .navbar .image-brand, .navbar .image-brand img { height: 58px !important; width: 58px !important; }
   .rate-picture div { bottom: 16px !important; left: 8% !important; }
