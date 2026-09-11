@@ -132,6 +132,11 @@ main:has(.cta-band){display:flex;flex-direction:column}main:has(.cta-band)>.topb
 .rate-picture { display: flex !important; isolation: isolate; }
 .rate-picture img { position: relative !important; z-index: 0 !important; }
 .rate-picture div { z-index: 1 !important; }
+.business-grid > div { position: relative !important; overflow: hidden !important; padding-top: 180px !important; }
+.business-grid > div::before { background: #eef3f9 center / cover no-repeat; content: '' !important; display: block; height: 150px; left: 0; position: absolute; right: 0; top: 0; }
+.business-grid > div:nth-child(1)::before { background-image: url('/business-pickups.png'); }
+.business-grid > div:nth-child(2)::before { background-image: url('/business-movement.png'); }
+.business-grid > div:nth-child(3)::before { background-image: url('/business-assistance.png'); }
 @media (max-width: 760px) {
   .navbar .image-brand, .navbar .image-brand img { height: 58px !important; width: 58px !important; }
   .rate-picture div { bottom: 16px !important; left: 8% !important; }
