@@ -57,7 +57,7 @@ export default function Home() {
     );
   }
   return (
-    <>
+    <main>
       <SiteNav />
       <section className="hero">
         <img
@@ -324,6 +324,6 @@ export default function Home() {
         </a>
       </section>
       <SiteFooter />
-    </>
+    </main>
   );
 }

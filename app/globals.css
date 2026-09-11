@@ -163,6 +163,17 @@ main:has(.cta-band){display:flex;flex-direction:column}main:has(.cta-band)>.topb
 .teal-dot { background: #008f79; box-shadow: 0 0 0 5px #008f791c; }
 .route-line { border-top: 2px dashed #b9c8dc; }
 @media (max-width: 760px) { .operations-panel { gap: 36px; grid-template-columns: 1fr; padding: 70px 8%; } .board-stats { grid-template-columns: 1fr 1fr 1fr; } .board-stats div { padding: 11px; } .board-stats strong { font-size: 23px; } .board-route { grid-template-columns: 1fr; gap: 14px; } .route-line { display: none; } }
+main:has(.cta-band) > .operations-panel { order: 6 !important; }
+main:has(.cta-band) > .journey { order: 7 !important; }
+main:has(.cta-band) > .business { order: 8 !important; }
+main:has(.cta-band) > .experience-module { order: 9 !important; }
+main:has(.cta-band) > .capability-module { order: 10 !important; }
+main:has(.cta-band) > .journey-wide { order: 11 !important; }
+main:has(.cta-band) > .network-module { order: 12 !important; }
+main:has(.cta-band) > .reviews { order: 13 !important; }
+main:has(.cta-band) > .faq { order: 14 !important; }
+main:has(.cta-band) > .cta-band { order: 15 !important; }
+main:has(.cta-band) > .site-footer { order: 16 !important; }
 @media (max-width: 760px) {
   .navbar .image-brand, .navbar .image-brand img { height: 58px !important; width: 58px !important; }
   .rate-picture div { bottom: 16px !important; left: 8% !important; }
