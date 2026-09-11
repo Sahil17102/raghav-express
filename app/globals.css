@@ -162,6 +162,10 @@ main:has(.cta-band){display:flex;flex-direction:column}main:has(.cta-band)>.topb
 .red-dot { background: #ed1c24; box-shadow: 0 0 0 5px #ed1c241c; }
 .teal-dot { background: #008f79; box-shadow: 0 0 0 5px #008f791c; }
 .route-line { border-top: 2px dashed #b9c8dc; }
+.services,.business,.reviews,.faq { background-image: linear-gradient(135deg, #052b6808 1px, transparent 1px), linear-gradient(45deg, #ed1c2406 1px, transparent 1px) !important; background-size: 34px 34px, 52px 52px !important; background-position: 0 0, 0 0 !important; animation: surface-pattern-drift 26s linear infinite !important; }
+.operations-panel { background-position: 0 0, 0 0 !important; animation: dark-pattern-drift 30s linear infinite !important; }
+@keyframes surface-pattern-drift { to { background-position: 68px 34px, -52px 26px; } }
+@keyframes dark-pattern-drift { to { background-position: 44px 44px, -44px 44px; } }
 @media (max-width: 760px) { .operations-panel { gap: 36px; grid-template-columns: 1fr; padding: 70px 8%; } .board-stats { grid-template-columns: 1fr 1fr 1fr; } .board-stats div { padding: 11px; } .board-stats strong { font-size: 23px; } .board-route { grid-template-columns: 1fr; gap: 14px; } .route-line { display: none; } }
 main:has(.cta-band) > .operations-panel { order: 6 !important; }
 main:has(.cta-band) > .journey { order: 7 !important; }
