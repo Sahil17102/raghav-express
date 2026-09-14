@@ -680,10 +680,12 @@ export function ClientModule({
   name,
   go,
   signedInEmail = "raghavexpresspali@gmail.com",
+  profile = {},
 }: {
   name: string;
   go: (n: string) => void;
   signedInEmail?: string;
+  profile?: Record<string, string>;
 }) {
   const [action, setAction] = useState("");
   const [connected, setConnected] = useState<string[]>([]);
@@ -1879,6 +1881,23 @@ export function ClientModule({
               onClick={(e) => e.stopPropagation()}
               onSubmit={(e) => {
                 e.preventDefault();
+                if (action === "Company Details") {
+                  const updates = Object.fromEntries(
+                    new FormData(e.currentTarget).entries(),
+                  ) as Record<string, string>;
+                  try {
+                    const profiles = JSON.parse(
+                      localStorage.getItem("raghav-user-profiles") || "{}",
+                    ) as Record<string, Record<string, string>>;
+                    localStorage.setItem(
+                      "raghav-user-profiles",
+                      JSON.stringify({
+                        ...profiles,
+                        [signedInEmail]: { ...profile, ...updates },
+                      }),
+                    );
+                  } catch {}
+                }
                 setSettingSaved(`${action} updated successfully`);
                 setAction("");
               }}
@@ -1907,7 +1926,7 @@ export function ClientModule({
                   <div>
                     <p>
                       <small>ACCOUNT HOLDER</small>
-                      <b>Raghav Express</b>
+                      <b>{profile.companyName || "Raghav Express"}</b>
                     </p>
                     <p>
                       <small>BANK</small>
@@ -1977,7 +1996,7 @@ export function ClientModule({
                       <Building2 />
                     </span>
                     <div>
-                      <b>Raghav Sharma</b>
+                      <b>{profile.contactName || "Account Owner"}</b>
                       <small>{signedInEmail} · Account owner</small>
                     </div>
                     <em>OWNER</em>
@@ -1989,11 +2008,11 @@ export function ClientModule({
                   <>
                     <label>
                       Legal Business Name
-                      <input required defaultValue="Raghav Express" />
+                      <input name="companyName" required defaultValue={profile.companyName || "Raghav Express"} />
                     </label>
                     <label>
                       Brand Name
-                      <input required defaultValue="Raghav Express" />
+                      <input name="brandName" required defaultValue={profile.brandName || profile.companyName || "Raghav Express"} />
                     </label>
                     <label>
                       Business Email
@@ -2005,20 +2024,22 @@ export function ClientModule({
                     </label>
                     <label>
                       Business Phone
-                      <input required defaultValue="+91 96604 23241" />
+                      <input name="phone" required defaultValue={profile.phone || ""} placeholder="Business phone" />
                     </label>
                     <label>
                       GSTIN
-                      <input maxLength={15} placeholder="15-digit GSTIN" />
+                      <input name="gst" maxLength={15} defaultValue={profile.gst || ""} placeholder="15-digit GSTIN" />
                     </label>
                     <label>
                       PAN Number
-                      <input maxLength={10} placeholder="Business PAN" />
+                      <input name="pan" maxLength={10} defaultValue={profile.pan || ""} placeholder="Business PAN" />
                     </label>
                     <label className="order-wide">
                       Registered Address
                       <input
+                        name="address"
                         required
+                        defaultValue={profile.address || ""}
                         placeholder="Complete registered address"
                       />
                     </label>

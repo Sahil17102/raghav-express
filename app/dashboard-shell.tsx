@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { ClientHome, ClientModule, OrdersManager } from "./client-views";
 type Role = "client" | "admin";
+type ClientProfile = Record<string, string>;
 type Icon = typeof Home;
 type Child = { label: string; icon: Icon };
 type Item = { label: string; icon: Icon; children?: Child[] };
@@ -645,10 +646,17 @@ export default function DashboardShell({ role }: { role: Role }) {
   const [signedInEmail, setSignedInEmail] = useState(
     "raghavexpresspali@gmail.com",
   );
+  const [clientProfile, setClientProfile] = useState<ClientProfile>({});
   useEffect(() => {
     const currentEmail = localStorage.getItem("raghav-current-user-email");
     if (currentEmail) {
       setSignedInEmail(currentEmail);
+      try {
+        const profiles = JSON.parse(
+          localStorage.getItem("raghav-user-profiles") || "{}",
+        ) as Record<string, ClientProfile>;
+        setClientProfile(profiles[currentEmail] || {});
+      } catch {}
       return;
     }
     try {
@@ -659,6 +667,12 @@ export default function DashboardShell({ role }: { role: Role }) {
       if (latestEmail) {
         localStorage.setItem("raghav-current-user-email", latestEmail);
         setSignedInEmail(latestEmail);
+        try {
+          const profiles = JSON.parse(
+            localStorage.getItem("raghav-user-profiles") || "{}",
+          ) as Record<string, ClientProfile>;
+          setClientProfile(profiles[latestEmail] || {});
+        } catch {}
       }
     } catch {
       localStorage.removeItem("raghav-onboarded-users");
@@ -1016,6 +1030,7 @@ export default function DashboardShell({ role }: { role: Role }) {
               name={active}
               go={select}
               signedInEmail={signedInEmail}
+              profile={clientProfile}
             />
           )}
         </div>
