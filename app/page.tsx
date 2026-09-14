@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
   CheckCircle2,
@@ -49,6 +49,11 @@ const reviews = [
 export default function Home() {
   const [trackingId, setTrackingId] = useState('');
   const [message, setMessage] = useState('');
+  useEffect(() => {
+    if (window.location.search === '?source=legacy-web') {
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
   function track(e: React.FormEvent) {
     e.preventDefault();
     setMessage(
