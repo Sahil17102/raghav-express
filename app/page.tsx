@@ -11,6 +11,7 @@ import {
   Truck,
 } from 'lucide-react';
 import { SiteFooter, SiteNav } from './site-chrome';
+const PORTAL_URL = 'https://raghav-express-client.onrender.com';
 const services = [
   {
     icon: PackageCheck,
@@ -57,7 +58,7 @@ export default function Home() {
     );
   }
   return (
-    <main>
+    <main className="marketing-page">
       <SiteNav />
       <section className="hero">
         <img
@@ -80,10 +81,10 @@ export default function Home() {
             the promise of every delivery.
           </p>
           <div className="hero-actions">
-            <a className="primary-btn" href="/contact">
+            <a className="primary-btn" href={`${PORTAL_URL}/contact`}>
               Get a Quick Quote <ArrowRight size={18} />
             </a>
-            <a className="watch-link" href="/services">
+            <a className="watch-link" href={`${PORTAL_URL}/services`}>
               <span>01</span> Explore our services
             </a>
           </div>
@@ -145,7 +146,7 @@ export default function Home() {
               <Icon size={34} />
               <h3>{title}</h3>
               <p>{text}</p>
-              <a href="/services">
+              <a href={`${PORTAL_URL}/services`}>
                 Learn more <ArrowRight size={15} />
               </a>
             </article>
@@ -157,7 +158,7 @@ export default function Home() {
             <p className="eyebrow"><span /> YOUR SHIPPING CONTROL ROOM</p>
             <h2>Every dispatch,<br /><i>in one view.</i></h2>
             <p>See what is booked, what is moving and what needs attention across your delivery network.</p>
-            <a className="primary-btn" href="/tracking">Open tracking <ArrowRight size={17} /></a>
+            <a className="primary-btn" href={`${PORTAL_URL}/tracking`}>Open tracking <ArrowRight size={17} /></a>
           </div>
           <div className="operations-board">
             <div className="board-head"><span>LIVE DISPATCH</span><b>Today · 09:42 AM</b></div>
@@ -179,7 +180,7 @@ export default function Home() {
             Every shipment moves through a simple, coordinated journey. We keep
             the work behind your delivery visible and understandable.
           </p>
-          <a className="outline-btn" href="/tracking">
+          <a className="outline-btn" href={`${PORTAL_URL}/tracking`}>
             Track a shipment <ArrowRight size={17} />
           </a>
         </div>
@@ -233,7 +234,7 @@ export default function Home() {
             <h3>Direct assistance</h3>
             <p>Talk to a person when a delivery needs attention.</p>
           </div>
-          <a href="/contact">
+          <a href={`${PORTAL_URL}/contact`}>
             Discuss your business needs <ArrowRight />
           </a>
         </div>
@@ -319,7 +320,7 @@ export default function Home() {
             you are.
           </h2>
         </div>
-        <a href="/contact" className="primary-btn">
+        <a href={`${PORTAL_URL}/contact`} className="primary-btn">
           Talk to our team <ArrowRight />
         </a>
       </section>
