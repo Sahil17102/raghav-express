@@ -1,0 +1,15 @@
+{
+  "short_name": "Raghav Express",
+  "name": "Raghav Express Admin",
+  "icons": [
+    {
+      "src": "raghav-express-logo.png",
+      "sizes": "any",
+      "type": "image/jpeg"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#062A5B",
+  "background_color": "#ffffff"
+}
