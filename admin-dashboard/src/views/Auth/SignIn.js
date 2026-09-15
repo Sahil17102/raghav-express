@@ -336,13 +336,6 @@ function SignIn() {
                   </InputGroup>
                 </FormControl>
 
-                <Box bg={inputBg} border="1px solid" borderColor={inputBorder} borderRadius="10px" px={4} py={3}>
-                  <Text fontSize="xs" fontWeight="800" color={textPrimary}>LOCAL ADMIN CREDENTIALS</Text>
-                  <Text mt={1} fontSize="sm" color={textSecondary}>
-                    {BRAND.adminEmail} &nbsp;·&nbsp; {LOCAL_ADMIN_PASSWORD}
-                  </Text>
-                </Box>
-
                 <Button
                   type="submit"
                   h="50px"
