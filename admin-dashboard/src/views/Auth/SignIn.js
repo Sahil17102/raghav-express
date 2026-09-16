@@ -30,8 +30,15 @@ const LOCAL_ADMIN_PASSWORD = 'Raghav@123'
 const LOCAL_ADMIN_TOKEN =
   'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJleHAiOjQxMDI0NDQ4MDAsInJvbGUiOiJhZG1pbiIsInN1YiI6ImxvY2FsLWFkbWluIn0.local'
 
+const DEMO_ADMIN_HOSTS = [
+  'localhost',
+  '127.0.0.1',
+  '::1',
+  'raghav-express-admin.onrender.com',
+]
+
 const isLocalAdminLogin = (email, password) =>
-  ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname) &&
+  DEMO_ADMIN_HOSTS.includes(window.location.hostname.toLowerCase()) &&
   email.trim().toLowerCase() === BRAND.adminEmail.toLowerCase() &&
   password.trim() === LOCAL_ADMIN_PASSWORD
 
