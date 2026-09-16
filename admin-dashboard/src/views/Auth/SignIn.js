@@ -45,6 +45,10 @@ function isTokenValid(token) {
 }
 
 function getLoginErrorMessage(error) {
+  if (error?.code === 'ECONNABORTED') {
+    return 'The backend API did not respond within 20 seconds. Please try again after the backend service is running.'
+  }
+
   const apiError = error?.response?.data?.error
   if (typeof apiError === 'string' && apiError.trim()) return apiError
 

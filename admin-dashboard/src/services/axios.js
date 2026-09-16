@@ -47,6 +47,9 @@ const apiBaseURL = normalizeApiBaseUrl(process.env.REACT_APP_API_BASE_URL)
 
 const api = axios.create({
   baseURL: apiBaseURL,
+  // Do not leave the sign-in UI spinning forever when a hosted API is down
+  // or stuck while waking up.
+  timeout: 20000,
   withCredentials: true, // only if using cookies
 })
 
