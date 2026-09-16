@@ -676,6 +676,101 @@ const moduleConfig: Record<
   },
 };
 
+function CreateOrderClone() {
+  const [kind, setKind] = useState<"B2C" | "B2B">("B2C");
+  const [orderId, setOrderId] = useState("ORD-98689952");
+  const [unit, setUnit] = useState<"CM" | "INCH">("CM");
+  const [weight, setWeight] = useState(0);
+  const [length, setLength] = useState(0);
+  const [breadth, setBreadth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [invoiceValue, setInvoiceValue] = useState(0);
+  const [invoices, setInvoices] = useState([0]);
+  const [boxes, setBoxes] = useState([0]);
+  const divisor = unit === "CM" ? 4500 : 139;
+  const volumetric = (length * breadth * height) / divisor;
+  const chargeable = Math.max(weight, volumetric, kind === "B2C" ? 0.5 : 0);
+  const dimension = unit === "CM" ? "cm" : "inch";
+  const regenerate = () => setOrderId(`ORD-${Math.floor(10000000 + Math.random() * 90000000)}`);
+
+  return (
+    <section className="fastship-create">
+      <header className="fastship-create-head">
+        <div><small>PANEL</small><h1>Create New Order</h1></div>
+        <div className="fastship-order-tabs" role="tablist" aria-label="Order type tabs">
+          {(["B2C", "B2B"] as const).map((type) => (
+            <button type="button" role="tab" aria-selected={kind === type} className={kind === type ? "active" : ""} onClick={() => setKind(type)} key={type}>{type} Order</button>
+          ))}
+        </div>
+      </header>
+      <div className="fastship-step-intro">
+        <div><b>{kind} Order Creation</b><span>Step 1 of 3</span><p>Build shipments faster with a guided flow. Only the active step is editable.</p></div>
+        <ol><li className="active"><i>1</i><span>Order &amp; Delivery<small>Customer, products and package details</small></span></li><li><i>2</i><span>Pickup &amp; Review<small>Pickup warehouse and booking summary</small></span></li><li><i>3</i><span>Courier Selection<small>Choose courier rate only</small></span></li></ol>
+      </div>
+      <form onSubmit={(event) => event.preventDefault()}>
+        <section className="fastship-form-card">
+          <h2><ClipboardList />Order Details <ChevronDown /></h2>
+          <div className="fastship-card-body three-col">
+            <label>ORDER ID *<div className="input-action"><input value={orderId} readOnly/><button type="button" onClick={regenerate}><RefreshCw /></button></div><small className="valid">Order ID is available.</small></label>
+            <label>ORDER DATE<input type="date" defaultValue="2026-09-16" /></label>
+            <label>ORDER TYPE *<select defaultValue="Prepaid"><option>Prepaid</option><option>COD</option></select><small>Select type</small></label>
+          </div>
+        </section>
+
+        <section className="fastship-form-card">
+          <h2><Building2 />Recipient Details <ChevronDown /></h2>
+          <div className="fastship-card-body">
+            <div className="saved-address"><select defaultValue=""><option value="" disabled>Saved Delivery Address</option></select><button type="button">Save Address</button></div>
+            <div className="fastship-grid">
+              {kind === "B2B" && <label>COMPANY NAME *<input required /></label>}
+              <label>{kind === "B2C" ? "NAME *" : "PHONE *"}<input required /></label>
+              {kind === "B2C" && <label>PHONE *<input required type="tel" /></label>}
+              <label className="full">ADDRESS *<textarea required /></label>
+              <label>PINCODE *<input required inputMode="numeric" maxLength={6} /></label>
+              <label>CITY *<input disabled /></label>
+              <label>STATE *<input disabled /></label>
+              {kind === "B2B" && <label>NAME (OPTIONAL)<input /></label>}
+              <label>EMAIL<input type="email" /></label>
+              {kind === "B2B" && <label>GSTIN (OPTIONAL)<input maxLength={15} /></label>}
+            </div>
+          </div>
+        </section>
+
+        <section className="fastship-form-card">
+          <h2><FileText />Invoices <ChevronDown /></h2>
+          <div className="fastship-card-body">
+            {invoices.map((invoice, index) => <div className="fastship-invoice" key={invoice}><h3>Invoice {index + 1}</h3><div className="fastship-grid three-col">
+              <label>INVOICE NUMBER *<input required /><small>Enter customer invoice number</small></label>
+              <label>INVOICE DATE *<input required type="date" defaultValue="2026-09-16" /></label>
+              <label>INVOICE VALUE (₹) *<input required type="number" min="0" value={index === 0 ? invoiceValue : undefined} onChange={index === 0 ? (e) => setInvoiceValue(Number(e.target.value)) : undefined} defaultValue={index === 0 ? undefined : 0}/></label>
+              <label>PRODUCT NAME *<input required placeholder="e.g. Cotton T-shirt" /></label>
+              <label>SKU (OPTIONAL)<input /></label><label>HSN CODE (OPTIONAL)<input /></label>
+              <label>EBN NUMBER (OPTIONAL)<input /><small>Required only when invoice value &gt; ₹50,000</small></label>
+              <label>EBN EXPIRY (OPTIONAL)<input type="date" /><small>Required when EBN Number is provided</small></label>
+              {kind === "B2B" && <label>INVOICE FILE (OPTIONAL)<input type="file" accept=".pdf,.jpg,.jpeg,.png" /></label>}
+            </div>{kind === "B2B" && invoices.length > 1 && <button className="remove-clone-row" type="button" onClick={() => setInvoices(rows => rows.filter(x => x !== invoice))}><X /> Remove invoice</button>}</div>)}
+            <div className="invoice-total"><b>Invoice Grand Total</b><strong>₹{invoiceValue.toFixed(2)}</strong></div>
+            {kind === "B2B" && <button className="clone-outline-button" type="button" onClick={() => setInvoices(rows => [...rows, Date.now()])}>+ Add Invoice</button>}
+          </div>
+        </section>
+
+        {kind === "B2C" ? <section className="fastship-form-card">
+          <h2><Boxes />Package Details <ChevronDown /></h2>
+          <div className="fastship-card-body"><div className="minimum-note">ⓘ &nbsp; Note: The minimum chargeable weight is 0.50 Kg</div><div className="dimension-toggle"><span>UNIT</span><button type="button" className={unit === "CM" ? "active" : ""} onClick={() => setUnit("CM")}>CM</button><button type="button" className={unit === "INCH" ? "active" : ""} onClick={() => setUnit("INCH")}>INCH</button></div>
+            <div className="fastship-grid four-col"><label>WEIGHT (KG) *<input required type="number" min="0" step="0.01" onChange={e => setWeight(Number(e.target.value))}/></label><label>LENGTH ({dimension.toUpperCase()}) *<input required type="number" min="0" onChange={e => setLength(Number(e.target.value))}/></label><label>BREADTH ({dimension.toUpperCase()}) *<input required type="number" min="0" onChange={e => setBreadth(Number(e.target.value))}/></label><label>HEIGHT ({dimension.toUpperCase()}) *<input required type="number" min="0" onChange={e => setHeight(Number(e.target.value))}/></label></div>
+            <div className="weight-panel"><h3>👜 Package Weight Summary</h3><p>Chargeable weight is calculated as max of actual, volumetric, or minimum weight (0.5 kg)</p><div><article><small>ACTUAL WEIGHT</small><b>{weight.toFixed(2)} <em>kg</em></b><span>{Math.round(weight * 1000)} grams</span></article><article><small>VOLUMETRIC WEIGHT</small><b>{volumetric.toFixed(2)} <em>kg</em></b><span>L × B × H / {divisor}</span></article><article className="active"><small>CHARGEABLE WEIGHT</small><b>{chargeable.toFixed(2)} <em>kg</em></b><span>{chargeable === 0.5 ? "Minimum weight applied" : "Maximum weight applied"}</span></article></div></div>
+          </div>
+        </section> : <section className="fastship-form-card"><h2><Boxes />Package Boxes <ChevronDown /></h2><div className="fastship-card-body"><div className="package-title"><div><h3>Package Boxes</h3><p>Enter the dimensions and actual weight of each physical box.</p></div><div className="dimension-toggle"><span>UNIT</span><button type="button" className={unit === "CM" ? "active" : ""} onClick={() => setUnit("CM")}>CM</button><button type="button" className={unit === "INCH" ? "active" : ""} onClick={() => setUnit("INCH")}>INCH</button></div></div>
+          {boxes.map((box, index) => <div className="box-entry" key={box}><label>NO. OF BOXES *<input type="number" min="1" defaultValue="1" /></label><div className="box-stat"><small>Total Actual Weight</small><b>{weight.toFixed(2)} kg</b></div><div className="box-stat"><small>Volumetric Weight</small><b>{volumetric.toFixed(2)} kg</b></div><div className="box-stat"><small>Chargeable Weight</small><b>{chargeable.toFixed(2)} kg</b></div><label>PER BOX WEIGHT (KG) *<input type="number" min="0" step="0.01" onChange={e => setWeight(Number(e.target.value))}/></label><label>LENGTH ({dimension.toUpperCase()}) *<input type="number" min="0" onChange={e => setLength(Number(e.target.value))}/></label><label>BREADTH ({dimension.toUpperCase()}) *<input type="number" min="0" onChange={e => setBreadth(Number(e.target.value))}/></label><label>HEIGHT ({dimension.toUpperCase()}) *<input type="number" min="0" onChange={e => setHeight(Number(e.target.value))}/></label>{boxes.length > 1 && <button type="button" onClick={() => setBoxes(rows => rows.filter(x => x !== box))}><X /></button>}</div>)}
+          <button className="clone-outline-button" type="button" onClick={() => setBoxes(rows => [...rows, Date.now()])}>+ Add Box</button><div className="weight-formula"><b>Actual vs Volumetric</b><span>max(Actual, Volumetric) · Volumetric = (L×B×H) / {divisor}</span><strong>{chargeable.toFixed(2)} kg</strong></div></div></section>}
+
+        {kind === "B2C" && <section className="fastship-form-card"><h2><IndianRupee />Optional Charges &amp; Summary <ChevronDown /></h2><div className="fastship-card-body fastship-grid four-col"><label>SHIPPING CHARGE (CUSTOMER ₹)<input type="number" min="0" /><small>What the customer pays for shipping</small></label><label>TRANSACTION FEE (OPTIONAL ₹)<input type="number" min="0" /></label><label>DISCOUNT (OPTIONAL ₹)<input type="number" min="0" /></label><label>PREPAID AMOUNT (OPTIONAL ₹)<input type="number" min="0" /></label></div></section>}
+        <div className="fastship-next"><span>Order &amp; Delivery</span><button type="submit">Next</button></div>
+      </form>
+    </section>
+  );
+}
+
 export function ClientModule({
   name,
   go,
@@ -1068,7 +1163,8 @@ export function ClientModule({
       </section>
     );
   if (name === "Create Order")
-    return (
+    return <CreateOrderClone />;
+    /*return (
       <section className="tool-workspace">
         <ModuleHead
           cfg={{
@@ -1604,7 +1700,7 @@ export function ClientModule({
           )}
         </form>
       </section>
-    );
+    );*/
   if (name === "Warehouse")
     return (
       <section className="module-workspace">
