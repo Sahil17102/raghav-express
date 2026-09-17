@@ -74,6 +74,13 @@ const ZONE_STORAGE_KEY = 'raghavAdminB2CPricingZones'
 const ZONE_SEED_VERSION_KEY = 'raghavAdminB2CPricingZoneSeedVersion'
 const RATE_STORAGE_KEY = 'raghavAdminB2CPricingRates'
 const RATE_SEED_VERSION_KEY = 'raghavAdminB2CPricingRateSeedVersion'
+const B2B_ZONE_STORAGE_KEY = 'raghavAdminB2BPricingZones'
+const B2B_ZONE_SEED_VERSION_KEY = 'raghavAdminB2BPricingZoneSeedVersion'
+const B2B_PINCODE_STORAGE_KEY = 'raghavAdminB2BPricingPincodes'
+const B2B_PINCODE_SEED_VERSION_KEY = 'raghavAdminB2BPricingPincodeSeedVersion'
+const B2B_RATE_STORAGE_KEY = 'raghavAdminB2BPricingRates'
+const B2B_RATE_SEED_VERSION_KEY = 'raghavAdminB2BPricingRateSeedVersion'
+const B2B_CHARGES_STORAGE_KEY = 'raghavAdminB2BAdditionalCharges'
 const ACTIVE_SERVICE_PROVIDERS = ['delhivery', 'india_post']
 
 const DEFAULT_LOCATIONS = pincodeSeed.locations.map(([pincode, city, state, tags], index) => ({
@@ -217,6 +224,123 @@ const DEFAULT_B2C_RATES = [
   },
 ]
 
+const DEFAULT_B2B_ZONES = [
+  ['41bc95d2-11cd-4c0d-bffd-09431576053b', 'N1', 'Zone N1', 'DELHI, FBD, GZB, GGN, NOIDA', ['DELHI']],
+  ['cd1fb249-c150-4cca-a550-a11116072b69', 'N2', 'Zone N2', 'HR, PB, RJ, UP, UK', ['HARYANA', 'PUNJAB', 'RAJASTHAN', 'UTTAR PRADESH', 'UTTARAKHAND']],
+  ['89bdcf7c-3939-40b9-a4fe-dbf0d7387815', 'N3', 'Zone N3', 'HIMACHAL PRADESH, JAMMU & KASHMIR', ['HIMACHAL PRADESH', 'JAMMU & KASHMIR', 'JAMMU AND KASHMIR']],
+  ['c50a2369-cce5-43d7-ad64-6e3ff7c7f9f1', 'C1', 'Zone C1', 'BHOPAL, INDORE, RAIPUR', ['MADHYA PRADESH']],
+  ['d2999bf4-cde1-45f5-9048-0e882e2a66a6', 'C2', 'Zone C2', 'CHHATTISGARH, MADHYA PRADESH', ['CHHATTISGARH', 'MADHYA PRADESH']],
+  ['ba1c458e-6eef-4392-b47c-60a2b26f4fed', 'W1', 'Zone W1', 'MUM, PUNE, AHMADABAD, BARODA, BHIWANDI, THANE', []],
+  ['7b285749-d225-48db-9240-123abb135fdd', 'W2', 'Zone W2', 'GUJRAT, GOA, MH, DAMAN & DIU, DADRA HAVELI', ['GUJARAT', 'GOA', 'MAHARASHTRA', 'DAMAN AND DIU', 'DADRA AND NAGAR HAVELI']],
+  ['f18edc5b-045c-4d2f-9215-522085efc9fb', 'E1', 'Zone E1', 'PATNA, KOLKATA, JAMSHEDPUR, BHUBANESWAR', []],
+  ['a8e7ae1f-20aa-4aae-8cac-d39dde38700d', 'E2', 'Zone E2', 'BIHAR, JHARKHAND, ODISHA, WEST BENGAL', ['BIHAR', 'JHARKHAND', 'ODISHA', 'WEST BENGAL']],
+  ['d5863747-3548-49ad-b7a1-53f19c0aa316', 'S1', 'Zone S1', 'BANGALORE, CHENNAI, HYDRABAD, SECUNDRABAD, SRIPERUMBUDUR', []],
+  ['d27e40da-b818-4b08-af4a-301fa8ef3744', 'S2', 'Zone S2', 'ANDHRA PRADESH, KARNATAKA, TAMIL NADU, TELANGANA', ['ANDHRA PRADESH', 'KARNATAKA', 'TAMIL NADU', 'TELANGANA']],
+  ['bcab543e-2f77-40e8-ac25-d18f70ede9af', 'S3', 'Zone S3', 'KERLA, PONDICHERRY', ['KERALA', 'PUDUCHERRY']],
+  ['bbfb5a59-64a1-4c8b-b50d-a8d6249db3a9', 'NE1', 'Zone NE1', 'GUWAHATI', []],
+  ['270b3fe2-6639-40cc-8622-9ec9e6934349', 'NE2', 'Zone NE2', 'ARUNACHAL, ASSAM, MANIPUR, MEGHALAYA, MIZORAM, NAGALAND, SIKKIM, TRIPURA', ['ARUNACHAL PRADESH', 'ASSAM', 'MANIPUR', 'MEGHALAYA', 'MIZORAM', 'NAGALAND', 'SIKKIM', 'TRIPURA']],
+  ['34e4aa66-df82-441c-afcf-99ac19baab90', 'SPECIAL_B2B', 'Special Zone (B2B)', 'Custom rules and exceptions', ['ANDAMAN AND NICOBAR', 'ANDAMAN & NICOBAR', 'CHANDIGARH', 'LAKSHADWEEP', 'LADAKH', 'SIKKIM', 'TRIPURA']],
+  ['2e6a4203-b13a-4478-a5aa-9e5b7c973c65', 'TEST781001', 'Guwahati 781001 Zone', 'ASSAM', ['ASSAM']],
+].map(([id, code, name, description, states]) => ({
+  id,
+  code,
+  name,
+  description,
+  states,
+  business_type: 'B2B',
+  created_at: '2026-09-09T00:31:00+05:30',
+}))
+
+const DEFAULT_B2B_PINCODES = DEFAULT_LOCATIONS.slice(0, 22000).map((item, index) => {
+  const state = String(item.state || '').toUpperCase()
+  const matchingZone =
+    DEFAULT_B2B_ZONES.find((zone) => (zone.states || []).includes(state)) ||
+    DEFAULT_B2B_ZONES[index % DEFAULT_B2B_ZONES.length]
+  return {
+    id: `b2b-pin-${item.pincode}`,
+    pincode: item.pincode,
+    city: item.city,
+    state: item.state,
+    zone_id: matchingZone.id,
+    zone_code: matchingZone.code,
+    zone_name: matchingZone.name,
+    courier_name: 'Global',
+    courier_id: '',
+    service_provider: '',
+    attributes: 'Standard',
+    sdl_rate_per_kg: '',
+    is_oda: false,
+    is_remote: false,
+    is_mall: false,
+    is_sez: false,
+    is_airport: false,
+    is_high_security: false,
+  }
+})
+
+const DEFAULT_B2B_RATES = DEFAULT_B2B_ZONES.flatMap((origin, originIndex) =>
+  DEFAULT_B2B_ZONES.map((destination, destinationIndex) => ({
+    id: `b2b-rate-${origin.code}-${destination.code}`,
+    originZoneId: origin.id,
+    destinationZoneId: destination.id,
+    origin_zone_id: origin.id,
+    destination_zone_id: destination.id,
+    ratePerKg: originIndex === destinationIndex ? 18 : 22 + Math.abs(originIndex - destinationIndex),
+    rate_per_kg: originIndex === destinationIndex ? 18 : 22 + Math.abs(originIndex - destinationIndex),
+    courier_id: undefined,
+    service_provider: undefined,
+    plan_id: 'basic',
+  })),
+)
+
+const DEFAULT_B2B_CHARGES = {
+  awb_charges: 0,
+  cft_factor: 4500,
+  minimum_chargeable_amount: 0,
+  minimum_chargeable_weight: 20,
+  minimum_chargeable_method: 'whichever_is_higher',
+  free_storage_days: 2,
+  demurrage_per_awb_day: 0,
+  demurrage_per_kg_day: 0,
+  demurrage_method: 'whichever_is_higher',
+  public_holiday_pickup_charge: 0,
+  fuel_surcharge_percentage: 0,
+  green_tax: 0,
+  fm_charge_per_awb: 0,
+  fm_charge_per_kg: 0,
+  fm_calculation_method: 'whichever_is_higher',
+  to_pay_charge_fixed: 0,
+  to_pay_charge_percent: 0,
+  green_tax_fixed: 0,
+  green_tax_per_kg: 0,
+  oda_charges: 0,
+  oda_per_kg_charge: 0,
+  oda_method: 'whichever_is_higher',
+  csd_delivery_charge: 0,
+  time_specific_per_kg: 0,
+  time_specific_per_awb: 0,
+  time_specific_method: 'whichever_is_higher',
+  mall_delivery_per_kg: 0,
+  mall_delivery_per_awb: 0,
+  mall_delivery_method: 'whichever_is_higher',
+  delivery_reattempt_per_kg: 0,
+  delivery_reattempt_per_awb: 0,
+  delivery_reattempt_method: 'whichever_is_higher',
+  handling_single_piece: 0,
+  handling_below_100_kg: 0,
+  handling_100_to_200_kg: 0,
+  handling_above_200_kg: 0,
+  cod_fixed_amount: 33,
+  cod_percentage: 1.7,
+  cod_method: 'whichever_is_higher',
+  rov_fixed_amount: 0,
+  rov_percentage: 0,
+  rov_method: 'whichever_is_higher',
+  insurance_charge: 0,
+  liability_limit: 0,
+  liability_method: 'whichever_is_lower',
+}
+
 const readLocalData = (key, fallback) => {
   try { return JSON.parse(localStorage.getItem(key)) || fallback } catch { return fallback }
 }
@@ -302,6 +426,45 @@ const readB2CRates = () => {
   return saved
 }
 
+const readB2BZones = () => {
+  const saved = readLocalData(B2B_ZONE_STORAGE_KEY, null)
+  const savedVersion = localStorage.getItem(B2B_ZONE_SEED_VERSION_KEY)
+  if (savedVersion !== 'fastship-clone-2026-09-18' || !Array.isArray(saved) || saved.length < DEFAULT_B2B_ZONES.length) {
+    const customByCode = new Map((Array.isArray(saved) ? saved : []).map((item) => [String(item.code), item]))
+    const upgraded = DEFAULT_B2B_ZONES.map((item) => ({ ...item, ...(customByCode.get(String(item.code)) || {}) }))
+    writeLocalData(B2B_ZONE_STORAGE_KEY, upgraded)
+    localStorage.setItem(B2B_ZONE_SEED_VERSION_KEY, 'fastship-clone-2026-09-18')
+    return upgraded
+  }
+  return saved
+}
+
+const readB2BPincodes = () => {
+  const saved = readLocalData(B2B_PINCODE_STORAGE_KEY, null)
+  const savedVersion = localStorage.getItem(B2B_PINCODE_SEED_VERSION_KEY)
+  if (savedVersion !== 'fastship-clone-2026-09-18' || !Array.isArray(saved) || saved.length < 20000) {
+    writeLocalData(B2B_PINCODE_STORAGE_KEY, DEFAULT_B2B_PINCODES)
+    localStorage.setItem(B2B_PINCODE_SEED_VERSION_KEY, 'fastship-clone-2026-09-18')
+    return DEFAULT_B2B_PINCODES
+  }
+  return saved
+}
+
+const readB2BRates = () => {
+  const saved = readLocalData(B2B_RATE_STORAGE_KEY, null)
+  const savedVersion = localStorage.getItem(B2B_RATE_SEED_VERSION_KEY)
+  if (savedVersion !== 'fastship-clone-2026-09-18' || !Array.isArray(saved) || saved.length < DEFAULT_B2B_RATES.length) {
+    const customById = new Map((Array.isArray(saved) ? saved : []).map((item) => [String(item.id), item]))
+    const upgraded = DEFAULT_B2B_RATES.map((item) => ({ ...item, ...(customById.get(String(item.id)) || {}) }))
+    writeLocalData(B2B_RATE_STORAGE_KEY, upgraded)
+    localStorage.setItem(B2B_RATE_SEED_VERSION_KEY, 'fastship-clone-2026-09-18')
+    return upgraded
+  }
+  return saved
+}
+
+const readB2BCharges = () => readLocalData(B2B_CHARGES_STORAGE_KEY, DEFAULT_B2B_CHARGES)
+
 const createLocalResponse = (config, data) => ({
   data,
   status: 200,
@@ -313,12 +476,19 @@ const createLocalResponse = (config, data) => ({
 
 const localAdapter = async (config) => {
   const method = String(config.method || 'get').toLowerCase()
-  const url = String(config.url || '').split('?')[0]
+  const rawUrl = String(config.url || '')
+  const url = rawUrl.split('?')[0]
+  const queryParams = Object.fromEntries(new URLSearchParams(rawUrl.split('?')[1] || '').entries())
+  config.params = { ...queryParams, ...(config.params || {}) }
   const payload = typeof config.data === 'string' ? JSON.parse(config.data || '{}') : (config.data || {})
   let locations = readLocations()
   let couriers = readCouriers()
   let b2cZones = readB2CZones()
   let b2cRates = readB2CRates()
+  let b2bZones = readB2BZones()
+  let b2bPincodes = readB2BPincodes()
+  let b2bRates = readB2BRates()
+  let b2bCharges = readB2BCharges()
   const providers = ACTIVE_SERVICE_PROVIDERS.map((serviceProvider) => {
     const matches = couriers.filter((item) => item.serviceProvider === serviceProvider)
     return { serviceProvider, totalCouriers: matches.length, enabledCouriers: matches.filter((item) => item.isEnabled).length, isEnabled: matches.some((item) => item.isEnabled) }
@@ -371,6 +541,111 @@ const localAdapter = async (config) => {
     indiaPost: { apiBase: 'https://test.cept.gov.in', customerId: '1674369691', username: 'Configured', configured: true },
   } })
   if (url.startsWith('/admin/couriers/credentials/') && ['put', 'post'].includes(method)) return createLocalResponse(config, { success: true, data: { ...payload, configured: true } })
+  if (url === '/admin/b2b/states' && method === 'get') {
+    const states = Array.from(new Set(DEFAULT_LOCATIONS.map((item) => item.state).filter(Boolean))).sort()
+    return createLocalResponse(config, { success: true, data: states })
+  }
+  if (url === '/admin/b2b/zones' && method === 'get') return createLocalResponse(config, { success: true, data: b2bZones })
+  if (url === '/admin/b2b/zones' && method === 'post') {
+    const item = { id: payload.id || `b2b-zone-${Date.now()}`, created_at: new Date().toISOString(), business_type: 'B2B', ...payload }
+    b2bZones = [...b2bZones, item]
+    writeLocalData(B2B_ZONE_STORAGE_KEY, b2bZones)
+    return createLocalResponse(config, { success: true, data: item })
+  }
+  if (url.startsWith('/admin/b2b/zones/') && ['put', 'delete'].includes(method)) {
+    const id = url.split('/').filter(Boolean).pop()
+    b2bZones = method === 'delete'
+      ? b2bZones.filter((item) => String(item.id) !== String(id))
+      : b2bZones.map((item) => String(item.id) === String(id) ? { ...item, ...payload } : item)
+    writeLocalData(B2B_ZONE_STORAGE_KEY, b2bZones)
+    return createLocalResponse(config, { success: true, data: payload })
+  }
+  if (url === '/admin/b2b/pincodes' && method === 'get') {
+    const params = config.params || {}
+    let rows = b2bPincodes
+    if (params.pincode) rows = rows.filter((item) => String(item.pincode).includes(String(params.pincode)))
+    if (params.zone_id || params.zoneId) {
+      const zoneId = params.zone_id || params.zoneId
+      rows = rows.filter((item) => String(item.zone_id) === String(zoneId))
+    }
+    if (params.state) rows = rows.filter((item) => String(item.state).toLowerCase().includes(String(params.state).toLowerCase()))
+    const page = Number(params.page || 1)
+    const limit = Number(params.limit || 20)
+    return createLocalResponse(config, {
+      success: true,
+      data: rows.slice((page - 1) * limit, page * limit),
+      pagination: { total: rows.length, page, limit, totalPages: Math.ceil(rows.length / limit) },
+    })
+  }
+  if (url === '/admin/b2b/pincodes' && method === 'post') {
+    const zone = b2bZones.find((item) => String(item.id) === String(payload.zone_id || payload.zoneId)) || b2bZones[0]
+    const item = { id: `b2b-pin-${payload.pincode}-${Date.now()}`, ...payload, zone_id: zone?.id, zone_code: zone?.code, zone_name: zone?.name }
+    b2bPincodes = [item, ...b2bPincodes]
+    writeLocalData(B2B_PINCODE_STORAGE_KEY, b2bPincodes)
+    return createLocalResponse(config, { success: true, data: item })
+  }
+  if (url.startsWith('/admin/b2b/pincodes/') && ['put', 'delete'].includes(method)) {
+    const id = url.split('/').filter(Boolean).pop()
+    b2bPincodes = method === 'delete'
+      ? b2bPincodes.filter((item) => String(item.id) !== String(id))
+      : b2bPincodes.map((item) => String(item.id) === String(id) ? { ...item, ...payload } : item)
+    writeLocalData(B2B_PINCODE_STORAGE_KEY, b2bPincodes)
+    return createLocalResponse(config, { success: true, data: payload })
+  }
+  if (url === '/admin/b2b/zone-rates' && method === 'get') {
+    const params = config.params || {}
+    let rows = b2bRates
+    if (params.plan_id) rows = rows.filter((row) => String(row.plan_id || 'basic') === String(params.plan_id))
+    if (params.courier_id) rows = rows.filter((row) => !row.courier_id || String(row.courier_id) === String(params.courier_id))
+    if (params.service_provider) rows = rows.filter((row) => !row.service_provider || String(row.service_provider) === String(params.service_provider))
+    return createLocalResponse(config, { success: true, data: rows })
+  }
+  if (url === '/admin/b2b/zone-rates' && method === 'post') {
+    const item = {
+      id: payload.id || `b2b-rate-${payload.originZoneId}-${payload.destinationZoneId}-${Date.now()}`,
+      ...payload,
+      origin_zone_id: payload.originZoneId || payload.origin_zone_id,
+      destination_zone_id: payload.destinationZoneId || payload.destination_zone_id,
+      rate_per_kg: payload.ratePerKg || payload.rate_per_kg,
+      plan_id: payload.plan_id || payload.planId || 'basic',
+    }
+    b2bRates = [...b2bRates.filter((row) => row.id !== item.id), item]
+    writeLocalData(B2B_RATE_STORAGE_KEY, b2bRates)
+    return createLocalResponse(config, { success: true, data: item })
+  }
+  if (url.startsWith('/admin/b2b/zone-rates/') && ['put', 'delete'].includes(method)) {
+    const id = url.split('/').filter(Boolean).pop()
+    b2bRates = method === 'delete'
+      ? b2bRates.filter((item) => String(item.id) !== String(id))
+      : b2bRates.map((item) => String(item.id) === String(id) ? { ...item, ...payload, rate_per_kg: payload.ratePerKg || payload.rate_per_kg } : item)
+    writeLocalData(B2B_RATE_STORAGE_KEY, b2bRates)
+    return createLocalResponse(config, { success: true, data: payload })
+  }
+  if (url === '/admin/b2b/additional-charges' && method === 'get') return createLocalResponse(config, { success: true, data: b2bCharges })
+  if (url === '/admin/b2b/additional-charges' && method === 'post') {
+    b2bCharges = { ...b2bCharges, ...payload }
+    writeLocalData(B2B_CHARGES_STORAGE_KEY, b2bCharges)
+    return createLocalResponse(config, { success: true, data: b2bCharges })
+  }
+  if (url === '/admin/b2b/overheads' && method === 'get') return createLocalResponse(config, { success: true, data: [] })
+  if (url === '/admin/b2b/calculate-rate' && method === 'post') {
+    const origin = b2bPincodes.find((item) => String(item.pincode) === String(payload.originPincode)) || b2bPincodes[0]
+    const destination = b2bPincodes.find((item) => String(item.pincode) === String(payload.destinationPincode)) || b2bPincodes[1]
+    const rate = b2bRates.find((item) => String(item.origin_zone_id) === String(origin.zone_id) && String(item.destination_zone_id) === String(destination.zone_id)) || b2bRates[0]
+    const actualWeight = Number(payload.weightKg || 0)
+    const volumetricWeight = payload.length && payload.width && payload.height
+      ? (Number(payload.length) * Number(payload.width) * Number(payload.height)) / Number(b2bCharges.cft_factor || 4500)
+      : 0
+    const billableWeight = Math.max(actualWeight, volumetricWeight, Number(b2bCharges.minimum_chargeable_weight || 0))
+    const baseFreight = billableWeight * Number(rate?.rate_per_kg || rate?.ratePerKg || 0)
+    const codCharge = String(payload.paymentMode || '').toUpperCase() === 'COD' ? Number(b2bCharges.cod_fixed_amount || 0) : 0
+    return createLocalResponse(config, { success: true, data: {
+      origin: { zoneCode: origin.zone_code, zoneName: origin.zone_name },
+      destination: { zoneCode: destination.zone_code, zoneName: destination.zone_name },
+      calculation: { actualWeight, volumetricWeight, billableWeight, usedVolumetric: volumetricWeight > actualWeight },
+      charges: { baseFreight, overheads: codCharge ? [{ id: 'cod', name: 'COD Charges', amount: codCharge }] : [], total: baseFreight + codCharge },
+    } })
+  }
   if (url === '/admin/zones/' && method === 'get') {
     const params = config.params || {}
     const businessType = String(params.business_type || params.businessType || '').toUpperCase()

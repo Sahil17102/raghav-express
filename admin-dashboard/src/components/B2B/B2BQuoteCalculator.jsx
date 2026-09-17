@@ -20,6 +20,7 @@ import {
 } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { fetchAllCouriersList } from '../../services/courier.service'
 import { b2bAdminService } from '../../services/b2bAdmin.service'
 import Card from '../Card/Card'
 import CardBody from '../Card/CardBody'
@@ -43,8 +44,8 @@ const B2BQuoteCalculator = ({ planId }) => {
   const [isCalculating, setIsCalculating] = useState(false)
 
   const { data: couriers = [] } = useQuery({
-    queryKey: ['couriers'],
-    queryFn: () => fetch('/api/couriers').then((r) => r.json()),
+    queryKey: ['couriers', 'b2b'],
+    queryFn: () => fetchAllCouriersList({ businessType: 'b2b' }),
   })
 
   const handleCalculate = async () => {
@@ -208,7 +209,7 @@ const B2BQuoteCalculator = ({ planId }) => {
                 onChange={(e) => setFormData({ ...formData, serviceProvider: e.target.value })}
               >
                 <option value="delhivery">Delhivery</option>
-                <option value="ekart">Ekart</option>
+                <option value="india_post">India Post</option>
               </Select>
             </FormControl>
 
