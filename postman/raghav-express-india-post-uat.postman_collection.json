@@ -1,0 +1,380 @@
+{
+  "info": {
+    "name": "Raghav Express - India Post UAT",
+    "description": "India Post external-customer UAT APIs. Booking is disabled unless allowBookings=true.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "internalApiKey",
+      "value": ""
+    },
+    {
+      "key": "indiaPostUsername",
+      "value": ""
+    },
+    {
+      "key": "indiaPostPassword",
+      "value": ""
+    },
+    {
+      "key": "customerId",
+      "value": "3000064781"
+    },
+    {
+      "key": "contractId",
+      "value": "41585456"
+    },
+    {
+      "key": "barcode",
+      "value": "ET21433001XIN"
+    },
+    {
+      "key": "allowBookings",
+      "value": "false"
+    }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{indiaPostUsername}}\",\n  \"password\": \"{{indiaPostPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Pincode Offices",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/offices?pincode=570001&limit=50"
+      }
+    },
+    {
+      "name": "Speed Post Tariff",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/tariffs/speed-post?product-code=SP&weight=250&source-pincode=400001&destination-pincode=110001&length=30&width=21&height=1&INS=1000&POD=YES"
+      }
+    },
+    {
+      "name": "Business Parcel Tariff",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/tariffs/business-parcel?product-code=BP&weight=550&source-pincode=141010&destination-pincode=110057&length=14&width=9&height=2&ins=1000"
+      }
+    },
+    {
+      "name": "24 Speed Post Document Tariff",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/tariffs/ddd-ndd?product-code=24_SPEEDPOST_DOC&weight=100&source-pincode=110001&destination-pincode=400001&source-office-id=15360005&destination-office-id=24350001&ins=1000&REG=FALSE&OTP=FALSE&ACK=FALSE"
+      }
+    },
+    {
+      "name": "24 Speed Post Parcel Tariff",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/tariffs/parspl?product-code=24_SPP_PARSPL&weight=1000&source-pincode=600001&destination-pincode=560001&source-office-id=29350001&destination-office-id=21840011&length=14&width=14&height=28&ins=1000&REG=FALSE&OTP=FALSE&ACK=FALSE&COD=TRUE&CODVALUE=1000"
+      }
+    },
+    {
+      "name": "48 Speed Post Document Tariff",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/tariffs/ddd-ndd?product-code=48_SPEEDPOST_DOC&weight=350&source-pincode=110001&destination-pincode=400001&source-office-id=15360005&destination-office-id=24350001&ins=1000&REG=FALSE&OTP=FALSE&ACK=FALSE"
+      }
+    },
+    {
+      "name": "Book Articles",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowBookings') !== 'true' && pm.collectionVariables.get('allowBookings') !== 'true') { throw new Error('Set allowBookings=true only with an unused UAT barcode'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/bookings",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customer_id\": \"{{customerId}}\",\n  \"articles\": [\n    {\n      \"bulk_customer_id\": \"{{customerId}}\",\n      \"contract_id\": \"{{contractId}}\",\n      \"barcode_no\": \"{{barcode}}\",\n      \"pickup_or_dropoff\": \"DROPOFF\",\n      \"pickup_dropoff_office_id\": 21260024,\n      \"article_type\": \"SP_INLAND_DOC\",\n      \"physical_weight\": 15,\n      \"shape_of_article\": \"DOC\",\n      \"length\": 10,\n      \"breadth_diameter\": 10,\n      \"height\": 1,\n      \"sender_name\": \"Raghav Enterprises\",\n      \"sender_company\": \"Raghav Enterprises\",\n      \"sender_add_line_1\": \"Test sender address\",\n      \"sender_city\": \"Jaipur\",\n      \"sender_pincode\": 302013,\n      \"sender_mobile_no\": 9660423241,\n      \"receiver_name\": \"Test Receiver\",\n      \"receiver_company\": \"Test Company\",\n      \"receiver_add_line_1\": \"Test receiver address\",\n      \"receiver_city\": \"Mysuru\",\n      \"receiver_pincode\": 570001,\n      \"receiver_mobile_no\": 9999999999,\n      \"alt_address_flag\": false,\n      \"pickup_address_flag\": false\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create Address Label",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/labels",
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"customer_id\": \"{{customerId}}\",\n    \"channel_type\": \"E\",\n    \"user_type\": \"R\",\n    \"barcode_no\": \"{{barcode}}\",\n    \"service_type\": \"Speed Post\",\n    \"booking_type\": \"COMMERCIAL\",\n    \"recipient_name\": \"Test Receiver\",\n    \"recipient_addressl1\": \"Test address\",\n    \"sender_name\": \"Raghav Enterprises\",\n    \"transmission_mode\": \"S\",\n    \"payment_mode\": \"contract\",\n    \"booking_office_name\": \"Test Office\",\n    \"booking_office_pin\": \"302013\",\n    \"size\": \"A6\",\n    \"payment_status\": \"PC\",\n    \"identifier\": \"Domestic\"\n  }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Download Events",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/events",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"Cust_Id\": \"0000000000\",\n  \"Event_Code\": \"LE\",\n  \"Event_Date\": \"01032026\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Bulk Tracking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/india-post/tracking",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bulk\": [\n    \"RK775227016IN\",\n    \"RK440375064IN\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

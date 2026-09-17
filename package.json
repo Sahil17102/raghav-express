@@ -12,6 +12,8 @@
     "postman:delhivery-b2c": "node scripts/generate-delhivery-postman.mjs",
     "test:delhivery-b2b": "npm run build && node scripts/test-delhivery-b2b.mjs",
     "postman:delhivery-b2b": "node scripts/generate-delhivery-b2b-postman.mjs",
+    "test:india-post": "npm run build && node scripts/test-india-post.mjs",
+    "postman:india-post": "node scripts/generate-india-post-postman.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt"
