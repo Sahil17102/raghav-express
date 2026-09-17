@@ -1,0 +1,878 @@
+{
+  "info": {
+    "name": "Raghav Express - Delhivery B2B",
+    "description": "Protected application API covering the Delhivery B2B/LTL lifecycle. Set allowMutations=true only with disposable sandbox data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "internalApiKey",
+      "value": ""
+    },
+    {
+      "key": "delhiveryUsername",
+      "value": ""
+    },
+    {
+      "key": "delhiveryPassword",
+      "value": ""
+    },
+    {
+      "key": "warehouseName",
+      "value": "Raghav Test Warehouse"
+    },
+    {
+      "key": "lrn",
+      "value": "220110457"
+    },
+    {
+      "key": "jobId",
+      "value": "test-job-id"
+    },
+    {
+      "key": "pickupId",
+      "value": "test-pickup-id"
+    },
+    {
+      "key": "pickupDate",
+      "value": "2026-09-18"
+    },
+    {
+      "key": "appointmentDate",
+      "value": "18/09/2026"
+    },
+    {
+      "key": "callbackUrl",
+      "value": "https://example.com/delhivery/callback"
+    },
+    {
+      "key": "callbackToken",
+      "value": "test-callback-token"
+    },
+    {
+      "key": "allowMutations",
+      "value": "false"
+    }
+  ],
+  "item": [
+    {
+      "name": "Reset Password",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/auth/forgot-password",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{delhiveryUsername}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{delhiveryUsername}}\",\n  \"password\": \"{{delhiveryPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Logout",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/auth/logout"
+      }
+    },
+    {
+      "name": "Serviceability",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/serviceability/122001?weight=1000"
+      }
+    },
+    {
+      "name": "Expected TAT",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/tat?origin_pin=400093&destination_pin=122001"
+      }
+    },
+    {
+      "name": "Freight Estimate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/freight/estimate",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dimensions\": [\n    {\n      \"length_cm\": 11,\n      \"width_cm\": 10,\n      \"height_cm\": 11,\n      \"box_count\": 1\n    }\n  ],\n  \"weight_g\": 1000,\n  \"cheque_payment\": false,\n  \"source_pin\": \"400069\",\n  \"consignee_pin\": \"122001\",\n  \"payment_mode\": \"prepaid\",\n  \"inv_amount\": 123,\n  \"freight_mode\": \"fop\",\n  \"rov_insurance\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Freight Charges",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/freight/charges?lrns={{lrn}}"
+      }
+    },
+    {
+      "name": "Create Warehouse",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/warehouses",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pin_code\": \"400059\",\n  \"city\": \"Mumbai\",\n  \"state\": \"Maharashtra\",\n  \"country\": \"India\",\n  \"address_details\": {\n    \"address\": \"Test address\",\n    \"contact_person\": \"Test User\",\n    \"phone_number\": \"9999999999\"\n  },\n  \"name\": \"{{warehouseName}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Update Warehouse",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/warehouses",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cl_warehouse_name\": \"{{warehouseName}}\",\n  \"update_dict\": {\n    \"address_details\": {\n      \"address\": \"Updated test address\",\n      \"contact_person\": \"Test User\",\n      \"phone_number\": \"9999999999\"\n    }\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/shipments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pickup_location_name\": \"{{warehouseName}}\",\n  \"payment_mode\": \"prepaid\",\n  \"weight\": 1000,\n  \"dropoff_location\": {\n    \"consignee_name\": \"Test Consignee\",\n    \"address\": \"Test address\",\n    \"city\": \"Gurugram\",\n    \"state\": \"Haryana\",\n    \"zip\": \"122001\",\n    \"phone\": \"9999999999\"\n  },\n  \"invoices\": [\n    {\n      \"inv_num\": \"POSTMAN-{{$timestamp}}\",\n      \"inv_amt\": 123\n    }\n  ],\n  \"shipment_details\": [\n    {\n      \"order_id\": \"RGX-{{$timestamp}}\",\n      \"box_count\": 1,\n      \"description\": \"Test shipment\",\n      \"weight\": 1000,\n      \"waybills\": [],\n      \"master\": false\n    }\n  ],\n  \"rov_insurance\": false,\n  \"freight_mode\": \"fop\",\n  \"fm_pickup\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Shipment Creation Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/shipments/status?job_id={{jobId}}"
+      }
+    },
+    {
+      "name": "Update Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/shipments/{{lrn}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"consignee_name\": \"Updated Test Consignee\",\n  \"consignee_phone\": \"9999999999\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Shipment Update Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/shipments/update/status?job_id={{jobId}}"
+      }
+    },
+    {
+      "name": "Cancel Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/shipments/{{lrn}}"
+      }
+    },
+    {
+      "name": "Track Shipment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/shipments/track?lrnum={{lrn}}&all_wbns=false"
+      }
+    },
+    {
+      "name": "Book Appointment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/appointments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"lrn\": \"{{lrn}}\",\n  \"date\": \"{{appointmentDate}}\",\n  \"appointment_slot\": \"12:00 PM-03:00 PM\",\n  \"po_number\": [\n    \"NotApplicable\"\n  ],\n  \"appointment_id\": \"\",\n  \"po_expiry_date\": \"{{appointmentDate}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create Pickup",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/pickups",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client_warehouse\": \"{{warehouseName}}\",\n  \"pickup_date\": \"{{pickupDate}}\",\n  \"start_time\": \"13:00:00\",\n  \"expected_package_count\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Cancel Pickup",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/pickups/{{pickupId}}"
+      }
+    },
+    {
+      "name": "Generate Shipping Label URL",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/labels/std/{{lrn}}"
+      }
+    },
+    {
+      "name": "LR Copy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/lr-copy/{{lrn}}"
+      }
+    },
+    {
+      "name": "Generate Shipping Labels",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/documents/generate/shipping_label",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"lrns\": [\n    \"{{lrn}}\"\n  ],\n  \"size\": \"a4\",\n  \"callback\": {\n    \"uri\": \"{{callbackUrl}}\",\n    \"method\": \"POST\",\n    \"authorization\": \"Bearer {{callbackToken}}\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Generate LR Copies",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { throw new Error('Set allowMutations=true to run this state-changing request'); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/documents/generate/lr_copy",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"lrns\": [\n    \"{{lrn}}\"\n  ],\n  \"callback\": {\n    \"uri\": \"{{callbackUrl}}\",\n    \"method\": \"POST\",\n    \"authorization\": \"Bearer {{callbackToken}}\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Generated Document Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/documents/generate/shipping_label/status/{{jobId}}"
+      }
+    },
+    {
+      "name": "Download POD",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2b/documents/download?lrn={{lrn}}&doc_type=LM_POD&auto_download=false&version=latest"
+      }
+    }
+  ]
+}
