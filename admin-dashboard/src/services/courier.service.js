@@ -54,7 +54,24 @@ export const fetchAllCouriersList = async (filters = {}) => {
 
   const res = await api.get(`/couriers/full-list`, { params })
   if (!res.data?.success) throw new Error('Failed to fetch couriers')
-  return normalizeArrayPayload(res.data) // returns an array of courier objects
+  const couriers = normalizeArrayPayload(res.data)
+  const businessType = String(filters.businessType || '').toLowerCase()
+  const paidProviders = new Set(['delhivery', 'india_post'])
+  const paidB2BIds = new Set(['delhivery-b2b', 'india-post-parcel'])
+  const paidB2CIds = new Set([
+    'delhivery-b2c',
+    'delhivery-express',
+    'india-post-speed',
+    'india-post-parcel',
+  ])
+
+  return couriers.filter((courier) => {
+    const provider = courier.serviceProvider || courier.service_provider
+    if (!paidProviders.has(provider)) return false
+    if (businessType === 'b2b') return paidB2BIds.has(String(courier.id))
+    if (businessType === 'b2c') return paidB2CIds.has(String(courier.id))
+    return true
+  }) // returns an array of courier objects
 }
 
 export const createCourier = async (payload) => {

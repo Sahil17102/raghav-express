@@ -1,4 +1,10 @@
 import api from './axios'
+import {
+  b2bDemoAdditionalCharges,
+  b2bDemoPincodes,
+  b2bDemoRates,
+  b2bDemoZones,
+} from '../data/b2bFastshipDemo'
 
 const BASE_URL = '/admin/b2b'
 
@@ -32,7 +38,8 @@ export const b2bAdminService = {
   async getZones(params = {}) {
     const query = buildQuery(params)
     const { data } = await api.get(`${BASE_URL}/zones${query ? `?${query}` : ''}`)
-    return normalizeArrayPayload(data)
+    const zones = normalizeArrayPayload(data)
+    return zones.length ? zones : b2bDemoZones
   },
 
   async createZone(payload) {
@@ -64,8 +71,25 @@ export const b2bAdminService = {
   async getPincodes(params = {}) {
     const query = buildQuery(params)
     const { data } = await api.get(`${BASE_URL}/pincodes${query ? `?${query}` : ''}`)
+    const rows = Array.isArray(data.data) ? data.data : []
+    if (!rows.length) {
+      let demoRows = b2bDemoPincodes
+      if (params.pincode) {
+        demoRows = demoRows.filter((item) => String(item.pincode).includes(String(params.pincode)))
+      }
+      if (params.zone_id || params.zoneId) {
+        const zoneId = params.zone_id || params.zoneId
+        demoRows = demoRows.filter((item) => String(item.zone_id) === String(zoneId))
+      }
+      const page = Number(params.page || 1)
+      const limit = Number(params.limit || 20)
+      return {
+        data: demoRows.slice((page - 1) * limit, page * limit),
+        pagination: { total: demoRows.length, page, limit, totalPages: Math.ceil(demoRows.length / limit) },
+      }
+    }
     return {
-      data: data.data ?? [],
+      data: rows,
       pagination: data.pagination ?? { total: 0, page: 1, limit: 20 },
     }
   },
@@ -111,7 +135,8 @@ export const b2bAdminService = {
   async getZoneRates(params = {}) {
     const query = buildQuery(params)
     const { data } = await api.get(`${BASE_URL}/zone-rates${query ? `?${query}` : ''}`)
-    return normalizeArrayPayload(data)
+    const rates = normalizeArrayPayload(data)
+    return rates.length ? rates : b2bDemoRates
   },
 
   async upsertZoneRate(payload) {
@@ -165,7 +190,8 @@ export const b2bAdminService = {
   async getAdditionalCharges(params = {}) {
     const query = buildQuery(params)
     const { data } = await api.get(`${BASE_URL}/additional-charges${query ? `?${query}` : ''}`)
-    return data.data ?? data
+    const charges = data.data ?? data
+    return charges && Object.keys(charges).length ? charges : b2bDemoAdditionalCharges
   },
 
   async upsertAdditionalCharges(payload) {
