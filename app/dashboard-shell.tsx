@@ -128,16 +128,66 @@ const clientSections: Section[] = [
 ];
 const adminSections: Section[] = [
   {
-    title: "ADMIN",
+    title: "OVERVIEW",
     items: [
       { label: "Dashboard", icon: LayoutDashboard },
-      { label: "All Orders", icon: Boxes },
-      { label: "Sellers", icon: Store },
-      { label: "NDR & RTO", icon: AlertTriangle },
-      { label: "Couriers", icon: Truck },
-      { label: "Finance", icon: WalletCards },
-      { label: "Reports", icon: BarChart3 },
-      { label: "Settings", icon: Settings },
+      { label: "Orders", icon: Boxes },
+      { label: "Users Management", icon: Store },
+    ],
+  },
+  {
+    title: "OPERATIONS",
+    items: [
+      { label: "Operations", icon: AlertTriangle, children: [
+        { label: "NDR", icon: AlertTriangle },
+        { label: "RTO", icon: RefreshCw },
+      ]},
+      { label: "Plan Management", icon: PackageCheck },
+    ],
+  },
+  {
+    title: "SHIPPING MANAGEMENT",
+    items: [
+      { label: "Shipping Management", icon: Truck, children: [
+        { label: "Couriers", icon: Truck },
+        { label: "Courier Credentials", icon: Settings },
+        { label: "Service Providers", icon: Store },
+        { label: "Zone Mappings", icon: MapPin },
+        { label: "Serviceability", icon: MapPin },
+        { label: "B2B Pricing", icon: IndianRupee },
+        { label: "B2C Pricing", icon: IndianRupee },
+      ]},
+    ],
+  },
+  {
+    title: "FINANCE",
+    items: [
+      { label: "Billing", icon: FileText, children: [
+        { label: "Invoices", icon: FileText },
+        { label: "Billing Preferences", icon: SlidersHorizontal },
+        { label: "COD Remittance", icon: IndianRupee },
+        { label: "Wallets", icon: WalletCards },
+      ]},
+      { label: "Reconciliation", icon: Scale, children: [
+        { label: "Weight Discrepancies", icon: Scale },
+        { label: "Dispute Management", icon: AlertTriangle },
+      ]},
+    ],
+  },
+  {
+    title: "TOOLS & SUPPORT",
+    items: [
+      { label: "Tools", icon: Calculator, children: [
+        { label: "Rate Calculator", icon: Calculator },
+        { label: "Rate Calculator Terms", icon: FileText },
+        { label: "Order Tracking", icon: Search },
+        { label: "API Integration", icon: Zap },
+      ]},
+      { label: "About Us Page", icon: FileText },
+      { label: "Support", icon: Headphones },
+      { label: "Payment Options", icon: WalletCards },
+      { label: "Change Password", icon: Settings },
+      { label: "Developer Logs", icon: ClipboardList },
     ],
   },
 ];
@@ -176,7 +226,7 @@ const orders = [
   ],
 ];
 
-function DashboardView({ go }: { go: (name: string) => void }) {
+function DashboardView({ go, role }: { go: (name: string) => void; role: Role }) {
   const [date, setDate] = useState("2026-09-12");
   const [refreshing, setRefreshing] = useState(false);
   const [customize, setCustomize] = useState(false);
@@ -207,10 +257,7 @@ function DashboardView({ go }: { go: (name: string) => void }) {
           </span>
           <div>
             <h1>Dashboard</h1>
-            <p>
-              A clean view of orders, cash flow, courier health, and action
-              queues.
-            </p>
+            <p>{role === "admin" ? "Monitor platform orders, sellers, courier health, finance, and action queues." : "A clean view of orders, cash flow, courier health, and action queues."}</p>
           </div>
         </div>
         <div className="heading-actions">
@@ -234,8 +281,12 @@ function DashboardView({ go }: { go: (name: string) => void }) {
         </div>
       </section>
       <section className="clone-stats">
-        {(
-          [
+        {(role === "admin" ? [
+            ["TOTAL ORDERS", "248", "12.5% growth this week", Boxes, "blue"],
+            ["ACTIVE SELLERS", "42", "3 joined this month", Store, "teal"],
+            ["GROSS REVENUE", "â‚¹2.99L", "Across all shipments", WalletCards, "orange"],
+            ["OPEN EXCEPTIONS", "7", "Needs operations review", AlertTriangle, "purple"],
+          ] : [
             ["ACTIVE SHIPMENTS", "0", "No active shipments", Boxes, "blue"],
             ["IN TRANSIT", "0", "Pickup queue is clear", Truck, "teal"],
             [
@@ -246,8 +297,7 @@ function DashboardView({ go }: { go: (name: string) => void }) {
               "orange",
             ],
             ["COD REMITTANCE", "₹0", "No remittance due", Building2, "purple"],
-          ] as [string, string, string, Icon, string][]
-        ).map(([label, value, note, I, tone]) => (
+          ]).map(([label, value, note, I, tone]) => (
           <article key={label}>
             <span className={`stat-icon ${tone}`}>
               <I />
@@ -258,7 +308,7 @@ function DashboardView({ go }: { go: (name: string) => void }) {
               <em>✓ {note}</em>
               <button
                 onClick={() =>
-                  go(
+                  go(role === "admin" ? (label === "ACTIVE SELLERS" ? "Users Management" : label === "OPEN EXCEPTIONS" ? "NDR" : "Orders") :
                     label === "WALLET BALANCE"
                       ? "Passbook"
                       : label === "COD REMITTANCE"
@@ -631,7 +681,7 @@ function GenericView({ name }: { name: string }) {
 
 export default function DashboardShell({ role }: { role: Role }) {
   const sections = role === "admin" ? adminSections : clientSections;
-  const [active, setActive] = useState("Home");
+  const [active, setActive] = useState(role === "admin" ? "Dashboard" : "Home");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [mobile, setMobile] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -1022,15 +1072,17 @@ export default function DashboardShell({ role }: { role: Role }) {
           </div>
         </header>
         <div className="clone-content">
-          {active === "Home" ? (
+          {role === "client" && active === "Home" ? (
             <ClientHome go={select} />
           ) : active === "Dashboard" ? (
-            <DashboardView go={select} />
-          ) : ["All Orders", "B2C Orders", "B2B Orders"].includes(active) ? (
+            <DashboardView go={select} role={role} />
+          ) : role === "client" && ["All Orders", "B2C Orders", "B2B Orders"].includes(active) ? (
             <OrdersManager
               go={select}
               mode={active as "All Orders" | "B2C Orders" | "B2B Orders"}
             />
+          ) : role === "admin" ? (
+            <GenericView name={active} />
           ) : (
             <ClientModule
               name={active}
