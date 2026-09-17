@@ -49,17 +49,59 @@ const api = axios.create({
   baseURL: apiBaseURL,
   // Do not leave the sign-in UI spinning forever when a hosted API is down
   // or stuck while waking up.
-  timeout: 20000,
+  timeout: 8000,
   withCredentials: true, // only if using cookies
 })
 
 let refreshPromise = null
+
+const isLocalAdminSession = () => {
+  const token = localStorage.getItem('accessToken') || ''
+  return token.endsWith('.local')
+}
+
+const isRaghavAdminHost = () => {
+  const host = window.location.hostname.toLowerCase()
+  return host === 'raghav-express-admin.onrender.com' || host === 'localhost' || host === '127.0.0.1'
+}
+
+// The hosted admin's built-in demo login intentionally uses an offline token.
+// Return an empty, API-compatible read model for that session so data screens
+// render normally instead of waiting forever for an API that cannot accept it.
+const createLocalReadResponse = (config) => ({
+  data: {
+    success: true,
+    data: [],
+    items: [],
+    rows: [],
+    orders: [],
+    users: [],
+    tickets: [],
+    couriers: [],
+    locations: [],
+    plans: [],
+    total: 0,
+    totalCount: 0,
+    totalPages: 0,
+    page: 1,
+    pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+  },
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config,
+  request: null,
+})
 
 // Request interceptor: attach access token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`
+  }
+
+  if (config.method?.toLowerCase() === 'get' && isLocalAdminSession() && isRaghavAdminHost()) {
+    config.adapter = async () => createLocalReadResponse(config)
   }
   return config
 })

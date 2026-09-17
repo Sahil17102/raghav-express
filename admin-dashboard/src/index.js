@@ -35,7 +35,14 @@ const ReactQueryDevtools =
       )
     : null
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 const root = createRoot(document.getElementById('root'))
 root.render(
