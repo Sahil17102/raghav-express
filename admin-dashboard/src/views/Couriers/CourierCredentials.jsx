@@ -484,7 +484,7 @@ const CourierCredentials = () => {
           </VStack>
         </Box>
 
-        <Box borderWidth="1px" borderRadius="lg" p={5} minW="320px" flex="1" maxW="520px">
+        <Box borderWidth="1px" borderRadius="lg" p={5} minW="320px" flex="1" maxW="520px" display="none">
           <VStack spacing={4} align="stretch">
             <Flex justify="space-between" align="center">
               <Text fontWeight="semibold">Shadowfax</Text>
@@ -550,7 +550,7 @@ const CourierCredentials = () => {
           </VStack>
         </Box>
 
-        <Box borderWidth="1px" borderRadius="lg" p={5} minW="320px" flex="1" maxW="520px">
+        <Box borderWidth="1px" borderRadius="lg" p={5} minW="320px" flex="1" maxW="520px" display="none">
           <VStack spacing={4} align="stretch">
             <Flex justify="space-between" align="center">
               <Text fontWeight="semibold">Ekart Logistics</Text>
@@ -656,8 +656,7 @@ const CourierCredentials = () => {
             </Button>
           </VStack>
         </Box>
-
-        <Box borderWidth="1px" borderRadius="lg" p={5} minW="320px" flex="1" maxW="520px">
+        <Box borderWidth="1px" borderRadius="lg" p={5} minW="320px" flex="1" maxW="520px" display="none">
           <VStack spacing={4} align="stretch">
             <Flex justify="space-between" align="center">
               <Text fontWeight="semibold">Xpressbees</Text>

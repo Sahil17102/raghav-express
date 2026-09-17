@@ -246,40 +246,21 @@ const Couriers = () => {
   if (isLoading) return <Spinner size="md" />
   if (error) return <Text color="red.500">Failed to load couriers</Text>
 
-  // Check if there are Delhivery couriers and show info
-  const delhiveryCouriers = couriers.filter((c) => c.serviceProvider === 'delhivery')
-  const hasDelhiveryExpress = delhiveryCouriers.some((c) => c.id === 99)
-  const hasDelhiverySurface = delhiveryCouriers.some((c) => c.id === 100)
+  const activeProviderLabels = Array.from(new Set(couriers.map((c) => c.serviceProvider)))
+    .map((provider) => COURIER_PROVIDER_OPTIONS.find((option) => option.value === provider)?.label || provider)
+    .join(', ')
 
   return (
     <Flex direction="column" pt={{ base: '12px', md: '4px' }} gap={4}>
-      {/* Delhivery Service Info */}
-      {delhiveryCouriers.length > 0 && (
+      {couriers.length > 0 && (
         <Alert status="info" borderRadius="md">
           <AlertIcon />
           <Box flex="1">
             <AlertTitle fontSize="sm" mb={1}>
-              Delhivery Service Information
+              Active Paid Courier Providers
             </AlertTitle>
             <AlertDescription fontSize="xs">
-              <Text mb={1}>
-                <strong>Delhivery Express</strong> (ID: 99) - Uses{' '}
-                <Badge colorScheme="blue">Express</Badge> shipping mode (air transport)
-              </Text>
-              <Text>
-                <strong>Delhivery Surface</strong> (ID: 100) - Uses{' '}
-                <Badge colorScheme="green">Surface</Badge> shipping mode (road transport)
-              </Text>
-              {!hasDelhiveryExpress && (
-                <Text mt={2} color="orange.600" fontSize="xs">
-                  âš ï¸ Delhivery Express (ID: 99) not found
-                </Text>
-              )}
-              {!hasDelhiverySurface && (
-                <Text mt={2} color="orange.600" fontSize="xs">
-                  âš ï¸ Delhivery Surface (ID: 100) not found
-                </Text>
-              )}
+              <Text>Showing only configured courier integrations: {activeProviderLabels}.</Text>
             </AlertDescription>
           </Box>
         </Alert>

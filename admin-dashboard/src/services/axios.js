@@ -68,6 +68,9 @@ const isRaghavAdminHost = () => {
 
 const LOCATION_STORAGE_KEY = 'raghavAdminLocations'
 const LOCATION_SEED_VERSION_KEY = 'raghavAdminLocationSeedVersion'
+const COURIER_STORAGE_KEY = 'raghavAdminCouriers'
+const COURIER_SEED_VERSION_KEY = 'raghavAdminCourierSeedVersion'
+const ACTIVE_SERVICE_PROVIDERS = ['delhivery', 'india_post']
 
 const DEFAULT_LOCATIONS = pincodeSeed.locations.map(([pincode, city, state, tags], index) => ({
   id: index + 1,
@@ -83,9 +86,6 @@ const DEFAULT_COURIERS = [
   ['delhivery-b2b', 'Delhivery B2B LTL', 'delhivery', ['b2b']],
   ['india-post-speed', 'India Post Speed Post', 'india_post', ['b2c']],
   ['india-post-parcel', 'India Post Parcel', 'india_post', ['b2c', 'b2b']],
-  ['ekart', 'Ekart Logistics', 'ekart', ['b2c']],
-  ['shadowfax', 'Shadowfax', 'shadowfax', ['b2c']],
-  ['xpressbees', 'Xpressbees', 'xpressbees', ['b2c', 'b2b']],
 ].map(([id, name, serviceProvider, businessType]) => ({ id, name, serviceProvider, businessType, isEnabled: true, createdAt: '2026-09-17' }))
 
 const readLocalData = (key, fallback) => {
@@ -125,6 +125,28 @@ const readLocations = () => {
   return saved
 }
 
+const readCouriers = () => {
+  const saved = readLocalData(COURIER_STORAGE_KEY, null)
+  const savedVersion = localStorage.getItem(COURIER_SEED_VERSION_KEY)
+  const savedCouriers = Array.isArray(saved)
+    ? saved.filter((item) => ACTIVE_SERVICE_PROVIDERS.includes(item?.serviceProvider))
+    : []
+
+  if (savedVersion !== 'paid-providers-2026-09-17' || savedCouriers.length < DEFAULT_COURIERS.length) {
+    const customById = new Map(savedCouriers.map((item) => [String(item.id), item]))
+    const upgraded = DEFAULT_COURIERS.map((item) => ({ ...item, ...(customById.get(String(item.id)) || {}) }))
+    writeLocalData(COURIER_STORAGE_KEY, upgraded)
+    localStorage.setItem(COURIER_SEED_VERSION_KEY, 'paid-providers-2026-09-17')
+    return upgraded
+  }
+
+  if (savedCouriers.length !== saved.length) {
+    writeLocalData(COURIER_STORAGE_KEY, savedCouriers)
+  }
+
+  return savedCouriers
+}
+
 const createLocalResponse = (config, data) => ({
   data,
   status: 200,
@@ -139,8 +161,8 @@ const localAdapter = async (config) => {
   const url = String(config.url || '').split('?')[0]
   const payload = typeof config.data === 'string' ? JSON.parse(config.data || '{}') : (config.data || {})
   let locations = readLocations()
-  let couriers = readLocalData('raghavAdminCouriers', DEFAULT_COURIERS)
-  const providers = ['delhivery', 'india_post', 'ekart', 'shadowfax', 'xpressbees'].map((serviceProvider) => {
+  let couriers = readCouriers()
+  const providers = ACTIVE_SERVICE_PROVIDERS.map((serviceProvider) => {
     const matches = couriers.filter((item) => item.serviceProvider === serviceProvider)
     return { serviceProvider, totalCouriers: matches.length, enabledCouriers: matches.filter((item) => item.isEnabled).length, isEnabled: matches.some((item) => item.isEnabled) }
   })
@@ -163,26 +185,25 @@ const localAdapter = async (config) => {
   if (url === '/couriers/full-list') return createLocalResponse(config, { success: true, data: couriers })
   if (url === '/couriers/create' && method === 'post') {
     const item = { id: payload.id || `courier-${Date.now()}`, name: payload.name || payload.courierName, serviceProvider: payload.serviceProvider, businessType: payload.businessType || ['b2c', 'b2b'], isEnabled: true, createdAt: new Date().toISOString().slice(0, 10) }
-    couriers = [...couriers, item]; writeLocalData('raghavAdminCouriers', couriers); return createLocalResponse(config, { success: true, data: item })
+    couriers = [...couriers, item].filter((courier) => ACTIVE_SERVICE_PROVIDERS.includes(courier.serviceProvider)); writeLocalData(COURIER_STORAGE_KEY, couriers); return createLocalResponse(config, { success: true, data: item })
   }
   if (url.startsWith('/couriers/status/') && method === 'patch') {
-    const id = url.split('/').pop(); couriers = couriers.map((item) => String(item.id) === id ? { ...item, ...payload } : item); writeLocalData('raghavAdminCouriers', couriers)
+    const id = url.split('/').pop(); couriers = couriers.map((item) => String(item.id) === id ? { ...item, ...payload } : item); writeLocalData(COURIER_STORAGE_KEY, couriers)
     return createLocalResponse(config, { success: true })
   }
   if (url.startsWith('/couriers/delete/') && method === 'delete') {
-    const id = url.split('/').pop(); couriers = couriers.filter((item) => String(item.id) !== id); writeLocalData('raghavAdminCouriers', couriers)
+    const id = url.split('/').pop(); couriers = couriers.filter((item) => String(item.id) !== id); writeLocalData(COURIER_STORAGE_KEY, couriers)
     return createLocalResponse(config, { success: true })
   }
   if (url === '/couriers/providers' && method === 'get') return createLocalResponse(config, { success: true, data: providers })
   if (url.startsWith('/couriers/providers/') && method === 'patch') {
-    const provider = url.split('/').pop(); couriers = couriers.map((item) => item.serviceProvider === provider ? { ...item, isEnabled: Boolean(payload.isEnabled) } : item); writeLocalData('raghavAdminCouriers', couriers)
+    const provider = url.split('/').pop(); couriers = couriers.map((item) => item.serviceProvider === provider ? { ...item, isEnabled: Boolean(payload.isEnabled) } : item); writeLocalData(COURIER_STORAGE_KEY, couriers)
     return createLocalResponse(config, { success: true })
   }
   if (url === '/admin/couriers/credentials' && method === 'get') return createLocalResponse(config, { success: true, data: {
     delhivery: { apiBase: 'https://track.delhivery.com', clientName: 'Raghav Express', apiKeyMasked: 'Configured', hasApiKey: true, configured: true },
     delhiveryB2B: { apiBase: 'https://ltl-clients-api.delhivery.com', username: 'Configured', freightMode: 'fop', fmPickup: true, hasPassword: true, configured: true },
     indiaPost: { apiBase: 'https://test.cept.gov.in', customerId: '1674369691', username: 'Configured', configured: true },
-    ekart: { configured: false }, shadowfax: { configured: false }, xpressbees: { configured: false },
   } })
   if (url.startsWith('/admin/couriers/credentials/') && ['put', 'post'].includes(method)) return createLocalResponse(config, { success: true, data: { ...payload, configured: true } })
   return createLocalResponse(config, { success: true, data: [], items: [], rows: [], orders: [], users: [], tickets: [], couriers: [], locations: [], plans: [], total: 0, totalCount: 0, totalPages: 0, page: 1, pagination: { page: 1, limit: 50, total: 0, totalPages: 0 } })
