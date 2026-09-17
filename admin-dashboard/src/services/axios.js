@@ -1,4 +1,5 @@
 import axios from 'axios'
+import pincodeSeed from '../data/indiaPincodeSeed.json'
 
 const RENDER_API_BASE_URL = 'https://express-magic-backend.onrender.com/api'
 
@@ -65,19 +66,17 @@ const isRaghavAdminHost = () => {
   return host === 'raghav-express-admin.onrender.com' || host === 'localhost' || host === '127.0.0.1'
 }
 
-const DEFAULT_LOCATIONS = [
-  ['110001', 'New Delhi', 'Delhi', ['north', 'metros']],
-  ['122001', 'Gurugram', 'Haryana', ['north', 'metros']],
-  ['302013', 'Jaipur', 'Rajasthan', ['north']],
-  ['306401', 'Pali', 'Rajasthan', ['west']],
-  ['342001', 'Jodhpur', 'Rajasthan', ['west']],
-  ['400001', 'Mumbai', 'Maharashtra', ['west', 'metros']],
-  ['400093', 'Mumbai', 'Maharashtra', ['west', 'metros']],
-  ['560001', 'Bengaluru', 'Karnataka', ['south', 'metros']],
-  ['570001', 'Mysuru', 'Karnataka', ['south']],
-  ['600001', 'Chennai', 'Tamil Nadu', ['south', 'metros']],
-  ['700001', 'Kolkata', 'West Bengal', ['east', 'metros']],
-].map(([pincode, city, state, tags], index) => ({ id: index + 1, pincode, city, state, country: 'India', tags }))
+const LOCATION_STORAGE_KEY = 'raghavAdminLocations'
+const LOCATION_SEED_VERSION_KEY = 'raghavAdminLocationSeedVersion'
+
+const DEFAULT_LOCATIONS = pincodeSeed.locations.map(([pincode, city, state, tags], index) => ({
+  id: index + 1,
+  pincode,
+  city,
+  state,
+  country: 'India',
+  tags,
+}))
 
 const DEFAULT_COURIERS = [
   ['delhivery-b2c', 'Delhivery Surface', 'delhivery', ['b2c']],
@@ -94,6 +93,38 @@ const readLocalData = (key, fallback) => {
 }
 const writeLocalData = (key, value) => localStorage.setItem(key, JSON.stringify(value))
 
+const mergeLocationSeeds = (current = []) => {
+  const byPincode = new Map(DEFAULT_LOCATIONS.map((item) => [item.pincode, item]))
+
+  current.forEach((item) => {
+    if (!item?.pincode || byPincode.has(String(item.pincode))) return
+    byPincode.set(String(item.pincode), {
+      id: item.id || Date.now() + byPincode.size,
+      pincode: String(item.pincode),
+      city: item.city || '',
+      state: item.state || '',
+      country: item.country || 'India',
+      tags: Array.isArray(item.tags) ? item.tags : [],
+    })
+  })
+
+  return Array.from(byPincode.values()).sort((a, b) => String(a.pincode).localeCompare(String(b.pincode)))
+}
+
+const readLocations = () => {
+  const saved = readLocalData(LOCATION_STORAGE_KEY, null)
+  const savedVersion = localStorage.getItem(LOCATION_SEED_VERSION_KEY)
+
+  if (savedVersion !== pincodeSeed.version || !Array.isArray(saved) || saved.length < DEFAULT_LOCATIONS.length) {
+    const upgraded = mergeLocationSeeds(Array.isArray(saved) ? saved : [])
+    writeLocalData(LOCATION_STORAGE_KEY, upgraded)
+    localStorage.setItem(LOCATION_SEED_VERSION_KEY, pincodeSeed.version)
+    return upgraded
+  }
+
+  return saved
+}
+
 const createLocalResponse = (config, data) => ({
   data,
   status: 200,
@@ -107,7 +138,7 @@ const localAdapter = async (config) => {
   const method = String(config.method || 'get').toLowerCase()
   const url = String(config.url || '').split('?')[0]
   const payload = typeof config.data === 'string' ? JSON.parse(config.data || '{}') : (config.data || {})
-  let locations = readLocalData('raghavAdminLocations', DEFAULT_LOCATIONS)
+  let locations = readLocations()
   let couriers = readLocalData('raghavAdminCouriers', DEFAULT_COURIERS)
   const providers = ['delhivery', 'india_post', 'ekart', 'shadowfax', 'xpressbees'].map((serviceProvider) => {
     const matches = couriers.filter((item) => item.serviceProvider === serviceProvider)
@@ -121,13 +152,13 @@ const localAdapter = async (config) => {
     return createLocalResponse(config, { success: true, data: filtered.slice((page - 1) * limit, page * limit), total: filtered.length, page, totalPages: Math.ceil(filtered.length / limit) })
   }
   if (url === '/serviceability/locations' && method === 'post') {
-    const item = { id: Date.now(), ...payload }; locations = [...locations, item]; writeLocalData('raghavAdminLocations', locations)
+    const item = { id: Date.now(), ...payload }; locations = [...locations, item]; writeLocalData(LOCATION_STORAGE_KEY, locations)
     return createLocalResponse(config, { success: true, data: item })
   }
   if (url.startsWith('/serviceability/locations/') && ['put', 'delete'].includes(method)) {
     const id = url.split('/').pop()
     locations = method === 'delete' ? locations.filter((item) => String(item.id) !== id) : locations.map((item) => String(item.id) === id ? { ...item, ...payload } : item)
-    writeLocalData('raghavAdminLocations', locations); return createLocalResponse(config, { success: true })
+    writeLocalData(LOCATION_STORAGE_KEY, locations); return createLocalResponse(config, { success: true })
   }
   if (url === '/couriers/full-list') return createLocalResponse(config, { success: true, data: couriers })
   if (url === '/couriers/create' && method === 'post') {

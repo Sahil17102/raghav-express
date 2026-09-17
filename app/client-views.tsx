@@ -501,7 +501,7 @@ const moduleConfig: Record<
     cards: [
       ['Primary Warehouse', 'Industrial Area, Jodhpur', Warehouse],
       ['Returns Hub', 'MIA, Pali', MapPin],
-      ['Pickup Coverage', '3 active pincodes', Truck],
+      ['Pickup Coverage', '23.9K serviceable pincodes', Truck],
     ],
   },
   Reconciliation: {
