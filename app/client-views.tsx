@@ -676,8 +676,27 @@ const moduleConfig: Record<
   },
 };
 
+async function readBookingResponse(response: Response) {
+  const raw = await response.text();
+  if (!raw)
+    return {
+      success: false,
+      message: `Booking service returned HTTP ${response.status} without a response body`,
+    };
+  try {
+    return JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return {
+      success: false,
+      message: `Booking service returned an invalid response (HTTP ${response.status})`,
+    };
+  }
+}
+
 function CreateOrderClone() {
   const [kind, setKind] = useState<'B2C' | 'B2B'>('B2C');
+  const [step, setStep] = useState(1);
+  const [draft, setDraft] = useState<Record<string, string>>({});
   const [courier, setCourier] = useState<'Delhivery' | 'India Post'>(
     'India Post',
   );
@@ -700,6 +719,18 @@ function CreateOrderClone() {
   const bookShipment = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    if (step < 3) {
+      if (step === 1)
+        setDraft(
+          Object.fromEntries(
+            [...form.entries()]
+              .filter(([, value]) => typeof value === 'string')
+              .map(([key, value]) => [key, String(value)]),
+          ),
+        );
+      setStep((current) => current + 1);
+      return;
+    }
     const paymentMode = String(form.get('paymentMode') || 'Prepaid');
     const totalAmount = Number(form.get('invoiceValue') || 0);
     if (kind === 'B2B') {
@@ -790,7 +821,7 @@ function CreateOrderClone() {
           method: 'POST',
           body: payload,
         });
-        const result = (await response.json()) as {
+        const result = (await readBookingResponse(response)) as {
           success?: boolean;
           message?: string;
           data?: Record<string, unknown>;
@@ -860,7 +891,7 @@ function CreateOrderClone() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(responsePayload),
         });
-        const result = (await response.json()) as {
+        const result = (await readBookingResponse(response)) as {
           success?: boolean;
           message?: string;
           data?: Record<string, unknown>;
@@ -911,7 +942,7 @@ function CreateOrderClone() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(responsePayload),
       });
-      const result = (await response.json()) as {
+      const result = (await readBookingResponse(response)) as {
         success?: boolean;
         message?: string;
         data?: Record<string, unknown>;
@@ -957,7 +988,11 @@ function CreateOrderClone() {
               role="tab"
               aria-selected={kind === type}
               className={kind === type ? 'active' : ''}
-              onClick={() => setKind(type)}
+              onClick={() => {
+                setKind(type);
+                setCourier(type === 'B2B' ? 'Delhivery' : 'India Post');
+                setStep(1);
+              }}
               key={type}
             >
               {type} Order
@@ -968,28 +1003,28 @@ function CreateOrderClone() {
       <div className="fastship-step-intro">
         <div>
           <b>{kind} Order Creation</b>
-          <span>Step 1 of 3</span>
+          <span>Step {step} of 3</span>
           <p>
             Build shipments faster with a guided flow. Only the active step is
             editable.
           </p>
         </div>
         <ol>
-          <li className="active">
+          <li className={step >= 1 ? 'active' : ''}>
             <i>1</i>
             <span>
               Order &amp; Delivery
               <small>Customer, products and package details</small>
             </span>
           </li>
-          <li>
+          <li className={step >= 2 ? 'active' : ''}>
             <i>2</i>
             <span>
               Pickup &amp; Review
               <small>Pickup warehouse and booking summary</small>
             </span>
           </li>
-          <li>
+          <li className={step >= 3 ? 'active' : ''}>
             <i>3</i>
             <span>
               Courier Selection<small>Choose courier rate only</small>
@@ -998,6 +1033,7 @@ function CreateOrderClone() {
         </ol>
       </div>
       <form onSubmit={bookShipment}>
+        <div style={{ display: step === 1 ? 'contents' : 'none' }}>
         <section className="fastship-form-card">
           <h2>
             <ClipboardList />
@@ -1026,22 +1062,6 @@ function CreateOrderClone() {
               </select>
               <small>Select type</small>
             </label>
-            {kind === 'B2C' && (
-              <label>
-                COURIER PARTNER *
-                <select
-                  name="courier"
-                  value={courier}
-                  onChange={(event) =>
-                    setCourier(event.target.value as 'Delhivery' | 'India Post')
-                  }
-                >
-                  <option>India Post</option>
-                  <option>Delhivery</option>
-                </select>
-                <small>Shipment is booked from Raghav Express</small>
-              </label>
-            )}
             {kind === 'B2B' && (
               <label>
                 PICKUP WAREHOUSE NAME *
@@ -1055,37 +1075,6 @@ function CreateOrderClone() {
             )}
           </div>
         </section>
-
-        {kind === 'B2C' && courier === 'India Post' && (
-          <section className="fastship-form-card">
-            <h2>
-              <Truck />
-              India Post Booking <ChevronDown />
-            </h2>
-            <div className="fastship-card-body fastship-grid three-col">
-              <label>
-                CONTRACT ID *
-                <input name="indiaPostContractId" required />
-                <small>India Post allotted contract ID</small>
-              </label>
-              <label>
-                ARTICLE BARCODE *
-                <input
-                  name="indiaPostBarcode"
-                  required
-                  pattern="[A-Za-z]{2}[0-9]{9}[A-Za-z]{2}"
-                  placeholder="Example: EX123456789IN"
-                />
-                <small>Use an unused barcode from the allotted API range</small>
-              </label>
-              <label>
-                DROPOFF OFFICE ID *
-                <input name="indiaPostOfficeId" required type="number" min="1" />
-                <small>Numeric India Post office ID</small>
-              </label>
-            </div>
-          </section>
-        )}
 
         <section className="fastship-form-card">
           <h2>
@@ -1499,11 +1488,63 @@ function CreateOrderClone() {
             </div>
           </section>
         )}
+        </div>
+        {step === 2 && (
+          <section className="fastship-form-card">
+            <h2><ClipboardList /> Booking Review <ChevronDown /></h2>
+            <div className="fastship-card-body">
+              <div className="booking-review-snapshot">
+                <div className="review-title">
+                  <small>SHIPMENT SNAPSHOT</small>
+                  <strong>{orderId}</strong>
+                  <span>{kind} · {draft.paymentMode || 'Prepaid'} · {chargeable.toFixed(2)} kg</span>
+                </div>
+                <div className="review-grid">
+                  <article><small>Customer Total</small><b>₹{invoiceValue.toFixed(2)}</b></article>
+                  <article><small>Pickup</small><b>302013</b><span>Raghav Enterprises, Jaipur</span></article>
+                  <article><small>Delivery</small><b>{draft.recipientPin}</b><span>{draft.recipientName}, {draft.recipientCity}</span></article>
+                  <article><small>Package</small><b>{chargeable.toFixed(2)} kg</b><span>{draft.productName}</span></article>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+        {step === 3 && (
+          <section className="fastship-form-card">
+            <h2><Truck /> Courier Selection <ChevronDown /></h2>
+            <div className="fastship-card-body">
+              <div className="courier-choice-head">
+                <div><b>Select Courier Partner</b><span>Choose the courier used to create this Raghav Express shipment.</span></div>
+                <em>2 options</em>
+              </div>
+              <div className="courier-choice-list">
+                {(kind === 'B2B' ? (['Delhivery'] as const) : (['India Post', 'Delhivery'] as const)).map((name) => (
+                  <button type="button" className={courier === name ? 'selected' : ''} onClick={() => setCourier(name)} key={name}>
+                    <span className="courier-mark">{name === 'India Post' ? 'IP' : 'D'}</span>
+                    <span><b>{name}</b><small>{name === 'India Post' ? 'Speed Post · India-wide delivery' : 'Surface · Pan India delivery'}</small></span>
+                    <span><small>Chargeable</small><b>{chargeable.toFixed(2)} kg</b></span>
+                    <strong>{courier === name ? 'Selected' : 'Select'}</strong>
+                  </button>
+                ))}
+              </div>
+              {courier === 'India Post' && (
+                <div className="india-post-allocation fastship-grid three-col">
+                  <label>CONTRACT ID *<input name="indiaPostContractId" required /><small>India Post allotted contract ID</small></label>
+                  <label>ARTICLE BARCODE *<input name="indiaPostBarcode" required pattern="[A-Za-z]{2}[0-9]{9}[A-Za-z]{2}" placeholder="EX123456789IN" /><small>Unused barcode from allotted API range</small></label>
+                  <label>DROPOFF OFFICE ID *<input name="indiaPostOfficeId" required type="number" min="1" /><small>Numeric India Post office ID</small></label>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
         <div className="fastship-next">
-          <span>Order &amp; Delivery</span>
+          <span>{step === 1 ? 'Order & Delivery' : step === 2 ? 'Pickup & Review' : 'Courier Selection'}</span>
+          {step > 1 && <button className="fastship-back" type="button" onClick={() => setStep((current) => current - 1)}>Back</button>}
           <button type="submit" disabled={booking}>
             {booking
               ? 'Booking...'
+              : step < 3
+                ? 'Next'
               : kind === 'B2B'
                 ? 'Create B2B Shipment'
                 : `Create ${courier} Shipment`}
