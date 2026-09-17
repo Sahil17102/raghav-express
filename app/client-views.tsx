@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle,
   BarChart3,
@@ -693,13 +693,25 @@ async function readBookingResponse(response: Response) {
   }
 }
 
-function CreateOrderClone() {
-  const [pickupAddresses, setPickupAddresses] = useState([
+const defaultPickupAddresses = [
     { id: 'jaipur-vki', name: 'Raghav Enterprises — Jaipur VKI', address: 'Shop No. 8, Road No. 15, Opp. BSNL Training Center, VKI', city: 'Jaipur', state: 'Rajasthan', pin: '302013', contact: '9660423241' },
     { id: 'pali', name: 'Raghav Express — Pali', address: 'Industrial Area', city: 'Pali', state: 'Rajasthan', pin: '306401', contact: '9660423241' },
     { id: 'jodhpur', name: 'Jodhpur Dispatch Hub', address: 'Basni Industrial Area', city: 'Jodhpur', state: 'Rajasthan', pin: '342005', contact: '9660423241' },
-  ]);
-  const [selectedPickupId, setSelectedPickupId] = useState('jaipur-vki');
+  ];
+
+function CreateOrderClone() {
+  const [pickupAddresses, setPickupAddresses] = useState(() => {
+    if (typeof window === 'undefined') return defaultPickupAddresses;
+    try {
+      const saved = JSON.parse(localStorage.getItem('raghavPickupAddresses') || '[]');
+      return Array.isArray(saved) && saved.length ? saved : defaultPickupAddresses;
+    } catch {
+      return defaultPickupAddresses;
+    }
+  });
+  const [selectedPickupId, setSelectedPickupId] = useState(() =>
+    typeof window === 'undefined' ? 'jaipur-vki' : localStorage.getItem('raghavSelectedPickup') || 'jaipur-vki',
+  );
   const [addingPickup, setAddingPickup] = useState(false);
   const [newPickup, setNewPickup] = useState({ name: '', address: '', city: '', state: '', pin: '', contact: '' });
   const [kind, setKind] = useState<'B2C' | 'B2B'>('B2C');
@@ -719,6 +731,10 @@ function CreateOrderClone() {
   const [boxes, setBoxes] = useState([0]);
   const [booking, setBooking] = useState(false);
   const selectedPickup = pickupAddresses.find((item) => item.id === selectedPickupId) || pickupAddresses[0];
+  useEffect(() => {
+    localStorage.setItem('raghavPickupAddresses', JSON.stringify(pickupAddresses));
+    localStorage.setItem('raghavSelectedPickup', selectedPickupId);
+  }, [pickupAddresses, selectedPickupId]);
   const divisor = unit === 'CM' ? 4500 : 139;
   const volumetric = (length * breadth * height) / divisor;
   const chargeable = Math.max(weight, volumetric, kind === 'B2C' ? 0.5 : 0);

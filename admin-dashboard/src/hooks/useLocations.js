@@ -25,7 +25,7 @@ export const useCreateLocation = () => {
   return useMutation({
     mutationFn: (data) => locationService.createLocation(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['locations'])
+      queryClient.invalidateQueries({ queryKey: ['locations'] })
     },
   })
 }
@@ -35,7 +35,7 @@ export const useUpdateLocation = () => {
   return useMutation({
     mutationFn: ({ id, data }) => locationService.updateLocation(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['locations'])
+      queryClient.invalidateQueries({ queryKey: ['locations'] })
     },
   })
 }
@@ -45,7 +45,7 @@ export const useDeleteLocation = () => {
   return useMutation({
     mutationFn: (id) => locationService.deleteLocation(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['locations'])
+      queryClient.invalidateQueries({ queryKey: ['locations'] })
     },
   })
 }

@@ -39,7 +39,7 @@ export const useCreateCourier = () => {
   return useMutation({
     mutationFn: createCourier,
     onSuccess: () => {
-      queryClient.invalidateQueries(['couriers'])
+      queryClient.invalidateQueries({ queryKey: ['couriers'] })
     },
   })
 }
@@ -76,7 +76,7 @@ export const useDeleteCourier = () => {
   return useMutation({
     mutationFn: deleteCourier,
     onSuccess: () => {
-      queryClient.invalidateQueries(['couriers'])
+      queryClient.invalidateQueries({ queryKey: ['couriers'] })
     },
   })
 }
@@ -87,7 +87,7 @@ export const useUpdateCourierStatus = () => {
   return useMutation({
     mutationFn: updateCourierStatus,
     onSuccess: () => {
-      queryClient.invalidateQueries(['couriers'])
+      queryClient.invalidateQueries({ queryKey: ['couriers'] })
     },
   })
 }
@@ -106,8 +106,8 @@ export const useUpdateServiceProviderStatus = () => {
   return useMutation({
     mutationFn: updateServiceProviderStatus,
     onSuccess: () => {
-      queryClient.invalidateQueries(['serviceProviders'])
-      queryClient.invalidateQueries(['couriers'])
+      queryClient.invalidateQueries({ queryKey: ['serviceProviders'] })
+      queryClient.invalidateQueries({ queryKey: ['couriers'] })
     },
   })
 }

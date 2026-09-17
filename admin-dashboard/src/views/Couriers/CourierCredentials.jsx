@@ -768,6 +768,32 @@ const CourierCredentials = () => {
           </VStack>
         </Box>
 
+        <Box borderWidth="1px" borderRadius="lg" p={5} minW="320px" flex="1" maxW="520px">
+          <VStack spacing={4} align="stretch">
+            <Flex justify="space-between" align="center">
+              <Text fontWeight="semibold">India Post</Text>
+              <Badge colorScheme={data?.indiaPost?.configured ? 'green' : 'orange'}>
+                {data?.indiaPost?.configured ? 'Configured' : 'Not configured'}
+              </Badge>
+            </Flex>
+            <FormControl>
+              <FormLabel>API Base URL</FormLabel>
+              <Input value={data?.indiaPost?.apiBase || ''} isReadOnly />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Bulk Customer ID</FormLabel>
+              <Input value={data?.indiaPost?.customerId || ''} isReadOnly />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Username</FormLabel>
+              <Input value={data?.indiaPost?.username || ''} isReadOnly />
+            </FormControl>
+            <Text fontSize="xs" color="gray.500">
+              India Post credentials are stored securely in the Raghav Express booking server and are never exposed here.
+            </Text>
+          </VStack>
+        </Box>
+
       </Flex>
     </Flex>
   )
