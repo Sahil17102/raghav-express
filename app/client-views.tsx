@@ -687,11 +687,59 @@ function CreateOrderClone() {
   const [invoiceValue, setInvoiceValue] = useState(0);
   const [invoices, setInvoices] = useState([0]);
   const [boxes, setBoxes] = useState([0]);
+  const [booking, setBooking] = useState(false);
   const divisor = unit === "CM" ? 4500 : 139;
   const volumetric = (length * breadth * height) / divisor;
   const chargeable = Math.max(weight, volumetric, kind === "B2C" ? 0.5 : 0);
   const dimension = unit === "CM" ? "cm" : "inch";
   const regenerate = () => setOrderId(`ORD-${Math.floor(10000000 + Math.random() * 90000000)}`);
+  const bookB2CShipment = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (kind !== "B2C") return;
+    const form = new FormData(event.currentTarget);
+    const paymentMode = String(form.get("paymentMode") || "Prepaid");
+    const totalAmount = Number(form.get("invoiceValue") || 0);
+    const responsePayload = {
+      shipments: [{
+        order: orderId,
+        name: String(form.get("recipientName") || ""),
+        phone: String(form.get("recipientPhone") || ""),
+        add: String(form.get("recipientAddress") || ""),
+        pin: String(form.get("recipientPin") || ""),
+        payment_mode: paymentMode,
+        cod_amount: paymentMode === "COD" ? totalAmount : undefined,
+        total_amount: totalAmount,
+        products_desc: String(form.get("productName") || ""),
+        seller_inv: String(form.get("invoiceNumber") || ""),
+        hsn_code: String(form.get("hsnCode") || ""),
+        ewbn: String(form.get("ewaybill") || ""),
+        weight: Math.round(weight * 1000),
+        shipment_length: unit === "CM" ? length : length * 2.54,
+        shipment_width: unit === "CM" ? breadth : breadth * 2.54,
+        shipment_height: unit === "CM" ? height : height * 2.54,
+        shipping_mode: "Surface",
+        country: "India",
+      }],
+    };
+    setBooking(true);
+    try {
+      const response = await fetch("/api/delhivery/b2c/shipments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(responsePayload),
+      });
+      const result = await response.json() as { success?: boolean; message?: string; data?: Record<string, unknown> };
+      if (!response.ok || !result.success) throw new Error(result.message || "Shipment creation failed");
+      const packages = Array.isArray(result.data?.packages) ? result.data.packages as Record<string, unknown>[] : [];
+      const waybill = String(packages[0]?.waybill || packages[0]?.wbn || result.data?.waybill || "");
+      window.alert(waybill ? `Shipment created successfully. AWB: ${waybill}` : "Shipment created successfully.");
+      regenerate();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Shipment creation failed");
+    } finally {
+      setBooking(false);
+    }
+  };
 
   return (
     <section className="fastship-create">
@@ -707,13 +755,13 @@ function CreateOrderClone() {
         <div><b>{kind} Order Creation</b><span>Step 1 of 3</span><p>Build shipments faster with a guided flow. Only the active step is editable.</p></div>
         <ol><li className="active"><i>1</i><span>Order &amp; Delivery<small>Customer, products and package details</small></span></li><li><i>2</i><span>Pickup &amp; Review<small>Pickup warehouse and booking summary</small></span></li><li><i>3</i><span>Courier Selection<small>Choose courier rate only</small></span></li></ol>
       </div>
-      <form onSubmit={(event) => event.preventDefault()}>
+      <form onSubmit={bookB2CShipment}>
         <section className="fastship-form-card">
           <h2><ClipboardList />Order Details <ChevronDown /></h2>
           <div className="fastship-card-body three-col">
             <label>ORDER ID *<div className="input-action"><input value={orderId} readOnly/><button type="button" onClick={regenerate}><RefreshCw /></button></div><small className="valid">Order ID is available.</small></label>
             <label>ORDER DATE<input type="date" defaultValue="2026-09-16" /></label>
-            <label>ORDER TYPE *<select defaultValue="Prepaid"><option>Prepaid</option><option>COD</option></select><small>Select type</small></label>
+            <label>ORDER TYPE *<select name="paymentMode" defaultValue="Prepaid"><option>Prepaid</option><option>COD</option></select><small>Select type</small></label>
           </div>
         </section>
 
@@ -723,10 +771,10 @@ function CreateOrderClone() {
             <div className="saved-address"><select defaultValue=""><option value="" disabled>Saved Delivery Address</option></select><button type="button">Save Address</button></div>
             <div className="fastship-grid">
               {kind === "B2B" && <label>COMPANY NAME *<input required /></label>}
-              <label>{kind === "B2C" ? "NAME *" : "PHONE *"}<input required /></label>
-              {kind === "B2C" && <label>PHONE *<input required type="tel" /></label>}
-              <label className="full">ADDRESS *<textarea required /></label>
-              <label>PINCODE *<input required inputMode="numeric" maxLength={6} /></label>
+              <label>{kind === "B2C" ? "NAME *" : "PHONE *"}<input name="recipientName" required /></label>
+              {kind === "B2C" && <label>PHONE *<input name="recipientPhone" required type="tel" /></label>}
+              <label className="full">ADDRESS *<textarea name="recipientAddress" required /></label>
+              <label>PINCODE *<input name="recipientPin" required inputMode="numeric" minLength={6} maxLength={6} pattern="[0-9]{6}" /></label>
               <label>CITY *<input disabled /></label>
               <label>STATE *<input disabled /></label>
               {kind === "B2B" && <label>NAME (OPTIONAL)<input /></label>}
@@ -740,12 +788,12 @@ function CreateOrderClone() {
           <h2><FileText />Invoices <ChevronDown /></h2>
           <div className="fastship-card-body">
             {invoices.map((invoice, index) => <div className="fastship-invoice" key={invoice}><h3>Invoice {index + 1}</h3><div className="fastship-grid three-col">
-              <label>INVOICE NUMBER *<input required /><small>Enter customer invoice number</small></label>
+              <label>INVOICE NUMBER *<input name="invoiceNumber" required /><small>Enter customer invoice number</small></label>
               <label>INVOICE DATE *<input required type="date" defaultValue="2026-09-16" /></label>
-              <label>INVOICE VALUE (₹) *<input required type="number" min="0" value={index === 0 ? invoiceValue : undefined} onChange={index === 0 ? (e) => setInvoiceValue(Number(e.target.value)) : undefined} defaultValue={index === 0 ? undefined : 0}/></label>
-              <label>PRODUCT NAME *<input required placeholder="e.g. Cotton T-shirt" /></label>
-              <label>SKU (OPTIONAL)<input /></label><label>HSN CODE (OPTIONAL)<input /></label>
-              <label>EBN NUMBER (OPTIONAL)<input /><small>Required only when invoice value &gt; ₹50,000</small></label>
+              <label>INVOICE VALUE (₹) *<input name="invoiceValue" required type="number" min="0" value={index === 0 ? invoiceValue : undefined} onChange={index === 0 ? (e) => setInvoiceValue(Number(e.target.value)) : undefined} defaultValue={index === 0 ? undefined : 0}/></label>
+              <label>PRODUCT NAME *<input name="productName" required placeholder="e.g. Cotton T-shirt" /></label>
+              <label>SKU (OPTIONAL)<input /></label><label>HSN CODE (OPTIONAL)<input name="hsnCode" /></label>
+              <label>EBN NUMBER (OPTIONAL)<input name="ewaybill" /><small>Required only when invoice value &gt; ₹50,000</small></label>
               <label>EBN EXPIRY (OPTIONAL)<input type="date" /><small>Required when EBN Number is provided</small></label>
               {kind === "B2B" && <label>INVOICE FILE (OPTIONAL)<input type="file" accept=".pdf,.jpg,.jpeg,.png" /></label>}
             </div>{kind === "B2B" && invoices.length > 1 && <button className="remove-clone-row" type="button" onClick={() => setInvoices(rows => rows.filter(x => x !== invoice))}><X /> Remove invoice</button>}</div>)}
@@ -765,7 +813,7 @@ function CreateOrderClone() {
           <button className="clone-outline-button" type="button" onClick={() => setBoxes(rows => [...rows, Date.now()])}>+ Add Box</button><div className="weight-formula"><b>Actual vs Volumetric</b><span>max(Actual, Volumetric) · Volumetric = (L×B×H) / {divisor}</span><strong>{chargeable.toFixed(2)} kg</strong></div></div></section>}
 
         {kind === "B2C" && <section className="fastship-form-card"><h2><IndianRupee />Optional Charges &amp; Summary <ChevronDown /></h2><div className="fastship-card-body fastship-grid four-col"><label>SHIPPING CHARGE (CUSTOMER ₹)<input type="number" min="0" /><small>What the customer pays for shipping</small></label><label>TRANSACTION FEE (OPTIONAL ₹)<input type="number" min="0" /></label><label>DISCOUNT (OPTIONAL ₹)<input type="number" min="0" /></label><label>PREPAID AMOUNT (OPTIONAL ₹)<input type="number" min="0" /></label></div></section>}
-        <div className="fastship-next"><span>Order &amp; Delivery</span><button type="submit">Next</button></div>
+        <div className="fastship-next"><span>Order &amp; Delivery</span><button type="submit" disabled={booking || kind !== "B2C"}>{booking ? "Booking..." : "Next"}</button></div>
       </form>
     </section>
   );

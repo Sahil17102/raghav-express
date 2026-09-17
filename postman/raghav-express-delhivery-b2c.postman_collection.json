@@ -1,0 +1,754 @@
+{
+  "info": {
+    "name": "Raghav Express - Delhivery B2C",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "internalApiKey",
+      "value": ""
+    },
+    {
+      "key": "waybill",
+      "value": "1234567890123"
+    },
+    {
+      "key": "uplId",
+      "value": "UPL0000000001"
+    },
+    {
+      "key": "pickupLocation",
+      "value": "Raghav Test Warehouse"
+    },
+    {
+      "key": "allowMutations",
+      "value": "false"
+    }
+  ],
+  "item": [
+    {
+      "name": "Pincode Serviceability",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/serviceability/194103"
+      }
+    },
+    {
+      "name": "Heavy Serviceability",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/heavy-serviceability/400086"
+      }
+    },
+    {
+      "name": "Expected TAT",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/tat?origin_pin=122003&destination_pin=136118&mot=S&pdt=B2C"
+      }
+    },
+    {
+      "name": "Bulk Waybills",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/waybills?count=5"
+      }
+    },
+    {
+      "name": "Single Waybill",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/waybill"
+      }
+    },
+    {
+      "name": "Shipment Tracking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments/track?waybill={{waybill}}"
+      }
+    },
+    {
+      "name": "Shipping Cost",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipping-cost?md=S&cgm=500&o_pin=342001&d_pin=110042&ss=Delivered&pt=Pre-paid"
+      }
+    },
+    {
+      "name": "Shipping Label",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments/label?waybill={{waybill}}&pdf=true&pdf_size=4R"
+      }
+    },
+    {
+      "name": "Download Document",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/documents/download?doc_type=EPOD&waybill={{waybill}}"
+      }
+    },
+    {
+      "name": "NDR Status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/ndr/{{uplId}}/status?verbose=true"
+      }
+    },
+    {
+      "name": "Pickup Request",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/pickup-requests",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pickup_time\": \"11:00:00\",\n  \"pickup_date\": \"2026-09-18\",\n  \"pickup_location\": \"{{pickupLocation}}\",\n  \"expected_package_count\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create Warehouse",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/warehouses",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{pickupLocation}}\",\n  \"phone\": \"9999999999\",\n  \"pin\": \"342001\",\n  \"address\": \"Test address\",\n  \"return_address\": \"Test address\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Update Warehouse",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/warehouses/update",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{pickupLocation}}\",\n  \"phone\": \"9999999999\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shipments\": [\n    {\n      \"order\": \"RGX-POSTMAN-{{$timestamp}}\",\n      \"name\": \"Test Customer\",\n      \"phone\": \"9999999999\",\n      \"add\": \"Test address\",\n      \"pin\": \"194103\",\n      \"payment_mode\": \"Prepaid\",\n      \"products_desc\": \"Test product\",\n      \"total_amount\": 100,\n      \"weight\": 500\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create MPS Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments/mps",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shipments\": [\n    {\n      \"order\": \"RGX-MPS-{{$timestamp}}\",\n      \"name\": \"Test Customer\",\n      \"phone\": \"9999999999\",\n      \"add\": \"Test address\",\n      \"pin\": \"194103\",\n      \"payment_mode\": \"Prepaid\",\n      \"waybill\": \"{{waybill}}\",\n      \"master_id\": \"{{waybill}}\",\n      \"mps_children\": 1,\n      \"mps_amount\": 0\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create RVP QC Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments/rvp-qc",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shipments\": [\n    {\n      \"order\": \"RGX-RVP-{{$timestamp}}\",\n      \"name\": \"Test Customer\",\n      \"phone\": \"9999999999\",\n      \"add\": \"Test address\",\n      \"pin\": \"194103\",\n      \"payment_mode\": \"Pickup\",\n      \"custom_qc\": [\n        {\n          \"description\": \"Test item\",\n          \"images\": [\n            \"https://example.com/item.jpg\"\n          ],\n          \"quantity\": 1,\n          \"questions\": [\n            {\n              \"questions_id\": \"Q1\",\n              \"options\": [\n                \"Yes\"\n              ],\n              \"value\": [\n                \"Yes\"\n              ],\n              \"required\": true,\n              \"type\": \"multi\"\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Edit Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments/edit",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"waybill\": \"{{waybill}}\",\n  \"name\": \"Updated Customer\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Cancel Shipment",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments/cancel",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"waybill\": \"{{waybill}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Submit NDR Action",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/ndr/actions",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"data\": [\n    {\n      \"waybill\": \"{{waybill}}\",\n      \"act\": \"RE-ATTEMPT\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Update Ewaybill",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (pm.variables.get('allowMutations') !== 'true' && pm.collectionVariables.get('allowMutations') !== 'true') { postman.setNextRequest(null); }"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HTTP status is successful', () => pm.expect(pm.response.code).to.be.within(200, 299));",
+              "pm.test('Proxy reports success', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{internalApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": "{{baseUrl}}/api/delhivery/b2c/shipments/{{waybill}}/ewaybill",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"data\": [\n    {\n      \"dcn\": \"INV-1\",\n      \"ewbn\": \"123456789012\"\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
