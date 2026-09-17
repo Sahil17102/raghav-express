@@ -36,8 +36,25 @@ import TableFilters from 'components/Tables/TableFilters'
 import { useZones } from 'hooks/useZones'
 import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
+import { b2bDemoZones } from 'data/b2bFastshipDemo'
 import { b2bAdminService } from 'services/b2bAdmin.service'
 import { GenericTable } from 'views/Dashboard/Tables/components/GenericTable'
+
+const B2C_DEMO_ZONES = [
+  ['1b79e9aa-51c2-48df-b307-f63c5649d5a1', 'WITHIN_CITY', 'Within City', 'PDF Zone A - Within City'],
+  ['d3253460-8107-4a49-a2fa-662e8cf36b0b', 'WITHIN_STATE', 'Within State', 'PDF Zone B - Within State'],
+  ['62b13792-8187-4a20-8774-311a50bd372b', 'WITHIN_REGION', 'Within Region', 'Mapped to PDF Zone B - Within State'],
+  ['5924c0b3-8e03-4bfe-9dad-5a92497d9543', 'METRO_TO_METRO', 'Metro to Metro', 'PDF Zone C - Metro To Metro'],
+  ['ff23de9e-e1dc-4eab-9e50-8d1b0711d55d', 'ROI', 'Rest of India', 'PDF Zone D - Rest Of India'],
+  ['e6f73c09-e829-46d4-8994-99067725342f', 'KASHMIR', 'Kashmir', 'Mapped to PDF Zone E - North East, Jammu and Kashmir'],
+].map(([id, code, name, description]) => ({
+  id,
+  code,
+  name,
+  description,
+  business_type: 'B2C',
+  created_at: '2026-09-09T00:31:00+05:30',
+}))
 
 const ZonesManagement = ({ defaultBusinessType = null }) => {
   const history = useHistory()
@@ -64,6 +81,7 @@ const ZonesManagement = ({ defaultBusinessType = null }) => {
   const { zones, isLoading, createZone, updateZone, deleteZone } = useZones(businessType, {})
 
   const isB2B = businessType === 'B2B'
+  const displayZones = zones?.length ? zones : isB2B ? b2bDemoZones : B2C_DEMO_ZONES
 
   const { data: stateOptions = [], isLoading: isLoadingStates } = useQuery({
     queryKey: ['b2b-states'],
@@ -249,7 +267,7 @@ const ZonesManagement = ({ defaultBusinessType = null }) => {
 
               <GenericTable
                 title={`${type} Zones`}
-                data={zones}
+                data={displayZones}
                 titleActions={
                   <Button leftIcon={<AddIcon />} colorScheme="brand" onClick={openCreateModal}>
                     Add {businessType} Zone
@@ -361,7 +379,7 @@ const ZonesManagement = ({ defaultBusinessType = null }) => {
 
           <GenericTable
             title={`${businessType} Zones`}
-            data={zones}
+            data={displayZones}
             titleActions={
               <Button leftIcon={<AddIcon />} colorScheme="brand" onClick={openCreateModal}>
                 Add {businessType} Zone
