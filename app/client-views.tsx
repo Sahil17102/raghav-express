@@ -694,6 +694,14 @@ async function readBookingResponse(response: Response) {
 }
 
 function CreateOrderClone() {
+  const [pickupAddresses, setPickupAddresses] = useState([
+    { id: 'jaipur-vki', name: 'Raghav Enterprises — Jaipur VKI', address: 'Shop No. 8, Road No. 15, Opp. BSNL Training Center, VKI', city: 'Jaipur', state: 'Rajasthan', pin: '302013', contact: '9660423241' },
+    { id: 'pali', name: 'Raghav Express — Pali', address: 'Industrial Area', city: 'Pali', state: 'Rajasthan', pin: '306401', contact: '9660423241' },
+    { id: 'jodhpur', name: 'Jodhpur Dispatch Hub', address: 'Basni Industrial Area', city: 'Jodhpur', state: 'Rajasthan', pin: '342005', contact: '9660423241' },
+  ]);
+  const [selectedPickupId, setSelectedPickupId] = useState('jaipur-vki');
+  const [addingPickup, setAddingPickup] = useState(false);
+  const [newPickup, setNewPickup] = useState({ name: '', address: '', city: '', state: '', pin: '', contact: '' });
   const [kind, setKind] = useState<'B2C' | 'B2B'>('B2C');
   const [step, setStep] = useState(1);
   const [draft, setDraft] = useState<Record<string, string>>({});
@@ -710,6 +718,7 @@ function CreateOrderClone() {
   const [invoices, setInvoices] = useState([0]);
   const [boxes, setBoxes] = useState([0]);
   const [booking, setBooking] = useState(false);
+  const selectedPickup = pickupAddresses.find((item) => item.id === selectedPickupId) || pickupAddresses[0];
   const divisor = unit === 'CM' ? 4500 : 139;
   const volumetric = (length * breadth * height) / divisor;
   const chargeable = Math.max(weight, volumetric, kind === 'B2C' ? 0.5 : 0);
@@ -1490,6 +1499,46 @@ function CreateOrderClone() {
         )}
         </div>
         {step === 2 && (
+          <>
+          <section className="fastship-form-card">
+            <h2><Building2 /> Select Pickup Address <ChevronDown /></h2>
+            <div className="fastship-card-body">
+              <div className="pickup-selector-head">
+                <label>
+                  SEARCH PICKUP ADDRESS
+                  <select value={selectedPickupId} onChange={(event) => setSelectedPickupId(event.target.value)}>
+                    {pickupAddresses.map((pickup) => <option value={pickup.id} key={pickup.id}>{pickup.name} — {pickup.pin}</option>)}
+                  </select>
+                </label>
+                <button type="button" onClick={() => setAddingPickup((value) => !value)}>+ Add Pickup Address</button>
+              </div>
+              <div className="pickup-address-list">
+                {pickupAddresses.map((pickup) => (
+                  <button type="button" className={selectedPickupId === pickup.id ? 'selected' : ''} onClick={() => setSelectedPickupId(pickup.id)} key={pickup.id}>
+                    <span className="pickup-check">{selectedPickupId === pickup.id ? '✓' : ''}</span>
+                    <b>{pickup.name}</b><strong>{pickup.pin}</strong>
+                    <span>{pickup.address}</span><span>{pickup.city}, {pickup.state} — {pickup.pin}</span>
+                    <small>Contact: {pickup.contact}</small><em>RTO same as pickup</em>
+                  </button>
+                ))}
+              </div>
+              {addingPickup && (
+                <div className="add-pickup-panel fastship-grid three-col">
+                  {(['name', 'address', 'city', 'state', 'pin', 'contact'] as const).map((field) => (
+                    <label key={field}>{field.toUpperCase()} *<input value={newPickup[field]} onChange={(event) => setNewPickup((current) => ({ ...current, [field]: event.target.value }))} /></label>
+                  ))}
+                  <button type="button" onClick={() => {
+                    if (!Object.values(newPickup).every(Boolean)) return window.alert('Please complete all pickup address fields.');
+                    const id = `pickup-${Date.now()}`;
+                    setPickupAddresses((items) => [...items, { id, ...newPickup }]);
+                    setSelectedPickupId(id);
+                    setNewPickup({ name: '', address: '', city: '', state: '', pin: '', contact: '' });
+                    setAddingPickup(false);
+                  }}>Save Pickup Address</button>
+                </div>
+              )}
+            </div>
+          </section>
           <section className="fastship-form-card">
             <h2><ClipboardList /> Booking Review <ChevronDown /></h2>
             <div className="fastship-card-body">
@@ -1501,13 +1550,14 @@ function CreateOrderClone() {
                 </div>
                 <div className="review-grid">
                   <article><small>Customer Total</small><b>₹{invoiceValue.toFixed(2)}</b></article>
-                  <article><small>Pickup</small><b>302013</b><span>Raghav Enterprises, Jaipur</span></article>
+                  <article><small>Pickup</small><b>{selectedPickup.pin}</b><span>{selectedPickup.name}, {selectedPickup.city}</span></article>
                   <article><small>Delivery</small><b>{draft.recipientPin}</b><span>{draft.recipientName}, {draft.recipientCity}</span></article>
                   <article><small>Package</small><b>{chargeable.toFixed(2)} kg</b><span>{draft.productName}</span></article>
                 </div>
               </div>
             </div>
           </section>
+          </>
         )}
         {step === 3 && (
           <section className="fastship-form-card">
