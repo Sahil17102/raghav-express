@@ -1,5 +1,5 @@
-"use client";
-import { useMemo, useState } from "react";
+'use client';
+import { useMemo, useState } from 'react';
 import {
   AlertTriangle,
   BarChart3,
@@ -24,48 +24,48 @@ import {
   Warehouse,
   X,
   Zap,
-} from "lucide-react";
+} from 'lucide-react';
 const orders = [
   [
-    "RGX-240812",
-    "Aarav Textiles",
-    "Jodhpur → Delhi",
-    "Raghav Surface",
-    "₹1,240",
-    "In transit",
+    'RGX-240812',
+    'Aarav Textiles',
+    'Jodhpur → Delhi',
+    'Raghav Surface',
+    '₹1,240',
+    'In transit',
   ],
   [
-    "RGX-240811",
-    "Meera Handicrafts",
-    "Pali → Mumbai",
-    "Express Air",
-    "₹860",
-    "Delivered",
+    'RGX-240811',
+    'Meera Handicrafts',
+    'Pali → Mumbai',
+    'Express Air',
+    '₹860',
+    'Delivered',
   ],
   [
-    "RGX-240810",
-    "Raj Foods",
-    "Jaipur → Ahmedabad",
-    "Raghav Cargo",
-    "₹2,180",
-    "Pickup due",
+    'RGX-240810',
+    'Raj Foods',
+    'Jaipur → Ahmedabad',
+    'Raghav Cargo',
+    '₹2,180',
+    'Pickup due',
   ],
   [
-    "RGX-240809",
-    "Blue Pottery Co.",
-    "Jodhpur → Bengaluru",
-    "Express Air",
-    "₹1,560",
-    "NDR",
+    'RGX-240809',
+    'Blue Pottery Co.',
+    'Jodhpur → Bengaluru',
+    'Express Air',
+    '₹1,560',
+    'NDR',
   ],
 ];
 export function ClientHome({ go }: { go: (n: string) => void }) {
   const kpis = [
-    ["Orders Today", "0", Boxes, "blue"],
-    ["In Transit", "0", Truck, "teal"],
-    ["NDR Pending", "0", AlertTriangle, "red"],
-    ["RTO Active", "0", RefreshCw, "violet"],
-    ["Wallet", "₹4,948", WalletCards, "orange"],
+    ['Orders Today', '0', Boxes, 'blue'],
+    ['In Transit', '0', Truck, 'teal'],
+    ['NDR Pending', '0', AlertTriangle, 'red'],
+    ['RTO Active', '0', RefreshCw, 'violet'],
+    ['Wallet', '₹4,948', WalletCards, 'orange'],
   ] as const;
   return (
     <>
@@ -75,7 +75,7 @@ export function ClientHome({ go }: { go: (n: string) => void }) {
           <h1>Good evening, Raghav!</h1>
           <p>Here’s your daily overview and the actions that need attention.</p>
         </div>
-        <button onClick={() => go("Create Order")}>
+        <button onClick={() => go('Create Order')}>
           <Plus />
           Create Order
         </button>
@@ -87,13 +87,13 @@ export function ClientHome({ go }: { go: (n: string) => void }) {
             className={t}
             onClick={() =>
               go(
-                n === "Wallet"
-                  ? "Passbook"
-                  : n.includes("NDR")
-                    ? "NDR"
-                    : n.includes("RTO")
-                      ? "RTO"
-                      : "All Orders",
+                n === 'Wallet'
+                  ? 'Passbook'
+                  : n.includes('NDR')
+                    ? 'NDR'
+                    : n.includes('RTO')
+                      ? 'RTO'
+                      : 'All Orders',
               )
             }
           >
@@ -122,15 +122,15 @@ export function ClientHome({ go }: { go: (n: string) => void }) {
             <i />
           </div>
           {[
-            ["Company Profile", "Add business details", Building2],
-            ["Bank Account", "Required for COD payouts", WalletCards],
-            ["Pickup Address", "Set up warehouse location", Warehouse],
-            ["Label Config", "Customize shipping labels", FileText],
+            ['Company Profile', 'Add business details', Building2],
+            ['Bank Account', 'Required for COD payouts', WalletCards],
+            ['Pickup Address', 'Set up warehouse location', Warehouse],
+            ['Label Config', 'Customize shipping labels', FileText],
           ].map(([n, d, I]) => (
             <button
               key={n as string}
               onClick={() =>
-                go(n === "Pickup Address" ? "Warehouse" : "Settings")
+                go(n === 'Pickup Address' ? 'Warehouse' : 'Settings')
               }
             >
               <span>
@@ -155,12 +155,12 @@ export function ClientHome({ go }: { go: (n: string) => void }) {
             </div>
           </header>
           {[
-            ["Create Order", "Ship a new package", Plus],
-            ["All Orders", "View all shipments", Boxes],
-            ["NDR", "Handle failed deliveries", AlertTriangle],
-            ["COD Remittance", "Track COD payouts", IndianRupee],
-            ["Rate Calculator", "Compare courier rates", Calculator],
-            ["Reports", "Shipping insights", BarChart3],
+            ['Create Order', 'Ship a new package', Plus],
+            ['All Orders', 'View all shipments', Boxes],
+            ['NDR', 'Handle failed deliveries', AlertTriangle],
+            ['COD Remittance', 'Track COD payouts', IndianRupee],
+            ['Rate Calculator', 'Compare courier rates', Calculator],
+            ['Reports', 'Shipping insights', BarChart3],
           ].map(([n, d, I]) => (
             <button key={n as string} onClick={() => go(n as string)}>
               <I />
@@ -177,26 +177,26 @@ export function ClientHome({ go }: { go: (n: string) => void }) {
 }
 export function OrdersManager({
   go,
-  mode = "All Orders",
+  mode = 'All Orders',
 }: {
   go: (n: string) => void;
-  mode?: "All Orders" | "B2C Orders" | "B2B Orders";
+  mode?: 'All Orders' | 'B2C Orders' | 'B2B Orders';
 }) {
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("All");
+  const [query, setQuery] = useState('');
+  const [status, setStatus] = useState('All');
   const [filters, setFilters] = useState(false);
   const [selected, setSelected] = useState<string[] | null>(null);
   const [orderType, setOrderType] = useState(
-    mode === "B2C Orders" ? "B2C" : mode === "B2B Orders" ? "B2B" : "All",
+    mode === 'B2C Orders' ? 'B2C' : mode === 'B2B Orders' ? 'B2B' : 'All',
   );
-  const [payment, setPayment] = useState("All payments");
-  const [courier, setCourier] = useState("All couriers");
+  const [payment, setPayment] = useState('All payments');
+  const [courier, setCourier] = useState('All couriers');
   const typedOrders = useMemo(
     () =>
       orders.map((r, index) => ({
         row: r,
-        type: index % 2 === 0 ? "B2C" : "B2B",
-        payment: index % 2 === 0 ? "Prepaid" : "COD",
+        type: index % 2 === 0 ? 'B2C' : 'B2B',
+        payment: index % 2 === 0 ? 'Prepaid' : 'COD',
       })),
     [],
   );
@@ -204,23 +204,23 @@ export function OrdersManager({
     () =>
       typedOrders.filter(
         ({ row, type, payment: pay }) =>
-          row.join(" ").toLowerCase().includes(query.toLowerCase()) &&
-          (orderType === "All" || type === orderType) &&
-          (status === "All" || row[5].toLowerCase() === status.toLowerCase()) &&
-          (payment === "All payments" || pay === payment) &&
-          (courier === "All couriers" || row[3] === courier),
+          row.join(' ').toLowerCase().includes(query.toLowerCase()) &&
+          (orderType === 'All' || type === orderType) &&
+          (status === 'All' || row[5].toLowerCase() === status.toLowerCase()) &&
+          (payment === 'All payments' || pay === payment) &&
+          (courier === 'All couriers' || row[3] === courier),
       ),
     [typedOrders, query, orderType, status, payment, courier],
   );
   const exportCsv = () => {
     const csv = [
-      "LRN,Type,Customer,Route,Courier,Amount,Status",
+      'LRN,Type,Customer,Route,Courier,Amount,Status',
       ...filtered.map(({ row, type }) =>
-        [row[0], type, ...row.slice(1)].join(","),
+        [row[0], type, ...row.slice(1)].join(','),
       ),
-    ].join("\n");
-    const href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-    const a = document.createElement("a");
+    ].join('\n');
+    const href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
     a.href = href;
     a.download = `raghav-${orderType.toLowerCase()}-orders.csv`;
     a.click();
@@ -231,10 +231,10 @@ export function OrdersManager({
       <section className="orders-head">
         <div>
           <span>ORDER MANAGEMENT</span>
-          <h1>{orderType === "All" ? "All Orders" : `${orderType} Orders`}</h1>
+          <h1>{orderType === 'All' ? 'All Orders' : `${orderType} Orders`}</h1>
           <p>
-            Search, filter and manage every{" "}
-            {orderType === "All" ? "shipment" : orderType + " shipment"}.
+            Search, filter and manage every{' '}
+            {orderType === 'All' ? 'shipment' : orderType + ' shipment'}.
           </p>
         </div>
         <div>
@@ -246,23 +246,23 @@ export function OrdersManager({
             <Download />
             Export CSV
           </button>
-          <button className="primary" onClick={() => go("Create Order")}>
+          <button className="primary" onClick={() => go('Create Order')}>
             <Plus />
             Create Order
           </button>
         </div>
       </section>
       <section className="order-type-tabs" aria-label="Order type">
-        {["All", "B2C", "B2B"].map((type) => (
+        {['All', 'B2C', 'B2B'].map((type) => (
           <button
             key={type}
-            className={orderType === type ? "active" : ""}
+            className={orderType === type ? 'active' : ''}
             onClick={() => setOrderType(type)}
           >
-            {type === "All" ? "All Orders" : `${type} Orders`}
+            {type === 'All' ? 'All Orders' : `${type} Orders`}
             <span>
               {
-                typedOrders.filter((x) => type === "All" || x.type === type)
+                typedOrders.filter((x) => type === 'All' || x.type === type)
                   .length
               }
             </span>
@@ -316,10 +316,10 @@ export function OrdersManager({
           <button
             type="button"
             onClick={() => {
-              setQuery("");
-              setStatus("All");
-              setPayment("All payments");
-              setCourier("All couriers");
+              setQuery('');
+              setStatus('All');
+              setPayment('All payments');
+              setCourier('All couriers');
             }}
           >
             Clear filters
@@ -328,31 +328,31 @@ export function OrdersManager({
       )}
       <section className="status-tabs">
         {[
-          "All",
-          "Pickups & Manifests",
-          "In transit",
-          "Out for delivery",
-          "Delivered",
-          "RTO Intransit",
-          "RTO Delivered",
-          "Undelivered",
-          "Cancelled",
-          "NDR",
+          'All',
+          'Pickups & Manifests',
+          'In transit',
+          'Out for delivery',
+          'Delivered',
+          'RTO Intransit',
+          'RTO Delivered',
+          'Undelivered',
+          'Cancelled',
+          'NDR',
         ].map((s) => (
           <button
-            className={status === s ? "active" : ""}
+            className={status === s ? 'active' : ''}
             onClick={() => setStatus(s)}
             key={s}
           >
             {s}
             <span>
-              {s === "All"
+              {s === 'All'
                 ? typedOrders.filter(
-                    (x) => orderType === "All" || x.type === orderType,
+                    (x) => orderType === 'All' || x.type === orderType,
                   ).length
                 : typedOrders.filter(
                     ({ row, type }) =>
-                      (orderType === "All" || type === orderType) &&
+                      (orderType === 'All' || type === orderType) &&
                       row[5].toLowerCase() === s.toLowerCase(),
                   ).length}
             </span>
@@ -363,7 +363,7 @@ export function OrdersManager({
         <header>
           <div>
             <h2>
-              {orderType === "All" ? "All Orders" : `${orderType} Orders`}
+              {orderType === 'All' ? 'All Orders' : `${orderType} Orders`}
             </h2>
             <p>{filtered.length} total orders</p>
           </div>
@@ -446,18 +446,18 @@ export function OrdersManager({
             <h2>{selected[0]}</h2>
             <div className="detail-grid">
               {[
-                ["Customer", selected[1]],
+                ['Customer', selected[1]],
                 [
-                  "Order Type",
+                  'Order Type',
                   typedOrders.find((x) => x.row[0] === selected[0])?.type ||
-                    "B2C",
+                    'B2C',
                 ],
-                ["Route", selected[2]],
-                ["Courier", selected[3]],
-                ["Charged Weight", "1.25 kg"],
-                ["Invoice Value", selected[4]],
-                ["Sender", "Raghav Express, Jodhpur"],
-                ["Receiver", selected[1]],
+                ['Route', selected[2]],
+                ['Courier', selected[3]],
+                ['Charged Weight', '1.25 kg'],
+                ['Invoice Value', selected[4]],
+                ['Sender', 'Raghav Express, Jodhpur'],
+                ['Receiver', selected[1]],
               ].map(([a, b]) => (
                 <div key={a}>
                   <small>{a}</small>
@@ -495,191 +495,191 @@ const moduleConfig: Record<
   }
 > = {
   Warehouse: {
-    title: "Pickup Warehouses",
-    sub: "Manage pickup and return locations",
-    actions: ["Add Warehouse", "Upload CSV"],
+    title: 'Pickup Warehouses',
+    sub: 'Manage pickup and return locations',
+    actions: ['Add Warehouse', 'Upload CSV'],
     cards: [
-      ["Primary Warehouse", "Industrial Area, Jodhpur", Warehouse],
-      ["Returns Hub", "MIA, Pali", MapPin],
-      ["Pickup Coverage", "3 active pincodes", Truck],
+      ['Primary Warehouse', 'Industrial Area, Jodhpur', Warehouse],
+      ['Returns Hub', 'MIA, Pali', MapPin],
+      ['Pickup Coverage', '3 active pincodes', Truck],
     ],
   },
   Reconciliation: {
-    title: "Weight Reconciliation",
-    sub: "Review shipment weight discrepancies",
-    actions: ["Export Report", "Settings"],
+    title: 'Weight Reconciliation',
+    sub: 'Review shipment weight discrepancies',
+    actions: ['Export Report', 'Settings'],
     cards: [
-      ["Open Disputes", "3 shipments", AlertTriangle],
-      ["Amount on Hold", "₹1,840", IndianRupee],
-      ["Resolved", "18 this month", PackageCheck],
+      ['Open Disputes', '3 shipments', AlertTriangle],
+      ['Amount on Hold', '₹1,840', IndianRupee],
+      ['Resolved', '18 this month', PackageCheck],
     ],
   },
   Couriers: {
-    title: "Courier Partners",
-    sub: "Manage available delivery services",
-    actions: ["Set Priority", "Compare Rates"],
+    title: 'Courier Partners',
+    sub: 'Manage available delivery services',
+    actions: ['Set Priority', 'Compare Rates'],
     cards: [
-      ["Raghav Surface", "Pan India · 3–6 days", Truck],
-      ["Express Air", "Metro cities · 1–3 days", PackageCheck],
-      ["Cargo Freight", "PTL · LTL · FTL", Boxes],
+      ['Raghav Surface', 'Pan India · 3–6 days', Truck],
+      ['Express Air', 'Metro cities · 1–3 days', PackageCheck],
+      ['Cargo Freight', 'PTL · LTL · FTL', Boxes],
     ],
   },
   Channels: {
-    title: "Sales Channels",
-    sub: "Connect stores and automate order sync",
-    actions: ["Add Channel", "Sync Orders"],
+    title: 'Sales Channels',
+    sub: 'Connect stores and automate order sync',
+    actions: ['Add Channel', 'Sync Orders'],
     cards: [
-      ["Shopify", "Ready to connect", Building2],
-      ["WooCommerce", "Ready to connect", Building2],
-      ["Custom API", "API keys and webhooks", ClipboardList],
+      ['Shopify', 'Ready to connect', Building2],
+      ['WooCommerce', 'Ready to connect', Building2],
+      ['Custom API', 'API keys and webhooks', ClipboardList],
     ],
   },
   Passbook: {
-    title: "Wallet Passbook",
-    sub: "Track wallet credits and shipping debits",
-    actions: ["Recharge Wallet", "Download Statement"],
+    title: 'Wallet Passbook',
+    sub: 'Track wallet credits and shipping debits',
+    actions: ['Recharge Wallet', 'Download Statement'],
     cards: [
-      ["Available Balance", "₹4,948", WalletCards],
-      ["Total Recharged", "₹15,000", IndianRupee],
-      ["Shipping Spend", "₹10,052", Truck],
+      ['Available Balance', '₹4,948', WalletCards],
+      ['Total Recharged', '₹15,000', IndianRupee],
+      ['Shipping Spend', '₹10,052', Truck],
     ],
   },
-  "COD Remittance": {
-    title: "COD Remittance",
-    sub: "Track collected COD and payout status",
-    actions: ["Export CSV", "Bank Details"],
+  'COD Remittance': {
+    title: 'COD Remittance',
+    sub: 'Track collected COD and payout status',
+    actions: ['Export CSV', 'Bank Details'],
     cards: [
-      ["COD Collected", "₹24,520", IndianRupee],
-      ["Next Remittance", "15 Sep 2026", CalendarDays],
-      ["Pending Orders", "12 shipments", Boxes],
+      ['COD Collected', '₹24,520', IndianRupee],
+      ['Next Remittance', '15 Sep 2026', CalendarDays],
+      ['Pending Orders', '12 shipments', Boxes],
     ],
   },
-  "Shipping Charges": {
-    title: "Shipping Charges",
-    sub: "Review freight, COD and handling deductions",
-    actions: ["Export Charges", "Raise Dispute"],
+  'Shipping Charges': {
+    title: 'Shipping Charges',
+    sub: 'Review freight, COD and handling deductions',
+    actions: ['Export Charges', 'Raise Dispute'],
     cards: [
-      ["Freight Charges", "₹8,940", Truck],
-      ["COD Fees", "₹620", IndianRupee],
-      ["Tax & Handling", "₹492", FileText],
+      ['Freight Charges', '₹8,940', Truck],
+      ['COD Fees', '₹620', IndianRupee],
+      ['Tax & Handling', '₹492', FileText],
     ],
   },
-  "All Recharges": {
-    title: "Wallet Recharges",
-    sub: "Review every wallet recharge and payment status",
-    actions: ["Recharge Wallet", "Export CSV"],
+  'All Recharges': {
+    title: 'Wallet Recharges',
+    sub: 'Review every wallet recharge and payment status',
+    actions: ['Recharge Wallet', 'Export CSV'],
     cards: [
-      ["Successful", "₹15,000", WalletCards],
-      ["Pending", "₹0", RefreshCw],
-      ["Failed", "₹0", AlertTriangle],
+      ['Successful', '₹15,000', WalletCards],
+      ['Pending', '₹0', RefreshCw],
+      ['Failed', '₹0', AlertTriangle],
     ],
   },
   Invoices: {
-    title: "Tax Invoices",
-    sub: "Download monthly shipping and service invoices",
-    actions: ["Download All", "Date Range"],
+    title: 'Tax Invoices',
+    sub: 'Download monthly shipping and service invoices',
+    actions: ['Download All', 'Date Range'],
     cards: [
-      ["September 2026", "₹10,052", FileText],
-      ["August 2026", "₹8,760", FileText],
-      ["GST Documents", "Up to date", PackageCheck],
+      ['September 2026', '₹10,052', FileText],
+      ['August 2026', '₹8,760', FileText],
+      ['GST Documents', 'Up to date', PackageCheck],
     ],
   },
-  "Credit Notes": {
-    title: "Credit Notes",
-    sub: "Track approved billing adjustments and refunds",
-    actions: ["Export CSV", "Date Range"],
+  'Credit Notes': {
+    title: 'Credit Notes',
+    sub: 'Track approved billing adjustments and refunds',
+    actions: ['Export CSV', 'Date Range'],
     cards: [
-      ["Total Credits", "₹860", IndianRupee],
-      ["Open Notes", "1 document", FileText],
-      ["Applied", "4 notes", PackageCheck],
+      ['Total Credits', '₹860', IndianRupee],
+      ['Open Notes', '1 document', FileText],
+      ['Applied', '4 notes', PackageCheck],
     ],
   },
-  "Debit Notes": {
-    title: "Debit Notes",
-    sub: "Review additional shipping and adjustment charges",
-    actions: ["Export CSV", "Raise Query"],
+  'Debit Notes': {
+    title: 'Debit Notes',
+    sub: 'Review additional shipping and adjustment charges',
+    actions: ['Export CSV', 'Raise Query'],
     cards: [
-      ["Total Debits", "₹420", IndianRupee],
-      ["Open Notes", "2 documents", FileText],
-      ["Resolved", "7 notes", PackageCheck],
+      ['Total Debits', '₹420', IndianRupee],
+      ['Open Notes', '2 documents', FileText],
+      ['Resolved', '7 notes', PackageCheck],
     ],
   },
   Ledgers: {
-    title: "Account Ledger",
-    sub: "Complete credit, debit and running balance statement",
-    actions: ["Download Ledger", "Date Range"],
+    title: 'Account Ledger',
+    sub: 'Complete credit, debit and running balance statement',
+    actions: ['Download Ledger', 'Date Range'],
     cards: [
-      ["Opening Balance", "₹0", WalletCards],
-      ["Credits", "₹15,860", IndianRupee],
-      ["Debits", "₹10,912", FileText],
+      ['Opening Balance', '₹0', WalletCards],
+      ['Credits', '₹15,860', IndianRupee],
+      ['Debits', '₹10,912', FileText],
     ],
   },
   Reports: {
-    title: "Shipping Reports",
-    sub: "Operational and financial performance reports",
-    actions: ["Date Range", "Export Report"],
+    title: 'Shipping Reports',
+    sub: 'Operational and financial performance reports',
+    actions: ['Date Range', 'Export Report'],
     cards: [
-      ["Order Report", "Shipment-wise movement", BarChart3],
-      ["Revenue Report", "Prepaid and COD earnings", IndianRupee],
-      ["Courier Report", "Partner performance", Truck],
+      ['Order Report', 'Shipment-wise movement', BarChart3],
+      ['Revenue Report', 'Prepaid and COD earnings', IndianRupee],
+      ['Courier Report', 'Partner performance', Truck],
     ],
   },
   NDR: {
-    title: "NDR Management",
-    sub: "Resolve failed delivery attempts",
-    actions: ["Bulk Action", "Export NDR"],
+    title: 'NDR Management',
+    sub: 'Resolve failed delivery attempts',
+    actions: ['Bulk Action', 'Export NDR'],
     cards: [
-      ["Action Required", "4 shipments", AlertTriangle],
-      ["Buyer Reattempt", "2 requested", RefreshCw],
-      ["Address Update", "1 pending", MapPin],
+      ['Action Required', '4 shipments', AlertTriangle],
+      ['Buyer Reattempt', '2 requested', RefreshCw],
+      ['Address Update', '1 pending', MapPin],
     ],
   },
   RTO: {
-    title: "RTO Management",
-    sub: "Track return-to-origin shipments",
-    actions: ["Export RTO", "Review Charges"],
+    title: 'RTO Management',
+    sub: 'Track return-to-origin shipments',
+    actions: ['Export RTO', 'Review Charges'],
     cards: [
-      ["RTO In Transit", "3 shipments", Truck],
-      ["RTO Delivered", "18 shipments", PackageCheck],
-      ["RTO Charges", "₹2,460", IndianRupee],
+      ['RTO In Transit', '3 shipments', Truck],
+      ['RTO Delivered', '18 shipments', PackageCheck],
+      ['RTO Charges', '₹2,460', IndianRupee],
     ],
   },
   Support: {
-    title: "Support Centre",
-    sub: "Create and monitor support tickets",
-    actions: ["Create Ticket", "Contact Support"],
+    title: 'Support Centre',
+    sub: 'Create and monitor support tickets',
+    actions: ['Create Ticket', 'Contact Support'],
     cards: [
-      ["Open Tickets", "2 active", AlertTriangle],
-      ["Resolved Tickets", "14 total", PackageCheck],
-      ["Average Response", "2 hours", RefreshCw],
+      ['Open Tickets', '2 active', AlertTriangle],
+      ['Resolved Tickets', '14 total', PackageCheck],
+      ['Average Response', '2 hours', RefreshCw],
     ],
   },
   Settings: {
-    title: "Account Settings",
-    sub: "Manage company, billing and shipping preferences",
-    actions: ["Save Changes", "API Settings"],
+    title: 'Account Settings',
+    sub: 'Manage company, billing and shipping preferences',
+    actions: ['Save Changes', 'API Settings'],
     cards: [
-      ["Company Profile", "Business and contact details", Building2],
-      ["Label Configuration", "Invoice and label preferences", FileText],
-      ["Courier Priority", "Automated courier selection", SlidersHorizontal],
+      ['Company Profile', 'Business and contact details', Building2],
+      ['Label Configuration', 'Invoice and label preferences', FileText],
+      ['Courier Priority', 'Automated courier selection', SlidersHorizontal],
     ],
   },
-  "Transporter ID": {
-    title: "Transporter IDs",
-    sub: "Manage GST e-way bill transporter identifiers",
-    actions: ["Add Transporter ID", "Export CSV"],
+  'Transporter ID': {
+    title: 'Transporter IDs',
+    sub: 'Manage GST e-way bill transporter identifiers',
+    actions: ['Add Transporter ID', 'Export CSV'],
     cards: [
-      ["Raghav Express", "09AABCRGX2026", Truck],
-      ["Status", "Active", PackageCheck],
-      ["Default Mode", "Surface", Boxes],
+      ['Raghav Express', '09AABCRGX2026', Truck],
+      ['Status', 'Active', PackageCheck],
+      ['Default Mode', 'Surface', Boxes],
     ],
   },
 };
 
 function CreateOrderClone() {
-  const [kind, setKind] = useState<"B2C" | "B2B">("B2C");
-  const [orderId, setOrderId] = useState("ORD-98689952");
-  const [unit, setUnit] = useState<"CM" | "INCH">("CM");
+  const [kind, setKind] = useState<'B2C' | 'B2B'>('B2C');
+  const [orderId, setOrderId] = useState('ORD-98689952');
+  const [unit, setUnit] = useState<'CM' | 'INCH'>('CM');
   const [weight, setWeight] = useState(0);
   const [length, setLength] = useState(0);
   const [breadth, setBreadth] = useState(0);
@@ -688,54 +688,189 @@ function CreateOrderClone() {
   const [invoices, setInvoices] = useState([0]);
   const [boxes, setBoxes] = useState([0]);
   const [booking, setBooking] = useState(false);
-  const divisor = unit === "CM" ? 4500 : 139;
+  const divisor = unit === 'CM' ? 4500 : 139;
   const volumetric = (length * breadth * height) / divisor;
-  const chargeable = Math.max(weight, volumetric, kind === "B2C" ? 0.5 : 0);
-  const dimension = unit === "CM" ? "cm" : "inch";
-  const regenerate = () => setOrderId(`ORD-${Math.floor(10000000 + Math.random() * 90000000)}`);
-  const bookB2CShipment = async (event: React.FormEvent<HTMLFormElement>) => {
+  const chargeable = Math.max(weight, volumetric, kind === 'B2C' ? 0.5 : 0);
+  const dimension = unit === 'CM' ? 'cm' : 'inch';
+  const regenerate = () =>
+    setOrderId(`ORD-${Math.floor(10000000 + Math.random() * 90000000)}`);
+  const bookShipment = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (kind !== "B2C") return;
     const form = new FormData(event.currentTarget);
-    const paymentMode = String(form.get("paymentMode") || "Prepaid");
-    const totalAmount = Number(form.get("invoiceValue") || 0);
+    const paymentMode = String(form.get('paymentMode') || 'Prepaid');
+    const totalAmount = Number(form.get('invoiceValue') || 0);
+    if (kind === 'B2B') {
+      const toCentimeters = (value: number) =>
+        unit === 'CM' ? value : value * 2.54;
+      const invoiceNumbers = form.getAll('invoiceNumber');
+      const invoiceValues = form.getAll('invoiceValue');
+      const ewaybills = form.getAll('ewaybill');
+      const invoiceFiles = form
+        .getAll('invoiceFile')
+        .filter(
+          (value): value is File => value instanceof File && value.size > 0,
+        );
+      const payload = new FormData();
+      payload.set(
+        'pickup_location_name',
+        String(form.get('pickupLocationName') || ''),
+      );
+      payload.set('payment_mode', paymentMode.toLowerCase());
+      if (paymentMode === 'COD') payload.set('cod_amount', String(totalAmount));
+      payload.set('weight', String(Math.round(weight * boxes.length * 1000)));
+      payload.set(
+        'dropoff_location',
+        JSON.stringify({
+          consignee_name: String(
+            form.get('companyName') || form.get('recipientName') || '',
+          ),
+          address: String(form.get('recipientAddress') || ''),
+          city: String(form.get('recipientCity') || ''),
+          state: String(form.get('recipientState') || ''),
+          zip: String(form.get('recipientPin') || ''),
+          phone: String(form.get('recipientPhone') || ''),
+          email: String(form.get('recipientEmail') || ''),
+          consignee_gst: String(form.get('recipientGst') || ''),
+        }),
+      );
+      payload.set(
+        'invoices',
+        JSON.stringify(
+          invoiceNumbers.map((number, index) => ({
+            inv_num: String(number),
+            inv_amt: Number(invoiceValues[index] || 0),
+            ewaybill: String(ewaybills[index] || ''),
+          })),
+        ),
+      );
+      payload.set(
+        'shipment_details',
+        JSON.stringify([
+          {
+            order_id: orderId,
+            box_count: boxes.length,
+            description: String(form.get('productName') || 'Goods'),
+            weight: Math.round(weight * boxes.length * 1000),
+            waybills: [],
+            master: false,
+          },
+        ]),
+      );
+      payload.set(
+        'dimensions',
+        JSON.stringify([
+          {
+            length_cm: toCentimeters(length),
+            width_cm: toCentimeters(breadth),
+            height_cm: toCentimeters(height),
+            box_count: boxes.length,
+          },
+        ]),
+      );
+      payload.set('rov_insurance', 'false');
+      payload.set('freight_mode', 'fop');
+      payload.set('fm_pickup', 'true');
+      invoiceFiles.forEach((file) => payload.append('doc_file', file));
+      if (invoiceFiles.length)
+        payload.set(
+          'doc_data',
+          JSON.stringify(
+            invoiceNumbers.map((number) => ({
+              doc_type: 'INVOICE_COPY',
+              doc_meta: { invoice_num: [String(number)] },
+            })),
+          ),
+        );
+      setBooking(true);
+      try {
+        const response = await fetch('/api/delhivery/b2b/shipments', {
+          method: 'POST',
+          body: payload,
+        });
+        const result = (await response.json()) as {
+          success?: boolean;
+          message?: string;
+          data?: Record<string, unknown>;
+        };
+        if (!response.ok || !result.success)
+          throw new Error(result.message || 'B2B shipment creation failed');
+        const jobId = String(
+          result.data?.job_id ||
+            result.data?.request_id ||
+            result.data?.jobId ||
+            '',
+        );
+        window.alert(
+          jobId
+            ? `B2B shipment submitted. Job ID: ${jobId}`
+            : 'B2B shipment submitted successfully.',
+        );
+        regenerate();
+      } catch (error) {
+        window.alert(
+          error instanceof Error
+            ? error.message
+            : 'B2B shipment creation failed',
+        );
+      } finally {
+        setBooking(false);
+      }
+      return;
+    }
     const responsePayload = {
-      shipments: [{
-        order: orderId,
-        name: String(form.get("recipientName") || ""),
-        phone: String(form.get("recipientPhone") || ""),
-        add: String(form.get("recipientAddress") || ""),
-        pin: String(form.get("recipientPin") || ""),
-        payment_mode: paymentMode,
-        cod_amount: paymentMode === "COD" ? totalAmount : undefined,
-        total_amount: totalAmount,
-        products_desc: String(form.get("productName") || ""),
-        seller_inv: String(form.get("invoiceNumber") || ""),
-        hsn_code: String(form.get("hsnCode") || ""),
-        ewbn: String(form.get("ewaybill") || ""),
-        weight: Math.round(weight * 1000),
-        shipment_length: unit === "CM" ? length : length * 2.54,
-        shipment_width: unit === "CM" ? breadth : breadth * 2.54,
-        shipment_height: unit === "CM" ? height : height * 2.54,
-        shipping_mode: "Surface",
-        country: "India",
-      }],
+      shipments: [
+        {
+          order: orderId,
+          name: String(form.get('recipientName') || ''),
+          phone: String(form.get('recipientPhone') || ''),
+          add: String(form.get('recipientAddress') || ''),
+          pin: String(form.get('recipientPin') || ''),
+          payment_mode: paymentMode,
+          cod_amount: paymentMode === 'COD' ? totalAmount : undefined,
+          total_amount: totalAmount,
+          products_desc: String(form.get('productName') || ''),
+          seller_inv: String(form.get('invoiceNumber') || ''),
+          hsn_code: String(form.get('hsnCode') || ''),
+          ewbn: String(form.get('ewaybill') || ''),
+          weight: Math.round(weight * 1000),
+          shipment_length: unit === 'CM' ? length : length * 2.54,
+          shipment_width: unit === 'CM' ? breadth : breadth * 2.54,
+          shipment_height: unit === 'CM' ? height : height * 2.54,
+          shipping_mode: 'Surface',
+          country: 'India',
+        },
+      ],
     };
     setBooking(true);
     try {
-      const response = await fetch("/api/delhivery/b2c/shipments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/delhivery/b2c/shipments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(responsePayload),
       });
-      const result = await response.json() as { success?: boolean; message?: string; data?: Record<string, unknown> };
-      if (!response.ok || !result.success) throw new Error(result.message || "Shipment creation failed");
-      const packages = Array.isArray(result.data?.packages) ? result.data.packages as Record<string, unknown>[] : [];
-      const waybill = String(packages[0]?.waybill || packages[0]?.wbn || result.data?.waybill || "");
-      window.alert(waybill ? `Shipment created successfully. AWB: ${waybill}` : "Shipment created successfully.");
+      const result = (await response.json()) as {
+        success?: boolean;
+        message?: string;
+        data?: Record<string, unknown>;
+      };
+      if (!response.ok || !result.success)
+        throw new Error(result.message || 'Shipment creation failed');
+      const packages = Array.isArray(result.data?.packages)
+        ? (result.data.packages as Record<string, unknown>[])
+        : [];
+      const waybill = String(
+        packages[0]?.waybill || packages[0]?.wbn || result.data?.waybill || '',
+      );
+      window.alert(
+        waybill
+          ? `Shipment created successfully. AWB: ${waybill}`
+          : 'Shipment created successfully.',
+      );
       regenerate();
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : "Shipment creation failed");
+      window.alert(
+        error instanceof Error ? error.message : 'Shipment creation failed',
+      );
     } finally {
       setBooking(false);
     }
@@ -744,76 +879,526 @@ function CreateOrderClone() {
   return (
     <section className="fastship-create">
       <header className="fastship-create-head">
-        <div><small>PANEL</small><h1>Create New Order</h1></div>
-        <div className="fastship-order-tabs" role="tablist" aria-label="Order type tabs">
-          {(["B2C", "B2B"] as const).map((type) => (
-            <button type="button" role="tab" aria-selected={kind === type} className={kind === type ? "active" : ""} onClick={() => setKind(type)} key={type}>{type} Order</button>
+        <div>
+          <small>PANEL</small>
+          <h1>Create New Order</h1>
+        </div>
+        <div
+          className="fastship-order-tabs"
+          role="tablist"
+          aria-label="Order type tabs"
+        >
+          {(['B2C', 'B2B'] as const).map((type) => (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={kind === type}
+              className={kind === type ? 'active' : ''}
+              onClick={() => setKind(type)}
+              key={type}
+            >
+              {type} Order
+            </button>
           ))}
         </div>
       </header>
       <div className="fastship-step-intro">
-        <div><b>{kind} Order Creation</b><span>Step 1 of 3</span><p>Build shipments faster with a guided flow. Only the active step is editable.</p></div>
-        <ol><li className="active"><i>1</i><span>Order &amp; Delivery<small>Customer, products and package details</small></span></li><li><i>2</i><span>Pickup &amp; Review<small>Pickup warehouse and booking summary</small></span></li><li><i>3</i><span>Courier Selection<small>Choose courier rate only</small></span></li></ol>
+        <div>
+          <b>{kind} Order Creation</b>
+          <span>Step 1 of 3</span>
+          <p>
+            Build shipments faster with a guided flow. Only the active step is
+            editable.
+          </p>
+        </div>
+        <ol>
+          <li className="active">
+            <i>1</i>
+            <span>
+              Order &amp; Delivery
+              <small>Customer, products and package details</small>
+            </span>
+          </li>
+          <li>
+            <i>2</i>
+            <span>
+              Pickup &amp; Review
+              <small>Pickup warehouse and booking summary</small>
+            </span>
+          </li>
+          <li>
+            <i>3</i>
+            <span>
+              Courier Selection<small>Choose courier rate only</small>
+            </span>
+          </li>
+        </ol>
       </div>
-      <form onSubmit={bookB2CShipment}>
+      <form onSubmit={bookShipment}>
         <section className="fastship-form-card">
-          <h2><ClipboardList />Order Details <ChevronDown /></h2>
+          <h2>
+            <ClipboardList />
+            Order Details <ChevronDown />
+          </h2>
           <div className="fastship-card-body three-col">
-            <label>ORDER ID *<div className="input-action"><input value={orderId} readOnly/><button type="button" onClick={regenerate}><RefreshCw /></button></div><small className="valid">Order ID is available.</small></label>
-            <label>ORDER DATE<input type="date" defaultValue="2026-09-16" /></label>
-            <label>ORDER TYPE *<select name="paymentMode" defaultValue="Prepaid"><option>Prepaid</option><option>COD</option></select><small>Select type</small></label>
+            <label>
+              ORDER ID *
+              <div className="input-action">
+                <input value={orderId} readOnly />
+                <button type="button" onClick={regenerate}>
+                  <RefreshCw />
+                </button>
+              </div>
+              <small className="valid">Order ID is available.</small>
+            </label>
+            <label>
+              ORDER DATE
+              <input type="date" defaultValue="2026-09-16" />
+            </label>
+            <label>
+              ORDER TYPE *
+              <select name="paymentMode" defaultValue="Prepaid">
+                <option>Prepaid</option>
+                <option>COD</option>
+              </select>
+              <small>Select type</small>
+            </label>
+            {kind === 'B2B' && (
+              <label>
+                PICKUP WAREHOUSE NAME *
+                <input
+                  name="pickupLocationName"
+                  required
+                  placeholder="Exact Delhivery registered name"
+                />
+                <small>Case and space sensitive</small>
+              </label>
+            )}
           </div>
         </section>
 
         <section className="fastship-form-card">
-          <h2><Building2 />Recipient Details <ChevronDown /></h2>
+          <h2>
+            <Building2 />
+            Recipient Details <ChevronDown />
+          </h2>
           <div className="fastship-card-body">
-            <div className="saved-address"><select defaultValue=""><option value="" disabled>Saved Delivery Address</option></select><button type="button">Save Address</button></div>
+            <div className="saved-address">
+              <select defaultValue="">
+                <option value="" disabled>
+                  Saved Delivery Address
+                </option>
+              </select>
+              <button type="button">Save Address</button>
+            </div>
             <div className="fastship-grid">
-              {kind === "B2B" && <label>COMPANY NAME *<input required /></label>}
-              <label>{kind === "B2C" ? "NAME *" : "PHONE *"}<input name="recipientName" required /></label>
-              {kind === "B2C" && <label>PHONE *<input name="recipientPhone" required type="tel" /></label>}
-              <label className="full">ADDRESS *<textarea name="recipientAddress" required /></label>
-              <label>PINCODE *<input name="recipientPin" required inputMode="numeric" minLength={6} maxLength={6} pattern="[0-9]{6}" /></label>
-              <label>CITY *<input disabled /></label>
-              <label>STATE *<input disabled /></label>
-              {kind === "B2B" && <label>NAME (OPTIONAL)<input /></label>}
-              <label>EMAIL<input type="email" /></label>
-              {kind === "B2B" && <label>GSTIN (OPTIONAL)<input maxLength={15} /></label>}
+              {kind === 'B2B' && (
+                <label>
+                  COMPANY NAME *<input name="companyName" required />
+                </label>
+              )}
+              <label>
+                NAME *<input name="recipientName" required />
+              </label>
+              <label>
+                PHONE *<input name="recipientPhone" required type="tel" />
+              </label>
+              <label className="full">
+                ADDRESS *<textarea name="recipientAddress" required />
+              </label>
+              <label>
+                PINCODE *
+                <input
+                  name="recipientPin"
+                  required
+                  inputMode="numeric"
+                  minLength={6}
+                  maxLength={6}
+                  pattern="[0-9]{6}"
+                />
+              </label>
+              <label>
+                CITY *<input name="recipientCity" required={kind === 'B2B'} />
+              </label>
+              <label>
+                STATE *<input name="recipientState" required={kind === 'B2B'} />
+              </label>
+              {kind === 'B2B' && (
+                <label>
+                  NAME (OPTIONAL)
+                  <input />
+                </label>
+              )}
+              <label>
+                EMAIL
+                <input name="recipientEmail" type="email" />
+              </label>
+              {kind === 'B2B' && (
+                <label>
+                  GSTIN (OPTIONAL)
+                  <input name="recipientGst" maxLength={15} />
+                </label>
+              )}
             </div>
           </div>
         </section>
 
         <section className="fastship-form-card">
-          <h2><FileText />Invoices <ChevronDown /></h2>
+          <h2>
+            <FileText />
+            Invoices <ChevronDown />
+          </h2>
           <div className="fastship-card-body">
-            {invoices.map((invoice, index) => <div className="fastship-invoice" key={invoice}><h3>Invoice {index + 1}</h3><div className="fastship-grid three-col">
-              <label>INVOICE NUMBER *<input name="invoiceNumber" required /><small>Enter customer invoice number</small></label>
-              <label>INVOICE DATE *<input required type="date" defaultValue="2026-09-16" /></label>
-              <label>INVOICE VALUE (₹) *<input name="invoiceValue" required type="number" min="0" value={index === 0 ? invoiceValue : undefined} onChange={index === 0 ? (e) => setInvoiceValue(Number(e.target.value)) : undefined} defaultValue={index === 0 ? undefined : 0}/></label>
-              <label>PRODUCT NAME *<input name="productName" required placeholder="e.g. Cotton T-shirt" /></label>
-              <label>SKU (OPTIONAL)<input /></label><label>HSN CODE (OPTIONAL)<input name="hsnCode" /></label>
-              <label>EBN NUMBER (OPTIONAL)<input name="ewaybill" /><small>Required only when invoice value &gt; ₹50,000</small></label>
-              <label>EBN EXPIRY (OPTIONAL)<input type="date" /><small>Required when EBN Number is provided</small></label>
-              {kind === "B2B" && <label>INVOICE FILE (OPTIONAL)<input type="file" accept=".pdf,.jpg,.jpeg,.png" /></label>}
-            </div>{kind === "B2B" && invoices.length > 1 && <button className="remove-clone-row" type="button" onClick={() => setInvoices(rows => rows.filter(x => x !== invoice))}><X /> Remove invoice</button>}</div>)}
-            <div className="invoice-total"><b>Invoice Grand Total</b><strong>₹{invoiceValue.toFixed(2)}</strong></div>
-            {kind === "B2B" && <button className="clone-outline-button" type="button" onClick={() => setInvoices(rows => [...rows, Date.now()])}>+ Add Invoice</button>}
+            {invoices.map((invoice, index) => (
+              <div className="fastship-invoice" key={invoice}>
+                <h3>Invoice {index + 1}</h3>
+                <div className="fastship-grid three-col">
+                  <label>
+                    INVOICE NUMBER *<input name="invoiceNumber" required />
+                    <small>Enter customer invoice number</small>
+                  </label>
+                  <label>
+                    INVOICE DATE *
+                    <input required type="date" defaultValue="2026-09-16" />
+                  </label>
+                  <label>
+                    INVOICE VALUE (₹) *
+                    <input
+                      name="invoiceValue"
+                      required
+                      type="number"
+                      min="0"
+                      value={index === 0 ? invoiceValue : undefined}
+                      onChange={
+                        index === 0
+                          ? (e) => setInvoiceValue(Number(e.target.value))
+                          : undefined
+                      }
+                      defaultValue={index === 0 ? undefined : 0}
+                    />
+                  </label>
+                  <label>
+                    PRODUCT NAME *
+                    <input
+                      name="productName"
+                      required
+                      placeholder="e.g. Cotton T-shirt"
+                    />
+                  </label>
+                  <label>
+                    SKU (OPTIONAL)
+                    <input />
+                  </label>
+                  <label>
+                    HSN CODE (OPTIONAL)
+                    <input name="hsnCode" />
+                  </label>
+                  <label>
+                    EBN NUMBER (OPTIONAL)
+                    <input name="ewaybill" />
+                    <small>Required only when invoice value &gt; ₹50,000</small>
+                  </label>
+                  <label>
+                    EBN EXPIRY (OPTIONAL)
+                    <input type="date" />
+                    <small>Required when EBN Number is provided</small>
+                  </label>
+                  {kind === 'B2B' && (
+                    <label>
+                      INVOICE FILE (OPTIONAL)
+                      <input
+                        name="invoiceFile"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png,.bmp"
+                      />
+                    </label>
+                  )}
+                </div>
+                {kind === 'B2B' && invoices.length > 1 && (
+                  <button
+                    className="remove-clone-row"
+                    type="button"
+                    onClick={() =>
+                      setInvoices((rows) => rows.filter((x) => x !== invoice))
+                    }
+                  >
+                    <X /> Remove invoice
+                  </button>
+                )}
+              </div>
+            ))}
+            <div className="invoice-total">
+              <b>Invoice Grand Total</b>
+              <strong>₹{invoiceValue.toFixed(2)}</strong>
+            </div>
+            {kind === 'B2B' && (
+              <button
+                className="clone-outline-button"
+                type="button"
+                onClick={() => setInvoices((rows) => [...rows, Date.now()])}
+              >
+                + Add Invoice
+              </button>
+            )}
           </div>
         </section>
 
-        {kind === "B2C" ? <section className="fastship-form-card">
-          <h2><Boxes />Package Details <ChevronDown /></h2>
-          <div className="fastship-card-body"><div className="minimum-note">ⓘ &nbsp; Note: The minimum chargeable weight is 0.50 Kg</div><div className="dimension-toggle"><span>UNIT</span><button type="button" className={unit === "CM" ? "active" : ""} onClick={() => setUnit("CM")}>CM</button><button type="button" className={unit === "INCH" ? "active" : ""} onClick={() => setUnit("INCH")}>INCH</button></div>
-            <div className="fastship-grid four-col"><label>WEIGHT (KG) *<input required type="number" min="0" step="0.01" onChange={e => setWeight(Number(e.target.value))}/></label><label>LENGTH ({dimension.toUpperCase()}) *<input required type="number" min="0" onChange={e => setLength(Number(e.target.value))}/></label><label>BREADTH ({dimension.toUpperCase()}) *<input required type="number" min="0" onChange={e => setBreadth(Number(e.target.value))}/></label><label>HEIGHT ({dimension.toUpperCase()}) *<input required type="number" min="0" onChange={e => setHeight(Number(e.target.value))}/></label></div>
-            <div className="weight-panel"><h3>👜 Package Weight Summary</h3><p>Chargeable weight is calculated as max of actual, volumetric, or minimum weight (0.5 kg)</p><div><article><small>ACTUAL WEIGHT</small><b>{weight.toFixed(2)} <em>kg</em></b><span>{Math.round(weight * 1000)} grams</span></article><article><small>VOLUMETRIC WEIGHT</small><b>{volumetric.toFixed(2)} <em>kg</em></b><span>L × B × H / {divisor}</span></article><article className="active"><small>CHARGEABLE WEIGHT</small><b>{chargeable.toFixed(2)} <em>kg</em></b><span>{chargeable === 0.5 ? "Minimum weight applied" : "Maximum weight applied"}</span></article></div></div>
-          </div>
-        </section> : <section className="fastship-form-card"><h2><Boxes />Package Boxes <ChevronDown /></h2><div className="fastship-card-body"><div className="package-title"><div><h3>Package Boxes</h3><p>Enter the dimensions and actual weight of each physical box.</p></div><div className="dimension-toggle"><span>UNIT</span><button type="button" className={unit === "CM" ? "active" : ""} onClick={() => setUnit("CM")}>CM</button><button type="button" className={unit === "INCH" ? "active" : ""} onClick={() => setUnit("INCH")}>INCH</button></div></div>
-          {boxes.map((box, index) => <div className="box-entry" key={box}><label>NO. OF BOXES *<input type="number" min="1" defaultValue="1" /></label><div className="box-stat"><small>Total Actual Weight</small><b>{weight.toFixed(2)} kg</b></div><div className="box-stat"><small>Volumetric Weight</small><b>{volumetric.toFixed(2)} kg</b></div><div className="box-stat"><small>Chargeable Weight</small><b>{chargeable.toFixed(2)} kg</b></div><label>PER BOX WEIGHT (KG) *<input type="number" min="0" step="0.01" onChange={e => setWeight(Number(e.target.value))}/></label><label>LENGTH ({dimension.toUpperCase()}) *<input type="number" min="0" onChange={e => setLength(Number(e.target.value))}/></label><label>BREADTH ({dimension.toUpperCase()}) *<input type="number" min="0" onChange={e => setBreadth(Number(e.target.value))}/></label><label>HEIGHT ({dimension.toUpperCase()}) *<input type="number" min="0" onChange={e => setHeight(Number(e.target.value))}/></label>{boxes.length > 1 && <button type="button" onClick={() => setBoxes(rows => rows.filter(x => x !== box))}><X /></button>}</div>)}
-          <button className="clone-outline-button" type="button" onClick={() => setBoxes(rows => [...rows, Date.now()])}>+ Add Box</button><div className="weight-formula"><b>Actual vs Volumetric</b><span>max(Actual, Volumetric) · Volumetric = (L×B×H) / {divisor}</span><strong>{chargeable.toFixed(2)} kg</strong></div></div></section>}
+        {kind === 'B2C' ? (
+          <section className="fastship-form-card">
+            <h2>
+              <Boxes />
+              Package Details <ChevronDown />
+            </h2>
+            <div className="fastship-card-body">
+              <div className="minimum-note">
+                ⓘ &nbsp; Note: The minimum chargeable weight is 0.50 Kg
+              </div>
+              <div className="dimension-toggle">
+                <span>UNIT</span>
+                <button
+                  type="button"
+                  className={unit === 'CM' ? 'active' : ''}
+                  onClick={() => setUnit('CM')}
+                >
+                  CM
+                </button>
+                <button
+                  type="button"
+                  className={unit === 'INCH' ? 'active' : ''}
+                  onClick={() => setUnit('INCH')}
+                >
+                  INCH
+                </button>
+              </div>
+              <div className="fastship-grid four-col">
+                <label>
+                  WEIGHT (KG) *
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    onChange={(e) => setWeight(Number(e.target.value))}
+                  />
+                </label>
+                <label>
+                  LENGTH ({dimension.toUpperCase()}) *
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    onChange={(e) => setLength(Number(e.target.value))}
+                  />
+                </label>
+                <label>
+                  BREADTH ({dimension.toUpperCase()}) *
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    onChange={(e) => setBreadth(Number(e.target.value))}
+                  />
+                </label>
+                <label>
+                  HEIGHT ({dimension.toUpperCase()}) *
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    onChange={(e) => setHeight(Number(e.target.value))}
+                  />
+                </label>
+              </div>
+              <div className="weight-panel">
+                <h3>👜 Package Weight Summary</h3>
+                <p>
+                  Chargeable weight is calculated as max of actual, volumetric,
+                  or minimum weight (0.5 kg)
+                </p>
+                <div>
+                  <article>
+                    <small>ACTUAL WEIGHT</small>
+                    <b>
+                      {weight.toFixed(2)} <em>kg</em>
+                    </b>
+                    <span>{Math.round(weight * 1000)} grams</span>
+                  </article>
+                  <article>
+                    <small>VOLUMETRIC WEIGHT</small>
+                    <b>
+                      {volumetric.toFixed(2)} <em>kg</em>
+                    </b>
+                    <span>L × B × H / {divisor}</span>
+                  </article>
+                  <article className="active">
+                    <small>CHARGEABLE WEIGHT</small>
+                    <b>
+                      {chargeable.toFixed(2)} <em>kg</em>
+                    </b>
+                    <span>
+                      {chargeable === 0.5
+                        ? 'Minimum weight applied'
+                        : 'Maximum weight applied'}
+                    </span>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section className="fastship-form-card">
+            <h2>
+              <Boxes />
+              Package Boxes <ChevronDown />
+            </h2>
+            <div className="fastship-card-body">
+              <div className="package-title">
+                <div>
+                  <h3>Package Boxes</h3>
+                  <p>
+                    Enter the dimensions and actual weight of each physical box.
+                  </p>
+                </div>
+                <div className="dimension-toggle">
+                  <span>UNIT</span>
+                  <button
+                    type="button"
+                    className={unit === 'CM' ? 'active' : ''}
+                    onClick={() => setUnit('CM')}
+                  >
+                    CM
+                  </button>
+                  <button
+                    type="button"
+                    className={unit === 'INCH' ? 'active' : ''}
+                    onClick={() => setUnit('INCH')}
+                  >
+                    INCH
+                  </button>
+                </div>
+              </div>
+              {boxes.map((box, index) => (
+                <div className="box-entry" key={box}>
+                  <label>
+                    NO. OF BOXES *
+                    <input type="number" min="1" defaultValue="1" />
+                  </label>
+                  <div className="box-stat">
+                    <small>Total Actual Weight</small>
+                    <b>{weight.toFixed(2)} kg</b>
+                  </div>
+                  <div className="box-stat">
+                    <small>Volumetric Weight</small>
+                    <b>{volumetric.toFixed(2)} kg</b>
+                  </div>
+                  <div className="box-stat">
+                    <small>Chargeable Weight</small>
+                    <b>{chargeable.toFixed(2)} kg</b>
+                  </div>
+                  <label>
+                    PER BOX WEIGHT (KG) *
+                    <input
+                      required
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      onChange={(e) => setWeight(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    LENGTH ({dimension.toUpperCase()}) *
+                    <input
+                      required
+                      type="number"
+                      min="0.01"
+                      onChange={(e) => setLength(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    BREADTH ({dimension.toUpperCase()}) *
+                    <input
+                      required
+                      type="number"
+                      min="0.01"
+                      onChange={(e) => setBreadth(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    HEIGHT ({dimension.toUpperCase()}) *
+                    <input
+                      required
+                      type="number"
+                      min="0.01"
+                      onChange={(e) => setHeight(Number(e.target.value))}
+                    />
+                  </label>
+                  {boxes.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setBoxes((rows) => rows.filter((x) => x !== box))
+                      }
+                    >
+                      <X />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                className="clone-outline-button"
+                type="button"
+                onClick={() => setBoxes((rows) => [...rows, Date.now()])}
+              >
+                + Add Box
+              </button>
+              <div className="weight-formula">
+                <b>Actual vs Volumetric</b>
+                <span>
+                  max(Actual, Volumetric) · Volumetric = (L×B×H) / {divisor}
+                </span>
+                <strong>{chargeable.toFixed(2)} kg</strong>
+              </div>
+            </div>
+          </section>
+        )}
 
-        {kind === "B2C" && <section className="fastship-form-card"><h2><IndianRupee />Optional Charges &amp; Summary <ChevronDown /></h2><div className="fastship-card-body fastship-grid four-col"><label>SHIPPING CHARGE (CUSTOMER ₹)<input type="number" min="0" /><small>What the customer pays for shipping</small></label><label>TRANSACTION FEE (OPTIONAL ₹)<input type="number" min="0" /></label><label>DISCOUNT (OPTIONAL ₹)<input type="number" min="0" /></label><label>PREPAID AMOUNT (OPTIONAL ₹)<input type="number" min="0" /></label></div></section>}
-        <div className="fastship-next"><span>Order &amp; Delivery</span><button type="submit" disabled={booking || kind !== "B2C"}>{booking ? "Booking..." : "Next"}</button></div>
+        {kind === 'B2C' && (
+          <section className="fastship-form-card">
+            <h2>
+              <IndianRupee />
+              Optional Charges &amp; Summary <ChevronDown />
+            </h2>
+            <div className="fastship-card-body fastship-grid four-col">
+              <label>
+                SHIPPING CHARGE (CUSTOMER ₹)
+                <input type="number" min="0" />
+                <small>What the customer pays for shipping</small>
+              </label>
+              <label>
+                TRANSACTION FEE (OPTIONAL ₹)
+                <input type="number" min="0" />
+              </label>
+              <label>
+                DISCOUNT (OPTIONAL ₹)
+                <input type="number" min="0" />
+              </label>
+              <label>
+                PREPAID AMOUNT (OPTIONAL ₹)
+                <input type="number" min="0" />
+              </label>
+            </div>
+          </section>
+        )}
+        <div className="fastship-next">
+          <span>Order &amp; Delivery</span>
+          <button type="submit" disabled={booking}>
+            {booking
+              ? 'Booking...'
+              : kind === 'B2B'
+                ? 'Create B2B Shipment'
+                : 'Create Shipment'}
+          </button>
+        </div>
       </form>
     </section>
   );
@@ -822,7 +1407,7 @@ function CreateOrderClone() {
 export function ClientModule({
   name,
   go,
-  signedInEmail = "raghavexpresspali@gmail.com",
+  signedInEmail = 'raghavexpresspali@gmail.com',
   profile = {},
 }: {
   name: string;
@@ -830,9 +1415,9 @@ export function ClientModule({
   signedInEmail?: string;
   profile?: Record<string, string>;
 }) {
-  const [action, setAction] = useState("");
+  const [action, setAction] = useState('');
   const [connected, setConnected] = useState<string[]>([]);
-  const [rateMode, setRateMode] = useState<"B2C" | "B2B">("B2C");
+  const [rateMode, setRateMode] = useState<'B2C' | 'B2B'>('B2C');
   const [rateResult, setRateResult] = useState<{
     actual: number;
     volumetric: number;
@@ -840,44 +1425,44 @@ export function ClientModule({
     cod: number;
     boxes: number;
   } | null>(null);
-  const [orderKind, setOrderKind] = useState<"B2C" | "B2B">("B2C");
-  const [generatedOrderId, setGeneratedOrderId] = useState("");
+  const [orderKind, setOrderKind] = useState<'B2C' | 'B2B'>('B2C');
+  const [generatedOrderId, setGeneratedOrderId] = useState('');
   const [b2cParcels, setB2cParcels] = useState([0]);
   const [b2bProducts, setB2bProducts] = useState([0]);
   const [b2bBoxes, setB2bBoxes] = useState([0]);
   const [b2bInvoices, setB2bInvoices] = useState([0]);
-  const [settingSaved, setSettingSaved] = useState("");
+  const [settingSaved, setSettingSaved] = useState('');
   const [warehouses, setWarehouses] = useState([
     {
-      name: "Raghav Express — Pali",
-      address: "Industrial Area, Pali, Rajasthan 306401",
-      contact: "+91 96604 23241",
+      name: 'Raghav Express — Pali',
+      address: 'Industrial Area, Pali, Rajasthan 306401',
+      contact: '+91 96604 23241',
     },
     {
-      name: "Jodhpur Dispatch Hub",
-      address: "Basni, Jodhpur, Rajasthan 342005",
-      contact: "+91 96604 23241",
+      name: 'Jodhpur Dispatch Hub',
+      address: 'Basni, Jodhpur, Rajasthan 342005',
+      contact: '+91 96604 23241',
     },
   ]);
   const cfg = moduleConfig[name] || {
     title: name,
     sub: `Manage ${name.toLowerCase()} from one focused workspace`,
-    actions: ["Add New", "Export CSV"],
+    actions: ['Add New', 'Export CSV'],
     cards: [
-      [`${name} Overview`, "Workspace ready", ClipboardList],
-      ["Pending Actions", "3 items", AlertTriangle],
-      ["Last Updated", "Today, 09:42 AM", RefreshCw],
+      [`${name} Overview`, 'Workspace ready', ClipboardList],
+      ['Pending Actions', '3 items', AlertTriangle],
+      ['Last Updated', 'Today, 09:42 AM', RefreshCw],
     ] as [string, string, typeof Boxes][],
   };
-  if (name === "Rate Calculator")
+  if (name === 'Rate Calculator')
     return (
       <section className="tool-workspace">
         <ModuleHead cfg={cfg} onAction={setAction} />
         <div className="rate-mode-tabs">
           <button
-            className={rateMode === "B2C" ? "active" : ""}
+            className={rateMode === 'B2C' ? 'active' : ''}
             onClick={() => {
-              setRateMode("B2C");
+              setRateMode('B2C');
               setRateResult(null);
             }}
           >
@@ -885,9 +1470,9 @@ export function ClientModule({
             B2C Parcel
           </button>
           <button
-            className={rateMode === "B2B" ? "active" : ""}
+            className={rateMode === 'B2B' ? 'active' : ''}
             onClick={() => {
-              setRateMode("B2B");
+              setRateMode('B2B');
               setRateResult(null);
             }}
           >
@@ -901,23 +1486,23 @@ export function ClientModule({
             onSubmit={(e) => {
               e.preventDefault();
               const data = new FormData(e.currentTarget);
-              const actual = Number(data.get("weight"));
-              const length = Number(data.get("length") || 0);
-              const breadth = Number(data.get("breadth") || 0);
-              const height = Number(data.get("height") || 0);
-              const boxes = Number(data.get("boxes") || 1);
+              const actual = Number(data.get('weight'));
+              const length = Number(data.get('length') || 0);
+              const breadth = Number(data.get('breadth') || 0);
+              const height = Number(data.get('height') || 0);
+              const boxes = Number(data.get('boxes') || 1);
               const volumetric =
-                rateMode === "B2C"
+                rateMode === 'B2C'
                   ? (length * breadth * height) / 5000
                   : (length * breadth * height * boxes) / 4500;
               const chargeable = Math.max(
                 actual,
                 volumetric,
-                rateMode === "B2C" ? 0.5 : 10,
+                rateMode === 'B2C' ? 0.5 : 10,
               );
-              const amount = Number(data.get("amount") || 0);
+              const amount = Number(data.get('amount') || 0);
               const cod =
-                data.get("payment") === "COD" ? Math.max(45, amount * 0.02) : 0;
+                data.get('payment') === 'COD' ? Math.max(45, amount * 0.02) : 0;
               setRateResult({ actual, volumetric, chargeable, cod, boxes });
             }}
           >
@@ -927,9 +1512,9 @@ export function ClientModule({
                 <h2>Calculate Shipping Rate</h2>
               </div>
               <small>
-                {rateMode === "B2C"
-                  ? "Minimum chargeable weight: 0.5 kg"
-                  : "Minimum cargo weight: 10 kg"}
+                {rateMode === 'B2C'
+                  ? 'Minimum chargeable weight: 0.5 kg'
+                  : 'Minimum cargo weight: 10 kg'}
               </small>
             </div>
             <div className="form-pair">
@@ -956,19 +1541,19 @@ export function ClientModule({
                 />
               </label>
               <label>
-                {rateMode === "B2C"
-                  ? "Actual Weight (kg)"
-                  : "Total Weight (kg)"}
+                {rateMode === 'B2C'
+                  ? 'Actual Weight (kg)'
+                  : 'Total Weight (kg)'}
                 <input
                   name="weight"
                   required
                   type="number"
-                  min={rateMode === "B2C" ? 0.1 : 1}
+                  min={rateMode === 'B2C' ? 0.1 : 1}
                   step="0.01"
-                  placeholder={rateMode === "B2C" ? "0.50" : "25"}
+                  placeholder={rateMode === 'B2C' ? '0.50' : '25'}
                 />
               </label>
-              {rateMode === "B2B" && (
+              {rateMode === 'B2B' && (
                 <>
                   <label>
                     Number of Boxes
@@ -993,7 +1578,7 @@ export function ClientModule({
                 </>
               )}
               <label>
-                {rateMode === "B2B" ? "Largest Box Length (cm)" : "Length (cm)"}
+                {rateMode === 'B2B' ? 'Largest Box Length (cm)' : 'Length (cm)'}
                 <input
                   name="length"
                   required
@@ -1003,9 +1588,9 @@ export function ClientModule({
                 />
               </label>
               <label>
-                {rateMode === "B2B"
-                  ? "Largest Box Breadth (cm)"
-                  : "Breadth (cm)"}
+                {rateMode === 'B2B'
+                  ? 'Largest Box Breadth (cm)'
+                  : 'Breadth (cm)'}
                 <input
                   name="breadth"
                   required
@@ -1015,7 +1600,7 @@ export function ClientModule({
                 />
               </label>
               <label>
-                {rateMode === "B2B" ? "Largest Box Height (cm)" : "Height (cm)"}
+                {rateMode === 'B2B' ? 'Largest Box Height (cm)' : 'Height (cm)'}
                 <input
                   name="height"
                   required
@@ -1048,7 +1633,7 @@ export function ClientModule({
                   <option>Return</option>
                 </select>
               </label>
-              {rateMode === "B2B" && (
+              {rateMode === 'B2B' && (
                 <>
                   <label>
                     Cargo Service
@@ -1102,7 +1687,7 @@ export function ClientModule({
             ) : (
               <>
                 <h2>{rateMode} Rate Results</h2>
-                {rateMode === "B2B" && (
+                {rateMode === 'B2B' && (
                   <div className="b2b-box-summary">
                     <Boxes />
                     <span>
@@ -1129,20 +1714,20 @@ export function ClientModule({
                   </span>
                 </div>
                 <div className="courier-rates">
-                  {(rateMode === "B2C"
+                  {(rateMode === 'B2C'
                     ? [
-                        ["Raghav Surface", 52, 4],
-                        ["Express Air", 78, 2],
-                        ["Economy Parcel", 44, 6],
+                        ['Raghav Surface', 52, 4],
+                        ['Express Air', 78, 2],
+                        ['Economy Parcel', 44, 6],
                       ]
                     : [
-                        ["Raghav Cargo PTL", 24, 5],
-                        ["Express Cargo", 38, 3],
-                        ["Business Surface", 29, 4],
+                        ['Raghav Cargo PTL', 24, 5],
+                        ['Express Cargo', 38, 3],
+                        ['Business Surface', 29, 4],
                       ]
                   ).map(([courier, base, days], index) => {
                     const freight =
-                      rateMode === "B2C"
+                      rateMode === 'B2C'
                         ? Number(base) +
                           Math.max(
                             0,
@@ -1156,8 +1741,8 @@ export function ClientModule({
                         <div>
                           <b>{courier as string}</b>
                           <small>
-                            {days as number}–{Number(days) + 1} working days ·{" "}
-                            {index === 1 ? "Air" : "Surface"}
+                            {days as number}–{Number(days) + 1} working days ·{' '}
+                            {index === 1 ? 'Air' : 'Surface'}
                           </small>
                         </div>
                         <span>
@@ -1165,11 +1750,11 @@ export function ClientModule({
                             Freight ₹{Math.round(freight)}
                             {rateResult.cod
                               ? ` + COD ₹${Math.round(rateResult.cod)}`
-                              : ""}
+                              : ''}
                           </small>
                           <strong>₹{total}</strong>
                         </span>
-                        <button onClick={() => go("Create Order")}>Book</button>
+                        <button onClick={() => go('Create Order')}>Book</button>
                       </article>
                     );
                   })}
@@ -1180,14 +1765,14 @@ export function ClientModule({
         </div>
       </section>
     );
-  if (name === "Order Tracking")
+  if (name === 'Order Tracking')
     return (
       <section className="tool-workspace">
         <ModuleHead
           cfg={{
             ...cfg,
-            title: "Track Shipment",
-            sub: "Follow a shipment using LRN or AWB",
+            title: 'Track Shipment',
+            sub: 'Follow a shipment using LRN or AWB',
           }}
           onAction={setAction}
         />
@@ -1197,7 +1782,7 @@ export function ClientModule({
           <p>Enter a Raghav Express LRN or AWB number.</p>
           <div>
             <input placeholder="e.g. RGX-240812" />
-            <button onClick={() => setAction("Shipment found: In transit")}>
+            <button onClick={() => setAction('Shipment found: In transit')}>
               Track AWB
             </button>
           </div>
@@ -1210,9 +1795,8 @@ export function ClientModule({
         </div>
       </section>
     );
-  if (name === "Create Order")
-    return <CreateOrderClone />;
-    /*return (
+  if (name === 'Create Order') return <CreateOrderClone />;
+  /*return (
       <section className="tool-workspace">
         <ModuleHead
           cfg={{
@@ -1749,14 +2333,14 @@ export function ClientModule({
         </form>
       </section>
     );*/
-  if (name === "Warehouse")
+  if (name === 'Warehouse')
     return (
       <section className="module-workspace">
         <ModuleHead
           cfg={cfg}
           onAction={(value) =>
             setAction(
-              value.startsWith("Add Warehouse") ? "add-warehouse" : value,
+              value.startsWith('Add Warehouse') ? 'add-warehouse' : value,
             )
           }
         />
@@ -1771,7 +2355,7 @@ export function ClientModule({
               </span>
               <div>
                 <small>
-                  {index === 0 ? "PRIMARY PICKUP" : "PICKUP LOCATION"}
+                  {index === 0 ? 'PRIMARY PICKUP' : 'PICKUP LOCATION'}
                 </small>
                 <h3>{warehouse.name}</h3>
                 <p>{warehouse.address}</p>
@@ -1784,8 +2368,8 @@ export function ClientModule({
             </article>
           ))}
         </div>
-        {action === "add-warehouse" && (
-          <div className="clone-modal" onClick={() => setAction("")}>
+        {action === 'add-warehouse' && (
+          <div className="clone-modal" onClick={() => setAction('')}>
             <form
               className="order-detail warehouse-form"
               onClick={(e) => e.stopPropagation()}
@@ -1795,18 +2379,18 @@ export function ClientModule({
                 setWarehouses((items) => [
                   ...items,
                   {
-                    name: String(data.get("name")),
-                    address: `${data.get("address")}, ${data.get("city")}, ${data.get("state")} ${data.get("pin")}`,
-                    contact: String(data.get("phone")),
+                    name: String(data.get('name')),
+                    address: `${data.get('address')}, ${data.get('city')}, ${data.get('state')} ${data.get('pin')}`,
+                    contact: String(data.get('phone')),
                   },
                 ]);
-                setAction("Warehouse added successfully");
+                setAction('Warehouse added successfully');
               }}
             >
               <button
                 type="button"
                 className="modal-close"
-                onClick={() => setAction("")}
+                onClick={() => setAction('')}
               >
                 <X />
               </button>
@@ -1895,7 +2479,7 @@ export function ClientModule({
                 </label>
               </div>
               <div className="warehouse-form-actions">
-                <button type="button" onClick={() => setAction("")}>
+                <button type="button" onClick={() => setAction('')}>
                   Cancel
                 </button>
                 <button type="submit">Save Warehouse</button>
@@ -1903,47 +2487,47 @@ export function ClientModule({
             </form>
           </div>
         )}
-        {action && action !== "add-warehouse" && (
+        {action && action !== 'add-warehouse' && (
           <div className="module-notice">
             <PackageCheck />
             {action}
-            <button onClick={() => setAction("")}>
+            <button onClick={() => setAction('')}>
               <X />
             </button>
           </div>
         )}
       </section>
     );
-  if (name === "Settings") {
+  if (name === 'Settings') {
     const groups = [
       [
-        "Account Control",
-        "Identity",
+        'Account Control',
+        'Identity',
         [
-          ["Company Details", "Business profile and brand identity", Building2],
-          ["Change Password", "Update login credentials securely", RefreshCw],
-          ["KYC Details", "Verification status and documents", ClipboardList],
-          ["Bank Accounts", "Payout and settlement accounts", WalletCards],
-          ["Manage Users", "Team access and permissions", Building2],
+          ['Company Details', 'Business profile and brand identity', Building2],
+          ['Change Password', 'Update login credentials securely', RefreshCw],
+          ['KYC Details', 'Verification status and documents', ClipboardList],
+          ['Bank Accounts', 'Payout and settlement accounts', WalletCards],
+          ['Manage Users', 'Team access and permissions', Building2],
         ],
       ],
       [
-        "Shipping Operations",
-        "Execution",
+        'Shipping Operations',
+        'Execution',
         [
-          ["Pickup Addresses", "Add and manage pickup locations", Warehouse],
-          ["Invoice Preferences", "Invoice branding and output", FileText],
-          ["Billing Preferences", "Billing cycles and automation", IndianRupee],
-          ["Label Settings", "Shipping label fields and format", PackageCheck],
+          ['Pickup Addresses', 'Add and manage pickup locations', Warehouse],
+          ['Invoice Preferences', 'Invoice branding and output', FileText],
+          ['Billing Preferences', 'Billing cycles and automation', IndianRupee],
+          ['Label Settings', 'Shipping label fields and format', PackageCheck],
         ],
       ],
       [
-        "Integrations And Routing",
-        "Connectivity",
+        'Integrations And Routing',
+        'Connectivity',
         [
-          ["Connected Channels", "Linked sales channels", Zap],
-          ["Courier Priority", "Preference rules by speed or cost", Truck],
-          ["API Integration", "API keys and webhooks", SlidersHorizontal],
+          ['Connected Channels', 'Linked sales channels', Zap],
+          ['Courier Priority', 'Preference rules by speed or cost', Truck],
+          ['API Integration', 'API keys and webhooks', SlidersHorizontal],
         ],
       ],
     ] as const;
@@ -1975,11 +2559,11 @@ export function ClientModule({
                 <h2>{title}</h2>
                 <span>{badge}</span>
                 <p>
-                  {title === "Account Control"
-                    ? "Business profile, credentials, KYC, payout accounts and team permissions."
-                    : title === "Shipping Operations"
-                      ? "Pickup network, billing logic, invoice output and shipping label configuration."
-                      : "Sales channels, courier rules, API keys and webhook connectivity."}
+                  {title === 'Account Control'
+                    ? 'Business profile, credentials, KYC, payout accounts and team permissions.'
+                    : title === 'Shipping Operations'
+                      ? 'Pickup network, billing logic, invoice output and shipping label configuration.'
+                      : 'Sales channels, courier rules, API keys and webhook connectivity.'}
                 </p>
               </div>
               <b>{items.length} modules</b>
@@ -1989,10 +2573,10 @@ export function ClientModule({
                 <button
                   key={item}
                   onClick={() =>
-                    item === "Pickup Addresses"
-                      ? go("Warehouse")
-                      : item === "Connected Channels"
-                        ? go("Channels")
+                    item === 'Pickup Addresses'
+                      ? go('Warehouse')
+                      : item === 'Connected Channels'
+                        ? go('Channels')
                         : setAction(item)
                   }
                 >
@@ -2013,28 +2597,28 @@ export function ClientModule({
           <div className="module-notice">
             <PackageCheck />
             {settingSaved}
-            <button onClick={() => setSettingSaved("")}>
+            <button onClick={() => setSettingSaved('')}>
               <X />
             </button>
           </div>
         )}
         {action && (
-          <div className="clone-modal" onClick={() => setAction("")}>
+          <div className="clone-modal" onClick={() => setAction('')}>
             <form
               className="order-detail settings-dialog"
               onClick={(e) => e.stopPropagation()}
               onSubmit={(e) => {
                 e.preventDefault();
-                if (action === "Company Details") {
+                if (action === 'Company Details') {
                   const updates = Object.fromEntries(
                     new FormData(e.currentTarget).entries(),
                   ) as Record<string, string>;
                   try {
                     const profiles = JSON.parse(
-                      localStorage.getItem("raghav-user-profiles") || "{}",
+                      localStorage.getItem('raghav-user-profiles') || '{}',
                     ) as Record<string, Record<string, string>>;
                     localStorage.setItem(
-                      "raghav-user-profiles",
+                      'raghav-user-profiles',
                       JSON.stringify({
                         ...profiles,
                         [signedInEmail]: { ...profile, ...updates },
@@ -2043,19 +2627,19 @@ export function ClientModule({
                   } catch {}
                 }
                 setSettingSaved(`${action} updated successfully`);
-                setAction("");
+                setAction('');
               }}
             >
               <button
                 type="button"
                 className="modal-close"
-                onClick={() => setAction("")}
+                onClick={() => setAction('')}
               >
                 <X />
               </button>
               <span className="detail-label">ACCOUNT CONFIGURATION</span>
               <h2>{action}</h2>
-              {action === "Bank Accounts" && (
+              {action === 'Bank Accounts' && (
                 <div className="saved-account-card">
                   <header>
                     <span>
@@ -2070,7 +2654,7 @@ export function ClientModule({
                   <div>
                     <p>
                       <small>ACCOUNT HOLDER</small>
-                      <b>{profile.companyName || "Raghav Express"}</b>
+                      <b>{profile.companyName || 'Raghav Express'}</b>
                     </p>
                     <p>
                       <small>BANK</small>
@@ -2087,7 +2671,7 @@ export function ClientModule({
                   </div>
                 </div>
               )}
-              {action === "KYC Details" && (
+              {action === 'KYC Details' && (
                 <div className="saved-account-card kyc-summary">
                   <header>
                     <span>
@@ -2119,7 +2703,7 @@ export function ClientModule({
                   </div>
                 </div>
               )}
-              {action === "Company Details" && (
+              {action === 'Company Details' && (
                 <div className="saved-account-card company-summary">
                   <header>
                     <span>
@@ -2133,14 +2717,14 @@ export function ClientModule({
                   </header>
                 </div>
               )}
-              {action === "Manage Users" && (
+              {action === 'Manage Users' && (
                 <div className="saved-account-card">
                   <header>
                     <span>
                       <Building2 />
                     </span>
                     <div>
-                      <b>{profile.contactName || "Account Owner"}</b>
+                      <b>{profile.contactName || 'Account Owner'}</b>
                       <small>{signedInEmail} · Account owner</small>
                     </div>
                     <em>OWNER</em>
@@ -2148,15 +2732,27 @@ export function ClientModule({
                 </div>
               )}
               <div className="form-pair">
-                {action === "Company Details" ? (
+                {action === 'Company Details' ? (
                   <>
                     <label>
                       Legal Business Name
-                      <input name="companyName" required defaultValue={profile.companyName || "Raghav Express"} />
+                      <input
+                        name="companyName"
+                        required
+                        defaultValue={profile.companyName || 'Raghav Express'}
+                      />
                     </label>
                     <label>
                       Brand Name
-                      <input name="brandName" required defaultValue={profile.brandName || profile.companyName || "Raghav Express"} />
+                      <input
+                        name="brandName"
+                        required
+                        defaultValue={
+                          profile.brandName ||
+                          profile.companyName ||
+                          'Raghav Express'
+                        }
+                      />
                     </label>
                     <label>
                       Business Email
@@ -2168,22 +2764,37 @@ export function ClientModule({
                     </label>
                     <label>
                       Business Phone
-                      <input name="phone" required defaultValue={profile.phone || ""} placeholder="Business phone" />
+                      <input
+                        name="phone"
+                        required
+                        defaultValue={profile.phone || ''}
+                        placeholder="Business phone"
+                      />
                     </label>
                     <label>
                       GSTIN
-                      <input name="gst" maxLength={15} defaultValue={profile.gst || ""} placeholder="15-digit GSTIN" />
+                      <input
+                        name="gst"
+                        maxLength={15}
+                        defaultValue={profile.gst || ''}
+                        placeholder="15-digit GSTIN"
+                      />
                     </label>
                     <label>
                       PAN Number
-                      <input name="pan" maxLength={10} defaultValue={profile.pan || ""} placeholder="Business PAN" />
+                      <input
+                        name="pan"
+                        maxLength={10}
+                        defaultValue={profile.pan || ''}
+                        placeholder="Business PAN"
+                      />
                     </label>
                     <label className="order-wide">
                       Registered Address
                       <input
                         name="address"
                         required
-                        defaultValue={profile.address || ""}
+                        defaultValue={profile.address || ''}
                         placeholder="Complete registered address"
                       />
                     </label>
@@ -2192,7 +2803,7 @@ export function ClientModule({
                       <input type="file" accept="image/*" />
                     </label>
                   </>
-                ) : action === "Change Password" ? (
+                ) : action === 'Change Password' ? (
                   <>
                     <label>
                       Current Password
@@ -2207,7 +2818,7 @@ export function ClientModule({
                       <input type="password" required minLength={8} />
                     </label>
                   </>
-                ) : action === "KYC Details" ? (
+                ) : action === 'KYC Details' ? (
                   <>
                     <label>
                       KYC Type
@@ -2245,7 +2856,7 @@ export function ClientModule({
                       <input type="file" accept=".pdf,.jpg,.jpeg,.png" />
                     </label>
                   </>
-                ) : action === "Bank Accounts" ? (
+                ) : action === 'Bank Accounts' ? (
                   <>
                     <label>
                       Account Holder
@@ -2275,7 +2886,7 @@ export function ClientModule({
                       <input type="file" accept=".pdf,.jpg,.jpeg,.png" />
                     </label>
                   </>
-                ) : action === "Manage Users" ? (
+                ) : action === 'Manage Users' ? (
                   <>
                     <label>
                       User Name
@@ -2306,7 +2917,7 @@ export function ClientModule({
                       </select>
                     </label>
                   </>
-                ) : action === "Invoice Preferences" ? (
+                ) : action === 'Invoice Preferences' ? (
                   <>
                     <label>
                       Invoice Prefix
@@ -2349,10 +2960,7 @@ export function ClientModule({
                     </label>
                     <label>
                       Support Email
-                      <input
-                        type="email"
-                        defaultValue={signedInEmail}
-                      />
+                      <input type="email" defaultValue={signedInEmail} />
                     </label>
                     <label>
                       Support Phone
@@ -2367,7 +2975,7 @@ export function ClientModule({
                       <input type="file" accept="image/*" />
                     </label>
                   </>
-                ) : action === "Billing Preferences" ? (
+                ) : action === 'Billing Preferences' ? (
                   <>
                     <label>
                       Invoice Frequency
@@ -2379,10 +2987,7 @@ export function ClientModule({
                     </label>
                     <label>
                       Billing Email
-                      <input
-                        type="email"
-                        defaultValue={signedInEmail}
-                      />
+                      <input type="email" defaultValue={signedInEmail} />
                     </label>
                     <label>
                       <input type="checkbox" defaultChecked /> Auto-generate
@@ -2393,7 +2998,7 @@ export function ClientModule({
                       automatically
                     </label>
                   </>
-                ) : action === "Label Settings" ? (
+                ) : action === 'Label Settings' ? (
                   <>
                     <label>
                       Printer Type
@@ -2428,7 +3033,7 @@ export function ClientModule({
                       <input type="number" defaultValue="5" />
                     </label>
                   </>
-                ) : action === "Courier Priority" ? (
+                ) : action === 'Courier Priority' ? (
                   <>
                     <label>
                       Allocation Strategy
@@ -2464,7 +3069,7 @@ export function ClientModule({
                       </select>
                     </label>
                   </>
-                ) : action === "API Integration" ? (
+                ) : action === 'API Integration' ? (
                   <>
                     <label>
                       API Key
@@ -2483,7 +3088,7 @@ export function ClientModule({
                     </label>
                     <label>
                       Events
-                      <select multiple defaultValue={["order.created"]}>
+                      <select multiple defaultValue={['order.created']}>
                         <option value="order.created">Order created</option>
                         <option value="shipment.updated">
                           Shipment updated
@@ -2523,7 +3128,7 @@ export function ClientModule({
       </section>
     );
   }
-  if (name === "Support")
+  if (name === 'Support')
     return (
       <section className="tool-workspace">
         <ModuleHead cfg={cfg} onAction={setAction} />
@@ -2532,19 +3137,19 @@ export function ClientModule({
           onSubmit={(e) => {
             e.preventDefault();
             setAction(
-              name === "Support"
-                ? "Support ticket RGX-TKT-104 created"
-                : "Account settings saved successfully",
+              name === 'Support'
+                ? 'Support ticket RGX-TKT-104 created'
+                : 'Account settings saved successfully',
             );
           }}
         >
           <h2>
-            {name === "Support"
-              ? "Create support ticket"
-              : "Company & shipping preferences"}
+            {name === 'Support'
+              ? 'Create support ticket'
+              : 'Company & shipping preferences'}
           </h2>
           <div className="form-pair">
-            {name === "Support" ? (
+            {name === 'Support' ? (
               <>
                 <label>
                   Category
@@ -2575,10 +3180,7 @@ export function ClientModule({
                 </label>
                 <label>
                   Support email
-                  <input
-                    type="email"
-                    defaultValue={signedInEmail}
-                  />
+                  <input type="email" defaultValue={signedInEmail} />
                 </label>
                 <label>
                   Contact number
@@ -2607,7 +3209,7 @@ export function ClientModule({
             )}
           </div>
           <button>
-            {name === "Support" ? "Create ticket" : "Save settings"}
+            {name === 'Support' ? 'Create ticket' : 'Save settings'}
           </button>
           {action && (
             <span className="form-success">
@@ -2631,7 +3233,7 @@ export function ClientModule({
               <h3>{t}</h3>
               <p>{d}</p>
             </div>
-            {name === "Channels" ? (
+            {name === 'Channels' ? (
               <button
                 onClick={() =>
                   setConnected((x) =>
@@ -2639,7 +3241,7 @@ export function ClientModule({
                   )
                 }
               >
-                {connected.includes(t) ? "Connected" : "Connect"}
+                {connected.includes(t) ? 'Connected' : 'Connect'}
               </button>
             ) : (
               <button onClick={() => setAction(`${t} opened`)}>
@@ -2653,7 +3255,7 @@ export function ClientModule({
         <div className="module-notice">
           <PackageCheck />
           {action}
-          <button onClick={() => setAction("")}>
+          <button onClick={() => setAction('')}>
             <X />
           </button>
         </div>
@@ -2696,7 +3298,7 @@ function ModuleHead({
       <div>
         {cfg.actions.map((a, i) => (
           <button
-            className={i === 0 ? "primary" : ""}
+            className={i === 0 ? 'primary' : ''}
             key={a}
             onClick={() => onAction(`${a} selected`)}
           >
