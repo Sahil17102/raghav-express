@@ -36,6 +36,13 @@ const settings = () => ({
   username: process.env.INDIA_POST_USERNAME?.trim(),
   password: process.env.INDIA_POST_PASSWORD?.trim(),
   customerId: process.env.INDIA_POST_CUSTOMER_ID?.trim(),
+  contractId: process.env.INDIA_POST_CONTRACT_ID?.trim(),
+  senderName: process.env.INDIA_POST_SENDER_NAME?.trim(),
+  senderCompany: process.env.INDIA_POST_SENDER_COMPANY?.trim(),
+  senderAddress: process.env.INDIA_POST_SENDER_ADDRESS?.trim(),
+  senderCity: process.env.INDIA_POST_SENDER_CITY?.trim(),
+  senderPincode: process.env.INDIA_POST_SENDER_PINCODE?.trim(),
+  senderMobile: process.env.INDIA_POST_SENDER_MOBILE?.trim(),
 });
 
 const decode = async (response: Response) => {
@@ -215,11 +222,58 @@ export async function handleIndiaPost(request: Request, segments: string[]) {
       body.customer_id || settings().customerId,
       'customer_id',
     );
+    const config = settings();
+    const normalizedArticles = articles.map((value, index) => {
+      if (!value || typeof value !== 'object')
+        throw new IndiaPostError(400, `articles[${index}] must be an object`);
+      const article = value as Json;
+      return {
+        ...article,
+        bulk_customer_id: required(
+          article.bulk_customer_id || customerId,
+          `articles[${index}].bulk_customer_id`,
+        ),
+        contract_id: required(
+          article.contract_id || config.contractId,
+          `articles[${index}].contract_id`,
+        ),
+        barcode_no: required(
+          article.barcode_no,
+          `articles[${index}].barcode_no`,
+        ),
+        sender_name: required(
+          article.sender_name || config.senderName,
+          `articles[${index}].sender_name`,
+        ),
+        sender_company:
+          article.sender_company || config.senderCompany || config.senderName,
+        sender_add_line_1: required(
+          article.sender_add_line_1 || config.senderAddress,
+          `articles[${index}].sender_add_line_1`,
+        ),
+        sender_city: required(
+          article.sender_city || config.senderCity,
+          `articles[${index}].sender_city`,
+        ),
+        sender_pincode: Number(
+          pin(
+            article.sender_pincode || config.senderPincode,
+            `articles[${index}].sender_pincode`,
+          ),
+        ),
+        sender_mobile_no: Number(
+          required(
+            article.sender_mobile_no || config.senderMobile,
+            `articles[${index}].sender_mobile_no`,
+          ),
+        ),
+      };
+    });
     return {
       data: await json(
         `/beextcustomer/process-articles/${encodeURIComponent(customerId)}`,
         'POST',
-        { articles },
+        { articles: normalizedArticles },
       ),
     };
   }

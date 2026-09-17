@@ -678,6 +678,9 @@ const moduleConfig: Record<
 
 function CreateOrderClone() {
   const [kind, setKind] = useState<'B2C' | 'B2B'>('B2C');
+  const [courier, setCourier] = useState<'Delhivery' | 'India Post'>(
+    'India Post',
+  );
   const [orderId, setOrderId] = useState('ORD-98689952');
   const [unit, setUnit] = useState<'CM' | 'INCH'>('CM');
   const [weight, setWeight] = useState(0);
@@ -811,6 +814,66 @@ function CreateOrderClone() {
           error instanceof Error
             ? error.message
             : 'B2B shipment creation failed',
+        );
+      } finally {
+        setBooking(false);
+      }
+      return;
+    }
+    if (courier === 'India Post') {
+      const toCentimeters = (value: number) =>
+        unit === 'CM' ? value : value * 2.54;
+      const responsePayload = {
+        articles: [
+          {
+            contract_id: String(form.get('indiaPostContractId') || ''),
+            barcode_no: String(form.get('indiaPostBarcode') || ''),
+            pickup_or_dropoff: 'DROPOFF',
+            pickup_dropoff_office_id: Number(
+              form.get('indiaPostOfficeId') || 0,
+            ),
+            article_type:
+              weight <= 0.5 ? 'SP_INLAND_DOC' : 'SP_INLAND_PARCEL',
+            physical_weight: Math.round(weight * 1000),
+            shape_of_article: weight <= 0.5 ? 'DOC' : 'NROL',
+            length: toCentimeters(length),
+            breadth_diameter: toCentimeters(breadth),
+            height: toCentimeters(height),
+            receiver_name: String(form.get('recipientName') || ''),
+            receiver_company: String(form.get('companyName') || ''),
+            receiver_add_line_1: String(form.get('recipientAddress') || ''),
+            receiver_city: String(form.get('recipientCity') || ''),
+            receiver_pincode: Number(form.get('recipientPin') || 0),
+            receiver_mobile_no: Number(form.get('recipientPhone') || 0),
+            prepaid: paymentMode === 'Prepaid',
+            cod: paymentMode === 'COD',
+            cod_value: paymentMode === 'COD' ? totalAmount : 0,
+            alt_address_flag: false,
+            pickup_address_flag: false,
+          },
+        ],
+      };
+      setBooking(true);
+      try {
+        const response = await fetch('/api/india-post/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(responsePayload),
+        });
+        const result = (await response.json()) as {
+          success?: boolean;
+          message?: string;
+          data?: Record<string, unknown>;
+        };
+        if (!response.ok || !result.success)
+          throw new Error(result.message || 'India Post booking failed');
+        window.alert(
+          `India Post shipment created successfully. Barcode: ${String(form.get('indiaPostBarcode'))}`,
+        );
+        regenerate();
+      } catch (error) {
+        window.alert(
+          error instanceof Error ? error.message : 'India Post booking failed',
         );
       } finally {
         setBooking(false);
@@ -963,6 +1026,22 @@ function CreateOrderClone() {
               </select>
               <small>Select type</small>
             </label>
+            {kind === 'B2C' && (
+              <label>
+                COURIER PARTNER *
+                <select
+                  name="courier"
+                  value={courier}
+                  onChange={(event) =>
+                    setCourier(event.target.value as 'Delhivery' | 'India Post')
+                  }
+                >
+                  <option>India Post</option>
+                  <option>Delhivery</option>
+                </select>
+                <small>Shipment is booked from Raghav Express</small>
+              </label>
+            )}
             {kind === 'B2B' && (
               <label>
                 PICKUP WAREHOUSE NAME *
@@ -976,6 +1055,37 @@ function CreateOrderClone() {
             )}
           </div>
         </section>
+
+        {kind === 'B2C' && courier === 'India Post' && (
+          <section className="fastship-form-card">
+            <h2>
+              <Truck />
+              India Post Booking <ChevronDown />
+            </h2>
+            <div className="fastship-card-body fastship-grid three-col">
+              <label>
+                CONTRACT ID *
+                <input name="indiaPostContractId" required />
+                <small>India Post allotted contract ID</small>
+              </label>
+              <label>
+                ARTICLE BARCODE *
+                <input
+                  name="indiaPostBarcode"
+                  required
+                  pattern="[A-Za-z]{2}[0-9]{9}[A-Za-z]{2}"
+                  placeholder="Example: EX123456789IN"
+                />
+                <small>Use an unused barcode from the allotted API range</small>
+              </label>
+              <label>
+                DROPOFF OFFICE ID *
+                <input name="indiaPostOfficeId" required type="number" min="1" />
+                <small>Numeric India Post office ID</small>
+              </label>
+            </div>
+          </section>
+        )}
 
         <section className="fastship-form-card">
           <h2>
@@ -1396,7 +1506,7 @@ function CreateOrderClone() {
               ? 'Booking...'
               : kind === 'B2B'
                 ? 'Create B2B Shipment'
-                : 'Create Shipment'}
+                : `Create ${courier} Shipment`}
           </button>
         </div>
       </form>
