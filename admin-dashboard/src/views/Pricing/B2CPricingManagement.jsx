@@ -11,7 +11,6 @@ import {
   useColorModeValue,
   VStack,
 } from '@chakra-ui/react'
-import { IconCoinRupee, IconFileSpreadsheet } from '@tabler/icons-react'
 import { lazy, Suspense, useState } from 'react'
 import ZonesManagement from '../Zones/ZonesManagement'
 
@@ -34,10 +33,10 @@ const B2CPricingManagement = () => {
         <Flex justify="space-between" align="flex-start" flexWrap="wrap" gap={4}>
           <Box>
             <Heading size="lg" mb={2}>
-              B2C Pricing & Zones
+              B2C Pricing Management
             </Heading>
             <Text color="gray.600" fontSize="sm">
-              Manage zones and pricing configurations for retail customers
+              Configure Delhivery Surface and Express rate cards for every B2C zone.
             </Text>
           </Box>
         </Flex>
@@ -48,7 +47,7 @@ const B2CPricingManagement = () => {
             index={subTabIndex}
             onChange={setSubTabIndex}
             colorScheme="purple"
-            variant="enclosed"
+            variant="line"
           >
             <Box px={6} pt={4} borderBottomWidth="1px" borderColor={borderColor}>
               <TabList>
@@ -60,7 +59,6 @@ const B2CPricingManagement = () => {
                   }}
                   fontWeight="medium"
                 >
-                  <IconFileSpreadsheet size={18} style={{ marginRight: '8px' }} />
                   Zones
                 </Tab>
                 <Tab
@@ -71,7 +69,6 @@ const B2CPricingManagement = () => {
                   }}
                   fontWeight="medium"
                 >
-                  <IconCoinRupee size={18} style={{ marginRight: '8px' }} />
                   Pricing
                 </Tab>
               </TabList>

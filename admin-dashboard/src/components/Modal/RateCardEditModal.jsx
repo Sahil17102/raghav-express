@@ -26,11 +26,10 @@ const normalizeMode = (value) => {
 }
 const makeCourierKey = (courierId, serviceProvider) =>
   `${courierId || ''}__${normalizeProvider(serviceProvider)}`
-const B2C_RATE_TYPES = ['forward', 'rto', 'reverse_pickup']
+const B2C_RATE_TYPES = ['forward', 'rto']
 const B2C_RATE_TYPE_LABELS = {
   forward: 'Forward',
   rto: 'RTO',
-  reverse_pickup: 'Reverse Pickup',
 }
 
 const inferLegacyExtraWeightUnit = (slab = {}) => {
@@ -105,6 +104,22 @@ export const RateCardEditModal = ({
       min_weight: data?.min_weight ?? '',
       cod_charges: data?.cod_charges ?? '',
       cod_percent: data?.cod_percent ?? '',
+      cod_slabs: Array.isArray(data?.cod_slabs) && data.cod_slabs.length
+        ? data.cod_slabs
+        : [
+            {
+              order_value_from: 0,
+              order_value_to: 2000,
+              charge_type: 'flat',
+              charge_value: data?.cod_charges ?? '',
+            },
+            {
+              order_value_from: 2000,
+              order_value_to: '',
+              charge_type: 'percent',
+              charge_value: data?.cod_percent ?? '',
+            },
+          ],
       other_charges: data?.other_charges ?? '',
       mode: data?.mode ?? '',
       zone_slabs: {},
@@ -161,6 +176,36 @@ export const RateCardEditModal = ({
     })
   }
 
+  const handleCodSlabChange = (index, field, value) => {
+    setForm((prev) => {
+      const codSlabs = [...(prev.cod_slabs || [])]
+      codSlabs[index] = { ...(codSlabs[index] || {}), [field]: value }
+      return { ...prev, cod_slabs: codSlabs }
+    })
+  }
+
+  const addCodSlab = () => {
+    setForm((prev) => ({
+      ...prev,
+      cod_slabs: [
+        ...(prev.cod_slabs || []),
+        {
+          order_value_from: '',
+          order_value_to: '',
+          charge_type: 'flat',
+          charge_value: '',
+        },
+      ],
+    }))
+  }
+
+  const removeCodSlab = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      cod_slabs: (prev.cod_slabs || []).filter((_, slabIndex) => slabIndex !== index),
+    }))
+  }
+
   const addSlab = (zoneName, type) => {
     setForm((prev) => {
       const next = { ...prev, zone_slabs: { ...(prev.zone_slabs || {}) } }
@@ -211,11 +256,9 @@ export const RateCardEditModal = ({
       if (isB2C) {
         const forwardSlabs = form.zone_slabs?.[zone.name]?.forward || []
         const rtoSlabs = form.zone_slabs?.[zone.name]?.rto || []
-        const reversePickupSlabs = form.zone_slabs?.[zone.name]?.reverse_pickup || []
         rates[zone.name] = {
           forward: forwardSlabs[0]?.rate ?? '',
           rto: rtoSlabs[0]?.rate ?? '',
-          reverse_pickup: reversePickupSlabs[0]?.rate ?? '',
         }
       } else {
         rates[zone.name] = { ...form[zone.name] }
@@ -244,10 +287,14 @@ export const RateCardEditModal = ({
       zones.map((zone) => [zone.name, normalizeEditableZoneSlabs(form.zone_slabs?.[zone.name])]),
     )
 
+    const firstFlatCodSlab = (form.cod_slabs || []).find((slab) => slab.charge_type === 'flat')
+    const firstPercentCodSlab = (form.cod_slabs || []).find((slab) => slab.charge_type === 'percent')
+
     const payload = {
       min_weight: isB2C ? undefined : form.min_weight,
-      cod_charges: form.cod_charges,
-      cod_percent: form.cod_percent,
+      cod_charges: isB2C ? firstFlatCodSlab?.charge_value ?? form.cod_charges : form.cod_charges,
+      cod_percent: isB2C ? firstPercentCodSlab?.charge_value ?? form.cod_percent : form.cod_percent,
+      cod_slabs: isB2C ? form.cod_slabs || [] : undefined,
       other_charges: form.other_charges,
       mode: form.mode,
       previous_mode: data?.mode,
@@ -477,7 +524,11 @@ export const RateCardEditModal = ({
         <SimpleGrid columns={2} spacing={4}>
           <FormControl>
             <FormLabel>Mode</FormLabel>
-            <Input value={form.mode} onChange={(e) => handleChange('mode', e.target.value)} />
+            <Select value={form.mode} onChange={(e) => handleChange('mode', e.target.value)}>
+              <option value="">Select Mode</option>
+              <option value="air">Air</option>
+              <option value="surface">Surface</option>
+            </Select>
           </FormControl>
           {!isB2C && (
             <FormControl>
@@ -515,6 +566,76 @@ export const RateCardEditModal = ({
           </FormControl>
         </SimpleGrid>
       </Box>
+
+      {isB2C && (
+        <Box mb={6} p={4} bg="blue.50" border="1px solid" borderColor="blue.200" borderRadius="md">
+          <Flex justify="space-between" align="flex-start" gap={3} mb={3}>
+            <Box>
+              <Text fontWeight="bold">COD Price Slabs</Text>
+              <Text fontSize="sm" color="gray.600">
+                Applied to all B2C zone rows for this courier, mode, provider, and plan.
+              </Text>
+            </Box>
+            <Button size="sm" colorScheme="brand" onClick={addCodSlab}>
+              Add COD Slab
+            </Button>
+          </Flex>
+
+          <Stack spacing={3}>
+            {(form.cod_slabs || []).map((slab, index) => (
+              <SimpleGrid
+                key={`cod-slab-${index}`}
+                columns={{ base: 1, md: 2, xl: 5 }}
+                spacing={3}
+              >
+                <FormControl>
+                  <FormLabel>Order Value From</FormLabel>
+                  <Input
+                    type="number"
+                    value={slab.order_value_from ?? ''}
+                    onChange={(e) =>
+                      handleCodSlabChange(index, 'order_value_from', e.target.value)
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Order Value To</FormLabel>
+                  <Input
+                    type="number"
+                    placeholder="Open ended"
+                    value={slab.order_value_to ?? ''}
+                    onChange={(e) => handleCodSlabChange(index, 'order_value_to', e.target.value)}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Charge Type</FormLabel>
+                  <Select
+                    value={slab.charge_type || 'flat'}
+                    onChange={(e) => handleCodSlabChange(index, 'charge_type', e.target.value)}
+                  >
+                    <option value="flat">Flat Amount</option>
+                    <option value="percent">Percent</option>
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Charge Value</FormLabel>
+                  <Input
+                    type="number"
+                    value={slab.charge_value ?? ''}
+                    onChange={(e) => handleCodSlabChange(index, 'charge_value', e.target.value)}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>&nbsp;</FormLabel>
+                  <Button colorScheme="red" variant="outline" onClick={() => removeCodSlab(index)}>
+                    Remove
+                  </Button>
+                </FormControl>
+              </SimpleGrid>
+            ))}
+          </Stack>
+        </Box>
+      )}
 
       <Divider mb={4} />
 

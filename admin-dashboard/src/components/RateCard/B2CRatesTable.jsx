@@ -7,7 +7,6 @@ import { GenericTable } from 'views/Dashboard/Tables/components/GenericTable'
 const B2C_RATE_SUMMARY_TYPES = [
   { key: 'forward', label: 'F' },
   { key: 'rto', label: 'RTO' },
-  { key: 'reverse_pickup', label: 'RP' },
 ]
 
 export const B2CTable = ({ data, zones, onEdit, planId, loading }) => {
@@ -24,7 +23,7 @@ export const B2CTable = ({ data, zones, onEdit, planId, loading }) => {
     const zoneColumns =
       zones?.map((zone) => ({
         key: zone.code,
-        label: `${zone.name} (F | RTO | RP)`,
+        label: `${zone.code || zone.name} - ${zone.name} (F | RTO)`,
         width: '180px',
         renderer: (_, row) => {
           const rates = row.rates?.[zone.name] || {}
@@ -60,9 +59,26 @@ export const B2CTable = ({ data, zones, onEdit, planId, loading }) => {
     const postColumns = [
       {
         key: 'cod',
-        label: 'COD (Charges | %)',
+        label: 'COD Slabs',
         width: '200px',
-        renderer: (_, row) => `₹${row.cod_charges ?? '0'} | ${row.cod_percent ?? '0'}%`,
+        renderer: (_, row) => {
+          if (Array.isArray(row.cod_slabs) && row.cod_slabs.length) {
+            return row.cod_slabs
+              .map((slab) => {
+                const from = slab.order_value_from ?? 0
+                const to =
+                  slab.order_value_to === '' || slab.order_value_to === undefined
+                    ? 'open'
+                    : slab.order_value_to
+                const type = String(slab.charge_type || '').toLowerCase()
+                const value =
+                  type === 'percent' ? `${slab.charge_value}%` : `Rs ${slab.charge_value}`
+                return `${from}-${to}: ${value}`
+              })
+              .join(', ')
+          }
+          return `Rs ${row.cod_charges ?? '0'}, ${row.cod_percent ?? '0'}%`
+        },
       },
       {
         key: 'other',
