@@ -23,7 +23,7 @@ const staticRoutes = [
 
 for (const route of staticRoutes) {
   const response = await server.fetch(
-    new Request(`https://raghav-express-client.onrender.com${route.path}`),
+    new Request(`https://raghav-express.onrender.com${route.path}`),
   );
   if (!response.ok) {
     throw new Error(`${route.path} static render failed with HTTP ${response.status}`);

@@ -11,7 +11,7 @@ import {
   Truck,
 } from 'lucide-react';
 import { SiteFooter, SiteNav } from './site-chrome';
-const PORTAL_URL = 'https://raghav-express-client.onrender.com';
+const PORTAL_URL = '';
 const services = [
   {
     icon: PackageCheck,

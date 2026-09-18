@@ -699,9 +699,7 @@ export default function DashboardShell({ role }: { role: Role }) {
   const [clientProfile, setClientProfile] = useState<ClientProfile>({});
   useEffect(() => {
     if (window.location.hostname === "raghav-express-web.onrender.com") {
-      window.location.replace(
-        "https://raghav-express.onrender.com/?source=legacy-web",
-      );
+      window.location.replace("https://raghav-express.onrender.com/");
       return;
     }
     const currentEmail = localStorage.getItem("raghav-current-user-email");
