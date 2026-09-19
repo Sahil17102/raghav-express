@@ -17,8 +17,14 @@ for (const entry of await readdir(clientRoot, { withFileTypes: true })) {
 
 const staticRoutes = [
   { path: '/', file: 'index.html' },
+  { path: '/about', file: 'about/index.html' },
+  { path: '/admin', file: 'admin/index.html' },
   { path: '/login', file: 'login/index.html' },
   { path: '/client', file: 'client/index.html' },
+  { path: '/contact', file: 'contact/index.html' },
+  { path: '/rate-calculator', file: 'rate-calculator/index.html' },
+  { path: '/services', file: 'services/index.html' },
+  { path: '/tracking', file: 'tracking/index.html' },
 ];
 
 for (const route of staticRoutes) {
@@ -33,4 +39,6 @@ for (const route of staticRoutes) {
   await writeFile(destination, await response.text(), 'utf8');
 }
 
-console.log('Static routes generated: /, /login and /client');
+console.log(
+  `Static routes generated: ${staticRoutes.map((route) => route.path).join(', ')}`,
+);
