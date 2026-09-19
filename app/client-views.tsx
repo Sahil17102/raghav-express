@@ -59,6 +59,59 @@ const orders = [
     'NDR',
   ],
 ];
+
+type ClientOrderRecord = {
+  id: string;
+  awb: string;
+  type: 'B2C' | 'B2B';
+  payment: string;
+  customer: string;
+  phone: string;
+  route: string;
+  pickup: string;
+  delivery: string;
+  courier: string;
+  weight: number;
+  amount: number;
+  status: string;
+  invoiceNumber: string;
+  invoiceValue: number;
+  product: string;
+  createdAt: string;
+};
+
+const CLIENT_ORDERS_KEY = 'raghavClientRealOrders';
+
+const readClientOrders = () => {
+  if (typeof window === 'undefined') return [] as ClientOrderRecord[];
+  try {
+    const saved = JSON.parse(localStorage.getItem(CLIENT_ORDERS_KEY) || '[]');
+    return Array.isArray(saved) ? (saved as ClientOrderRecord[]) : [];
+  } catch {
+    return [] as ClientOrderRecord[];
+  }
+};
+
+const writeClientOrders = (items: ClientOrderRecord[]) => {
+  localStorage.setItem(CLIENT_ORDERS_KEY, JSON.stringify(items));
+  window.dispatchEvent(new Event('raghav-orders-updated'));
+};
+
+const upsertClientOrder = (order: ClientOrderRecord) => {
+  if (typeof window === 'undefined') return;
+  const existing = readClientOrders();
+  writeClientOrders([order, ...existing.filter((item) => item.id !== order.id)]);
+};
+
+const downloadTextFile = (filename: string, content: string, type = 'text/plain') => {
+  const href = URL.createObjectURL(new Blob([content], { type }));
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(href);
+};
+
 export function ClientHome({ go }: { go: (n: string) => void }) {
   const kpis = [
     ['Orders Today', '0', Boxes, 'blue'],
@@ -176,6 +229,360 @@ export function ClientHome({ go }: { go: (n: string) => void }) {
   );
 }
 export function OrdersManager({
+  go,
+  mode = 'All Orders',
+}: {
+  go: (n: string) => void;
+  mode?: 'All Orders' | 'B2C Orders' | 'B2B Orders';
+}) {
+  const [query, setQuery] = useState('');
+  const [status, setStatus] = useState('All');
+  const [filters, setFilters] = useState(false);
+  const [selected, setSelected] = useState<ClientOrderRecord | null>(null);
+  const [actionFor, setActionFor] = useState<string | null>(null);
+  const [realOrders, setRealOrders] = useState<ClientOrderRecord[]>(() => readClientOrders());
+  const [orderType, setOrderType] = useState(
+    mode === 'B2C Orders' ? 'B2C' : mode === 'B2B Orders' ? 'B2B' : 'All',
+  );
+  const [payment, setPayment] = useState('All payments');
+  const [courier, setCourier] = useState('All couriers');
+
+  useEffect(() => {
+    const sync = () => setRealOrders(readClientOrders());
+    sync();
+    window.addEventListener('storage', sync);
+    window.addEventListener('raghav-orders-updated', sync);
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('raghav-orders-updated', sync);
+    };
+  }, []);
+
+  const visibleBase = useMemo(
+    () =>
+      realOrders.filter(
+        (order) => orderType === 'All' || order.type === orderType,
+      ),
+    [realOrders, orderType],
+  );
+  const filtered = useMemo(
+    () =>
+      visibleBase.filter(
+        (order) =>
+          [
+            order.id,
+            order.awb,
+            order.customer,
+            order.route,
+            order.courier,
+            order.invoiceNumber,
+            order.product,
+          ]
+            .join(' ')
+            .toLowerCase()
+            .includes(query.toLowerCase()) &&
+          (status === 'All' || order.status.toLowerCase() === status.toLowerCase()) &&
+          (payment === 'All payments' || order.payment === payment) &&
+          (courier === 'All couriers' || order.courier === courier),
+      ),
+    [visibleBase, query, status, payment, courier],
+  );
+
+  const updateOrder = (id: string, updates: Partial<ClientOrderRecord>) => {
+    const next = realOrders.map((order) =>
+      order.id === id ? { ...order, ...updates } : order,
+    );
+    setRealOrders(next);
+    writeClientOrders(next);
+  };
+
+  const orderDocument = (order: ClientOrderRecord, title: string) =>
+    [
+      `Raghav Express - ${title}`,
+      `Order: ${order.id}`,
+      `AWB: ${order.awb || 'Pending'}`,
+      `Type: ${order.type}`,
+      `Courier: ${order.courier}`,
+      `Customer: ${order.customer}`,
+      `Phone: ${order.phone}`,
+      `Route: ${order.route}`,
+      `Weight: ${order.weight.toFixed(2)} kg`,
+      `Amount: ${formatMoney(order.amount)}`,
+      `Invoice: ${order.invoiceNumber}`,
+      `Invoice Value: ${formatMoney(order.invoiceValue)}`,
+      `Product: ${order.product}`,
+      `Status: ${order.status}`,
+      `Created: ${new Date(order.createdAt).toLocaleString('en-IN')}`,
+    ].join('\n');
+
+  const exportCsv = () => {
+    const csv = [
+      'LRN,AWB,Type,Customer,Route,Courier,Weight,Amount,Status,Invoice',
+      ...filtered.map((order) =>
+        [
+          order.id,
+          order.awb,
+          order.type,
+          order.customer,
+          order.route,
+          order.courier,
+          order.weight.toFixed(2),
+          order.amount,
+          order.status,
+          order.invoiceNumber,
+        ].join(','),
+      ),
+    ].join('\n');
+    downloadTextFile(`raghav-${orderType.toLowerCase()}-orders.csv`, csv, 'text/csv');
+  };
+
+  const statusOptions = [
+    'All',
+    'Pickups & Manifests',
+    'In transit',
+    'Out for delivery',
+    'Delivered',
+    'RTO Intransit',
+    'RTO Delivered',
+    'Undelivered',
+    'Cancelled',
+    'NDR',
+  ];
+  const couriers = Array.from(new Set(realOrders.map((order) => order.courier))).filter(Boolean);
+
+  return (
+    <>
+      <section className="orders-head">
+        <div>
+          <span>ORDER MANAGEMENT</span>
+          <h1>{orderType === 'All' ? 'All Orders' : `${orderType} Orders`}</h1>
+          <p>Only real shipments created from this client panel are shown here.</p>
+        </div>
+        <div>
+          <button onClick={() => setFilters(!filters)}>
+            <SlidersHorizontal />
+            Filters
+          </button>
+          <button onClick={exportCsv}>
+            <Download />
+            Export CSV
+          </button>
+          <button className="primary" onClick={() => go('Create Order')}>
+            <Plus />
+            Create Order
+          </button>
+        </div>
+      </section>
+      <section className="order-type-tabs" aria-label="Order type">
+        {['All', 'B2C', 'B2B'].map((type) => (
+          <button
+            key={type}
+            className={orderType === type ? 'active' : ''}
+            onClick={() => setOrderType(type)}
+          >
+            {type === 'All' ? 'All Orders' : `${type} Orders`}
+            <span>{realOrders.filter((x) => type === 'All' || x.type === type).length}</span>
+          </button>
+        ))}
+      </section>
+      {filters && (
+        <section className="order-filters">
+          <label>
+            <Search />
+            Search
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="LRN, AWB, customer, courier"
+            />
+          </label>
+          <label>
+            Payment mode
+            <select value={payment} onChange={(e) => setPayment(e.target.value)}>
+              <option>All payments</option>
+              <option>Prepaid</option>
+              <option>COD</option>
+            </select>
+          </label>
+          <label>
+            Courier
+            <select value={courier} onChange={(e) => setCourier(e.target.value)}>
+              <option>All couriers</option>
+              {couriers.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              setQuery('');
+              setStatus('All');
+              setPayment('All payments');
+              setCourier('All couriers');
+            }}
+          >
+            Clear filters
+          </button>
+        </section>
+      )}
+      <section className="status-tabs">
+        {statusOptions.map((item) => (
+          <button
+            className={status === item ? 'active' : ''}
+            onClick={() => setStatus(item)}
+            key={item}
+          >
+            {item}
+            <span>
+              {item === 'All'
+                ? visibleBase.length
+                : visibleBase.filter((order) => order.status.toLowerCase() === item.toLowerCase()).length}
+            </span>
+          </button>
+        ))}
+      </section>
+      <article className="clone-card order-management">
+        <header>
+          <div>
+            <h2>{orderType === 'All' ? 'All Orders' : `${orderType} Orders`}</h2>
+            <p>{filtered.length} real orders</p>
+          </div>
+          <label className="table-search">
+            <Search />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search orders" />
+          </label>
+        </header>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>LRN / AWB</th>
+                <th>TYPE</th>
+                <th>CUSTOMER</th>
+                <th>ROUTE</th>
+                <th>COURIER</th>
+                <th>WEIGHT</th>
+                <th>AMOUNT</th>
+                <th>STATUS</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!filtered.length && (
+                <tr>
+                  <td colSpan={9}>
+                    <div className="empty-orders">
+                      <b>No real shipments yet</b>
+                      <span>Create a shipment and it will appear here.</span>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              {filtered.map((order) => (
+                <tr key={order.id}>
+                  <td>
+                    <b>{order.id}</b>
+                    <small>{order.awb || 'AWB pending'}</small>
+                  </td>
+                  <td>
+                    <b>{order.type}</b>
+                    <small>{order.payment}</small>
+                  </td>
+                  <td>{order.customer}</td>
+                  <td>{order.route}</td>
+                  <td>{order.courier}</td>
+                  <td>{order.weight.toFixed(2)} kg</td>
+                  <td>{formatMoney(order.amount)}</td>
+                  <td>
+                    <span className="order-status">{order.status}</span>
+                  </td>
+                  <td>
+                    <div className="order-actions">
+                      <button className="info-button" onClick={() => setSelected(order)}>
+                        <Eye />
+                        Info
+                      </button>
+                      <button className="dots-button" onClick={() => setActionFor(actionFor === order.id ? null : order.id)}>
+                        ...
+                      </button>
+                      {actionFor === order.id && (
+                        <div className="order-action-menu">
+                          <button onClick={() => downloadTextFile(`${order.id}-label.txt`, orderDocument(order, 'Shipping Label'))}>Download label</button>
+                          <button onClick={() => downloadTextFile(`${order.id}-manifest.txt`, orderDocument(order, 'Manifest'))}>Download manifest</button>
+                          <button onClick={() => downloadTextFile(`${order.id}-invoice.txt`, orderDocument(order, 'Invoice'))}>Download invoice</button>
+                          <button onClick={() => updateOrder(order.id, { status: 'Cancelled' })}>Cancel shipment</button>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <footer>
+          <span>Rows per page: <b>10</b></span>
+          <span>{filtered.length ? `1-${filtered.length}` : '0'} of {filtered.length}</span>
+        </footer>
+      </article>
+      {selected && (
+        <div className="clone-modal" onClick={() => setSelected(null)}>
+          <section className="order-detail" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setSelected(null)}>
+              <X />
+            </button>
+            <span className="detail-label">COMPLETE ORDER INFORMATION</span>
+            <h2>{selected.id}</h2>
+            <div className="detail-grid">
+              {[
+                ['AWB', selected.awb || 'Pending'],
+                ['Customer', selected.customer],
+                ['Phone', selected.phone],
+                ['Order Type', selected.type],
+                ['Payment', selected.payment],
+                ['Route', selected.route],
+                ['Pickup', selected.pickup],
+                ['Delivery', selected.delivery],
+                ['Courier', selected.courier],
+                ['Charged Weight', `${selected.weight.toFixed(2)} kg`],
+                ['Amount', formatMoney(selected.amount)],
+                ['Invoice', selected.invoiceNumber],
+                ['Invoice Value', formatMoney(selected.invoiceValue)],
+                ['Product', selected.product],
+                ['Status', selected.status],
+              ].map(([a, b]) => (
+                <div key={a}>
+                  <small>{a}</small>
+                  <b>{b}</b>
+                </div>
+              ))}
+            </div>
+            <div className="detail-route">
+              <MapPin />
+              <span>Booked</span>
+              <i />
+              <Truck />
+              <span>{selected.status}</span>
+              <i />
+              <PackageCheck />
+              <span>Delivery</span>
+            </div>
+            <div className="detail-actions">
+              <button onClick={() => downloadTextFile(`${selected.id}-label.txt`, orderDocument(selected, 'Shipping Label'))}>Download label</button>
+              <button onClick={() => downloadTextFile(`${selected.id}-manifest.txt`, orderDocument(selected, 'Manifest'))}>Manifest</button>
+              <button onClick={() => downloadTextFile(`${selected.id}-invoice.txt`, orderDocument(selected, 'Invoice'))}>Invoice</button>
+              <button onClick={() => updateOrder(selected.id, { status: 'Cancelled' })}>Cancel shipment</button>
+            </div>
+            <button className="save-button" onClick={() => setSelected(null)}>Close details</button>
+          </section>
+        </div>
+      )}
+    </>
+  );
+}
+
+function LegacyOrdersManager({
   go,
   mode = 'All Orders',
 }: {
@@ -902,6 +1309,31 @@ function CreateOrderClone() {
     }
     const paymentMode = String(form.get('paymentMode') || 'Prepaid');
     const totalAmount = Number(form.get('invoiceValue') || 0);
+    const selectedQuote =
+      courierQuotes.find((quote) => quote.name === courier) || courierQuotes[0];
+    const saveCreatedOrder = (awb: string, courierName: string) => {
+      upsertClientOrder({
+        id: orderId,
+        awb,
+        type: kind,
+        payment: paymentMode,
+        customer: String(
+          form.get('companyName') || form.get('recipientName') || 'Customer',
+        ),
+        phone: String(form.get('recipientPhone') || ''),
+        route: `${selectedPickup.city} → ${String(form.get('recipientCity') || '')}`,
+        pickup: `${selectedPickup.name}, ${selectedPickup.city} ${selectedPickup.pin}`,
+        delivery: `${String(form.get('recipientAddress') || '')}, ${String(form.get('recipientCity') || '')} ${String(form.get('recipientPin') || '')}`,
+        courier: courierName,
+        weight: chargeable,
+        amount: Math.round(Number(selectedQuote?.total || totalAmount || 0)),
+        status: 'Pickups & Manifests',
+        invoiceNumber: String(form.get('invoiceNumber') || ''),
+        invoiceValue: totalAmount,
+        product: String(form.get('productName') || 'Goods'),
+        createdAt: new Date().toISOString(),
+      });
+    };
     if (kind === 'B2B') {
       const toCentimeters = (value: number) =>
         unit === 'CM' ? value : value * 2.54;
@@ -1008,6 +1440,7 @@ function CreateOrderClone() {
             ? `B2B shipment submitted. Job ID: ${jobId}`
             : 'B2B shipment submitted successfully.',
         );
+        saveCreatedOrder(jobId || orderId, 'Delhivery B2B LTL');
         regenerate();
       } catch (error) {
         window.alert(
@@ -1067,6 +1500,7 @@ function CreateOrderClone() {
         };
         if (!response.ok || !result.success)
           throw new Error(result.message || 'India Post booking failed');
+        saveCreatedOrder(String(form.get('indiaPostBarcode') || orderId), 'India Post');
         window.alert(
           `India Post shipment created successfully. Barcode: ${String(form.get('indiaPostBarcode'))}`,
         );
@@ -1129,6 +1563,7 @@ function CreateOrderClone() {
           ? `Shipment created successfully. AWB: ${waybill}`
           : 'Shipment created successfully.',
       );
+      saveCreatedOrder(waybill || orderId, 'Delhivery');
       regenerate();
     } catch (error) {
       window.alert(
