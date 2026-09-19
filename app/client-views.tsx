@@ -1749,9 +1749,9 @@ function CreateOrderClone() {
               </div>
               {courier === 'India Post' && (
                 <div className="india-post-allocation fastship-grid three-col">
-                  <label>CONTRACT ID *<input name="indiaPostContractId" required /><small>India Post allotted contract ID</small></label>
-                  <label>ARTICLE BARCODE *<input name="indiaPostBarcode" required pattern="[A-Za-z]{2}[0-9]{9}[A-Za-z]{2}" placeholder="EX123456789IN" /><small>Unused barcode from allotted API range</small></label>
-                  <label>DROPOFF OFFICE ID *<input name="indiaPostOfficeId" required type="number" min="1" /><small>Numeric India Post office ID</small></label>
+                  <label>CONTRACT ID (OPTIONAL)<input name="indiaPostContractId" /><small>Uses configured India Post contract when blank</small></label>
+                  <label>ARTICLE BARCODE *<input name="indiaPostBarcode" required pattern="[A-Za-z]{2}[0-9]{9}[A-Za-z]{2}" placeholder="EX123456789IN" /><small>Required real unused barcode from allotted API range</small></label>
+                  <label>DROPOFF OFFICE ID (OPTIONAL)<input name="indiaPostOfficeId" type="number" min="1" /><small>Uses configured India Post office when blank</small></label>
                 </div>
               )}
             </div>

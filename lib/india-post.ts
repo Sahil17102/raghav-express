@@ -37,6 +37,7 @@ const settings = () => ({
   password: process.env.INDIA_POST_PASSWORD?.trim(),
   customerId: process.env.INDIA_POST_CUSTOMER_ID?.trim(),
   contractId: process.env.INDIA_POST_CONTRACT_ID?.trim(),
+  dropoffOfficeId: process.env.INDIA_POST_DROPOFF_OFFICE_ID?.trim(),
   senderName: process.env.INDIA_POST_SENDER_NAME?.trim(),
   senderCompany: process.env.INDIA_POST_SENDER_COMPANY?.trim(),
   senderAddress: process.env.INDIA_POST_SENDER_ADDRESS?.trim(),
@@ -240,6 +241,12 @@ export async function handleIndiaPost(request: Request, segments: string[]) {
         barcode_no: required(
           article.barcode_no,
           `articles[${index}].barcode_no`,
+        ),
+        pickup_dropoff_office_id: Number(
+          required(
+            article.pickup_dropoff_office_id || config.dropoffOfficeId,
+            `articles[${index}].pickup_dropoff_office_id`,
+          ),
         ),
         sender_name: required(
           article.sender_name || config.senderName,
