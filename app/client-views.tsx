@@ -699,6 +699,51 @@ const defaultPickupAddresses = [
     { id: 'jodhpur', name: 'Jodhpur Dispatch Hub', address: 'Basni Industrial Area', city: 'Jodhpur', state: 'Rajasthan', pin: '342005', contact: '9660423241' },
   ];
 
+const b2cZoneRates = {
+  'Within City': [29, 34, 45, 82, 145, 260],
+  'Within State': [34, 39, 54, 94, 168, 305],
+  'Metro to Metro': [42, 49, 68, 118, 218, 390],
+  'Rest of India': [48, 56, 78, 138, 252, 455],
+  Kashmir: [62, 74, 105, 190, 355, 640],
+};
+
+const b2cSlabs = [
+  { from: 0, to: 0.5 },
+  { from: 0.5, to: 1 },
+  { from: 1, to: 2 },
+  { from: 2, to: 5 },
+  { from: 5, to: 10 },
+  { from: 10, to: 20 },
+];
+
+const metroPrefixes = ['110', '400', '560', '600', '700', '500', '302'];
+
+const formatMoney = (value: number) =>
+  `₹${Math.round(value).toLocaleString('en-IN')}`;
+
+const getB2CZoneName = (pickupPin = '', deliveryPin = '') => {
+  const from = pickupPin.replace(/\D/g, '');
+  const to = deliveryPin.replace(/\D/g, '');
+  if (from && to && from.slice(0, 3) === to.slice(0, 3)) return 'Within City';
+  if (from.slice(0, 2) === to.slice(0, 2)) return 'Within State';
+  if (metroPrefixes.includes(from.slice(0, 3)) && metroPrefixes.includes(to.slice(0, 3))) {
+    return 'Metro to Metro';
+  }
+  if (['18', '19'].includes(to.slice(0, 2))) return 'Kashmir';
+  return 'Rest of India';
+};
+
+const getB2BRatePerKg = (pickupPin = '', deliveryPin = '') => {
+  const from = Number(pickupPin.replace(/\D/g, '').slice(0, 2) || 0);
+  const to = Number(deliveryPin.replace(/\D/g, '').slice(0, 2) || 0);
+  if (!from || !to) return 28;
+  const distance = Math.min(15, Math.abs(from - to));
+  return distance <= 1 ? 18 : 22 + distance;
+};
+
+const buildChargeRows = (rows: Array<{ label: string; value: number }>) =>
+  rows.filter((row) => Number(row.value) > 0);
+
 function CreateOrderClone() {
   const [pickupAddresses, setPickupAddresses] = useState(() => {
     if (typeof window === 'undefined') return defaultPickupAddresses;
@@ -739,6 +784,99 @@ function CreateOrderClone() {
   const volumetric = (length * breadth * height) / divisor;
   const chargeable = Math.max(weight, volumetric, kind === 'B2C' ? 0.5 : 0);
   const dimension = unit === 'CM' ? 'cm' : 'inch';
+  const courierQuotes = useMemo(() => {
+    const paymentMode = draft.paymentMode || 'Prepaid';
+    const deliveryPin = draft.recipientPin || '';
+    const b2cZone = getB2CZoneName(selectedPickup.pin, deliveryPin);
+    const b2cSlabIndex = Math.max(
+      0,
+      b2cSlabs.findIndex((slab) => chargeable <= slab.to),
+    );
+    const safeSlabIndex = b2cSlabIndex >= 0 ? b2cSlabIndex : b2cSlabs.length - 1;
+    const b2bBillableWeight = Math.max(chargeable, 20);
+    const b2bRatePerKg = getB2BRatePerKg(selectedPickup.pin, deliveryPin);
+
+    const quoteForB2C = (
+      name: 'India Post' | 'Delhivery',
+      options: {
+        description: string;
+        multiplier: number;
+        codFlat: number;
+        codPercent: number;
+        fuelPercent?: number;
+        handling?: number;
+        eta: string;
+      },
+    ) => {
+      const baseRates = b2cZoneRates[b2cZone as keyof typeof b2cZoneRates] || b2cZoneRates['Rest of India'];
+      const slab = b2cSlabs[safeSlabIndex];
+      const freight = Math.round(baseRates[safeSlabIndex] * options.multiplier);
+      const cod =
+        paymentMode === 'COD'
+          ? Math.max(options.codFlat, (invoiceValue * options.codPercent) / 100)
+          : 0;
+      const fuel = options.fuelPercent ? freight * options.fuelPercent : 0;
+      const handling = options.handling || 0;
+      const charges = buildChargeRows([
+        { label: 'Freight', value: freight },
+        { label: 'COD charges', value: cod },
+        { label: 'Fuel surcharge', value: fuel },
+        { label: 'Handling charges', value: handling },
+      ]);
+      const total = charges.reduce((sum, row) => sum + row.value, 0);
+      return {
+        name,
+        description: options.description,
+        billableWeight: chargeable,
+        zone: b2cZone,
+        slab: `${slab.from}-${slab.to} kg`,
+        eta: options.eta,
+        total,
+        charges,
+      };
+    };
+
+    if (kind === 'B2B') {
+      const freight = b2bBillableWeight * b2bRatePerKg;
+      const fuel = freight * 0.08;
+      const charges = buildChargeRows([
+        { label: 'Freight', value: freight },
+        { label: 'Fuel surcharge', value: fuel },
+        { label: 'Pickup handling', value: 120 },
+      ]);
+      return [
+        {
+          name: 'Delhivery' as const,
+          description: 'B2B LTL cargo · Pan India delivery',
+          billableWeight: b2bBillableWeight,
+          zone: `Matrix @ ${formatMoney(b2bRatePerKg)}/kg`,
+          slab: 'Minimum 20 kg',
+          eta: '3-7 days',
+          total: charges.reduce((sum, row) => sum + row.value, 0),
+          charges,
+        },
+      ];
+    }
+
+    return [
+      quoteForB2C('India Post', {
+        description: 'Speed Post · India-wide delivery',
+        multiplier: 1.08,
+        codFlat: 30,
+        codPercent: 1.5,
+        handling: 12,
+        eta: '2-5 days',
+      }),
+      quoteForB2C('Delhivery', {
+        description: 'Surface · Pan India delivery',
+        multiplier: 1,
+        codFlat: 38,
+        codPercent: 1.8,
+        fuelPercent: 0.06,
+        eta: '3-6 days',
+      }),
+    ].sort((a, b) => a.total - b.total);
+  }, [chargeable, draft.paymentMode, draft.recipientPin, invoiceValue, kind, selectedPickup.pin]);
   const regenerate = () =>
     setOrderId(`ORD-${Math.floor(10000000 + Math.random() * 90000000)}`);
   const bookShipment = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -1584,14 +1722,30 @@ function CreateOrderClone() {
                 <em>2 options</em>
               </div>
               <div className="courier-choice-list">
-                {(kind === 'B2B' ? (['Delhivery'] as const) : (['India Post', 'Delhivery'] as const)).map((name) => (
-                  <button type="button" className={courier === name ? 'selected' : ''} onClick={() => setCourier(name)} key={name}>
-                    <span className="courier-mark">{name === 'India Post' ? 'IP' : 'D'}</span>
+                {courierQuotes.map((quote) => {
+                  const name = quote.name;
+                  return (
+                  <button type="button" className={courier === quote.name ? 'selected' : ''} onClick={() => setCourier(quote.name)} key={quote.name}>
+                    <span className="courier-mark">{quote.name === 'India Post' ? 'IP' : 'D'}</span>
                     <span><b>{name}</b><small>{name === 'India Post' ? 'Speed Post · India-wide delivery' : 'Surface · Pan India delivery'}</small></span>
                     <span><small>Chargeable</small><b>{chargeable.toFixed(2)} kg</b></span>
+                    <span className="courier-price">
+                      <small>Payable Amount</small>
+                      <b>{formatMoney(quote.total)}</b>
+                      <em>{quote.zone} · {quote.slab} · ETA {quote.eta}</em>
+                    </span>
+                    <span className="courier-breakdown">
+                      {quote.charges.map((row) => (
+                        <em key={row.label}>
+                          {row.label}
+                          <b>{formatMoney(row.value)}</b>
+                        </em>
+                      ))}
+                    </span>
                     <strong>{courier === name ? 'Selected' : 'Select'}</strong>
                   </button>
-                ))}
+                  );
+                })}
               </div>
               {courier === 'India Post' && (
                 <div className="india-post-allocation fastship-grid three-col">
