@@ -103,6 +103,7 @@ const B2B_RATE_SEED_VERSION_KEY = 'raghavAdminB2BPricingRateSeedVersion'
 const B2B_CHARGES_STORAGE_KEY = 'raghavAdminB2BAdditionalCharges'
 const ACTIVE_SERVICE_PROVIDERS = ['delhivery', 'india_post']
 const B2C_RATE_SEED_VERSION = 'raghav-b2c-six-slabs-2026-09-19'
+const B2B_RATE_SEED_VERSION = 'raghav-b2b-full-matrix-2026-09-19'
 
 const DEFAULT_LOCATIONS = pincodeSeed.locations.map(([pincode, city, state, tags], index) => ({
   id: index + 1,
@@ -491,11 +492,11 @@ const readB2BPincodes = () => {
 const readB2BRates = () => {
   const saved = readLocalData(B2B_RATE_STORAGE_KEY, null)
   const savedVersion = localStorage.getItem(B2B_RATE_SEED_VERSION_KEY)
-  if (savedVersion !== 'fastship-clone-2026-09-18' || !Array.isArray(saved) || saved.length < DEFAULT_B2B_RATES.length) {
+  if (savedVersion !== B2B_RATE_SEED_VERSION || !Array.isArray(saved) || saved.length < DEFAULT_B2B_RATES.length) {
     const customById = new Map((Array.isArray(saved) ? saved : []).map((item) => [String(item.id), item]))
     const upgraded = DEFAULT_B2B_RATES.map((item) => ({ ...item, ...(customById.get(String(item.id)) || {}) }))
     writeLocalData(B2B_RATE_STORAGE_KEY, upgraded)
-    localStorage.setItem(B2B_RATE_SEED_VERSION_KEY, 'fastship-clone-2026-09-18')
+    localStorage.setItem(B2B_RATE_SEED_VERSION_KEY, B2B_RATE_SEED_VERSION)
     return upgraded
   }
   return saved
@@ -645,7 +646,13 @@ const localAdapter = async (config) => {
   if (url === '/admin/b2b/zone-rates' && method === 'get') {
     const params = config.params || {}
     let rows = b2bRates
-    if (params.plan_id) rows = rows.filter((row) => String(row.plan_id || 'basic') === String(params.plan_id))
+    if (params.plan_id) {
+      const matchingPlanRows = rows.filter((row) => String(row.plan_id || 'basic') === String(params.plan_id))
+      rows = (matchingPlanRows.length ? matchingPlanRows : DEFAULT_B2B_RATES).map((row) => ({
+        ...row,
+        plan_id: params.plan_id,
+      }))
+    }
     if (params.courier_id) rows = rows.filter((row) => !row.courier_id || String(row.courier_id) === String(params.courier_id))
     if (params.service_provider) rows = rows.filter((row) => !row.service_provider || String(row.service_provider) === String(params.service_provider))
     return createLocalResponse(config, { success: true, data: rows })
