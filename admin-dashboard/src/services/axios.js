@@ -102,6 +102,7 @@ const B2B_RATE_STORAGE_KEY = 'raghavAdminB2BPricingRates'
 const B2B_RATE_SEED_VERSION_KEY = 'raghavAdminB2BPricingRateSeedVersion'
 const B2B_CHARGES_STORAGE_KEY = 'raghavAdminB2BAdditionalCharges'
 const ACTIVE_SERVICE_PROVIDERS = ['delhivery', 'india_post']
+const B2C_RATE_SEED_VERSION = 'raghav-b2c-six-slabs-2026-09-19'
 
 const DEFAULT_LOCATIONS = pincodeSeed.locations.map(([pincode, city, state, tags], index) => ({
   id: index + 1,
@@ -141,33 +142,50 @@ const DEFAULT_B2C_ZONES = [
   created_at: '2026-09-09T00:31:00+05:30',
 }))
 
-const zoneSlabsForAllZones = (forwardRate, extraRate, weightTo = 0.5, rtoRate = '') =>
-  Object.fromEntries(DEFAULT_B2C_ZONES.map((zone) => [
-    zone.name,
-    {
-      forward: [
-        {
-          weight_from: 0,
-          weight_to: weightTo,
-          rate: forwardRate,
-          extra_rate: extraRate,
-          extra_weight_unit: weightTo,
-        },
-      ],
-      rto: rtoRate
-        ? [
-            {
-              weight_from: 0,
-              weight_to: weightTo,
-              rate: rtoRate,
-              extra_rate: extraRate,
-              extra_weight_unit: weightTo,
-            },
-          ]
-        : [],
-      reverse_pickup: [],
-    },
-  ]))
+const B2C_SLABS = [
+  { weight_from: 0, weight_to: 0.5, extra_weight_unit: 0.5 },
+  { weight_from: 0.5, weight_to: 1, extra_weight_unit: 0.5 },
+  { weight_from: 1, weight_to: 2, extra_weight_unit: 1 },
+  { weight_from: 2, weight_to: 5, extra_weight_unit: 1 },
+  { weight_from: 5, weight_to: 10, extra_weight_unit: 1 },
+  { weight_from: 10, weight_to: 20, extra_weight_unit: 1 },
+]
+
+const B2C_ZONE_BASE_RATES = {
+  'Within City': [29, 34, 45, 82, 145, 260],
+  'Within State': [34, 39, 54, 94, 168, 305],
+  'Within Region': [39, 46, 64, 112, 205, 365],
+  'Metro to Metro': [42, 49, 68, 118, 218, 390],
+  'Rest of India': [48, 56, 78, 138, 252, 455],
+  Kashmir: [62, 74, 105, 190, 355, 640],
+}
+
+const zoneSlabsForAllZones = (multiplier = 1) =>
+  Object.fromEntries(DEFAULT_B2C_ZONES.map((zone) => {
+    const baseRates = B2C_ZONE_BASE_RATES[zone.name] || B2C_ZONE_BASE_RATES['Rest of India']
+    return [
+      zone.name,
+      {
+        forward: B2C_SLABS.map((slab, index) => {
+          const rate = Math.round(baseRates[index] * multiplier)
+          return {
+            ...slab,
+            rate,
+            extra_rate: Math.max(18, Math.round(rate * 0.72)),
+          }
+        }),
+        rto: B2C_SLABS.map((slab, index) => {
+          const rate = Math.round(baseRates[index] * multiplier * 0.92)
+          return {
+            ...slab,
+            rate,
+            extra_rate: Math.max(16, Math.round(rate * 0.7)),
+          }
+        }),
+        reverse_pickup: [],
+      },
+    ]
+  }))
 
 const DEFAULT_B2C_RATES = [
   {
@@ -186,7 +204,7 @@ const DEFAULT_B2C_RATES = [
       { order_value_from: 2000, order_value_to: '', charge_type: 'percent', charge_value: 1.7 },
     ],
     other_charges: 0,
-    zone_slabs: zoneSlabsForAllZones(34, 31, 0.5),
+    zone_slabs: zoneSlabsForAllZones(1.12),
   },
   {
     id: 'delhivery-surface-basic',
@@ -204,7 +222,7 @@ const DEFAULT_B2C_RATES = [
       { order_value_from: 2000, order_value_to: '', charge_type: 'percent', charge_value: 1.8 },
     ],
     other_charges: 0,
-    zone_slabs: zoneSlabsForAllZones(30, 28, 0.5),
+    zone_slabs: zoneSlabsForAllZones(1),
   },
   {
     id: 'india-post-speed-basic',
@@ -222,7 +240,7 @@ const DEFAULT_B2C_RATES = [
       { order_value_from: 2000, order_value_to: '', charge_type: 'percent', charge_value: 1.5 },
     ],
     other_charges: 0,
-    zone_slabs: zoneSlabsForAllZones(35, 32, 0.5),
+    zone_slabs: zoneSlabsForAllZones(1.08),
   },
   {
     id: 'india-post-parcel-basic',
@@ -240,7 +258,7 @@ const DEFAULT_B2C_RATES = [
       { order_value_from: 2000, order_value_to: '', charge_type: 'percent', charge_value: 1.5 },
     ],
     other_charges: 0,
-    zone_slabs: zoneSlabsForAllZones(45, 35, 2),
+    zone_slabs: zoneSlabsForAllZones(0.92),
   },
 ]
 
@@ -436,11 +454,11 @@ const readB2CZones = () => {
 const readB2CRates = () => {
   const saved = readLocalData(RATE_STORAGE_KEY, null)
   const savedVersion = localStorage.getItem(RATE_SEED_VERSION_KEY)
-  if (savedVersion !== 'fastship-clone-2026-09-18' || !Array.isArray(saved) || saved.length < DEFAULT_B2C_RATES.length) {
+  if (savedVersion !== B2C_RATE_SEED_VERSION || !Array.isArray(saved) || saved.length < DEFAULT_B2C_RATES.length) {
     const customById = new Map((Array.isArray(saved) ? saved : []).map((item) => [String(item.id || `${item.courier_id}-${item.mode}`), item]))
     const upgraded = DEFAULT_B2C_RATES.map((item) => ({ ...item, ...(customById.get(String(item.id)) || {}) }))
     writeLocalData(RATE_STORAGE_KEY, upgraded)
-    localStorage.setItem(RATE_SEED_VERSION_KEY, 'fastship-clone-2026-09-18')
+    localStorage.setItem(RATE_SEED_VERSION_KEY, B2C_RATE_SEED_VERSION)
     return upgraded
   }
   return saved
@@ -704,7 +722,13 @@ const localAdapter = async (config) => {
     const params = config.params || {}
     let rows = b2cRates
     if (String(params.businessType || '').toLowerCase() === 'b2b') rows = []
-    if (params.planId) rows = rows.filter((row) => String(row.plan_id || 'basic') === String(params.planId))
+    if (params.planId) {
+      const matchingPlanRows = rows.filter((row) => String(row.plan_id || 'basic') === String(params.planId))
+      rows = (matchingPlanRows.length ? matchingPlanRows : DEFAULT_B2C_RATES).map((row) => ({
+        ...row,
+        plan_id: params.planId,
+      }))
+    }
     if (params.mode) rows = rows.filter((row) => String(row.mode || '').toLowerCase() === String(params.mode).toLowerCase())
     if (params.courier_name) {
       const selected = Array.isArray(params.courier_name) ? params.courier_name : [params.courier_name]
