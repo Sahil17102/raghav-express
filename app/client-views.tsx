@@ -678,6 +678,12 @@ const moduleConfig: Record<
 
 async function readBookingResponse(response: Response) {
   const raw = await response.text();
+  if (!raw && response.ok)
+    return {
+      success: true,
+      message: `Booking request accepted with HTTP ${response.status}`,
+      data: {},
+    };
   if (!raw)
     return {
       success: false,
