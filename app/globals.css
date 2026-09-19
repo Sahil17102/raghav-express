@@ -8939,3 +8939,298 @@ body {
     height: 61px;
   }
 }
+
+/* Client workspace density pass: closer to the public landing font scale. */
+.clone-app {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+.clone-sidebar {
+  width: 280px;
+}
+.clone-main {
+  margin-left: 280px;
+  width: calc(100% - 280px);
+}
+.clone-brand {
+  height: 122px;
+  padding: 10px 22px;
+}
+.clone-brand img {
+  width: 98px;
+  height: 98px;
+}
+.clone-nav-scroll {
+  padding: 8px 10px;
+}
+.clone-nav-scroll section {
+  margin-bottom: 9px;
+}
+.clone-nav-scroll h3 {
+  margin: 7px 12px 4px;
+  font-size: 10px;
+}
+.clone-nav-scroll button,
+.sidebar-bottom > button {
+  min-height: 39px;
+  gap: 9px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.nav-icon {
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+}
+.nav-icon svg {
+  width: 18px;
+}
+.subnav {
+  margin-left: 39px;
+}
+.subnav button {
+  min-height: 31px;
+  font-size: 12px;
+}
+.merchant {
+  margin-top: 6px;
+  padding: 9px;
+  border-radius: 13px;
+}
+.merchant > span,
+.avatar {
+  width: 34px;
+  height: 34px;
+}
+.clone-topbar {
+  height: 70px;
+  gap: 13px;
+  padding: 0 16px;
+}
+.clone-topbar > b {
+  font-size: 18px;
+}
+.global-search {
+  height: 48px;
+  max-width: 560px;
+}
+.global-search select {
+  padding: 0 13px;
+}
+.global-search input {
+  font-size: 13px;
+  padding: 0 13px;
+}
+.global-search button {
+  padding: 0 17px;
+}
+.top-tools {
+  gap: 7px;
+}
+.top-tools button {
+  height: 40px;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+.top-tools button svg {
+  width: 16px;
+}
+.clone-content {
+  padding: 22px 2.5%;
+}
+.home-welcome,
+.orders-head {
+  padding: 21px 24px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+}
+.home-welcome h1,
+.orders-head h1 {
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+.orders-head > div:last-child > button,
+.orders-head .primary {
+  height: 39px;
+  padding: 0 12px;
+  font-size: 11px;
+}
+.order-type-tabs {
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.order-type-tabs button,
+.status-tabs button {
+  height: 34px;
+  padding: 0 11px;
+  font-size: 10px;
+}
+.status-tabs {
+  margin-bottom: 13px;
+  padding: 4px;
+}
+.order-filters {
+  margin-bottom: 12px;
+  padding: 12px;
+  gap: 10px;
+}
+.order-filters label {
+  height: 40px;
+}
+.clone-card {
+  border-radius: 15px;
+}
+.clone-card header {
+  padding: 17px 20px;
+}
+.clone-card h2 {
+  font-size: 18px;
+}
+.table-search {
+  height: 38px;
+}
+.table-wrap th,
+.table-wrap td {
+  padding: 13px 17px;
+  font-size: 12px;
+}
+.order-status,
+.info-button {
+  font-size: 8px;
+}
+.info-button {
+  padding: 6px 8px;
+}
+.dots-button {
+  width: 31px;
+  height: 31px;
+}
+.order-action-menu {
+  min-width: 168px;
+}
+.fastship-create {
+  padding-bottom: 32px;
+}
+.fastship-create-head {
+  margin-bottom: 14px;
+}
+.fastship-create-head h1 {
+  font-size: 25px;
+  letter-spacing: -0.02em;
+}
+.fastship-order-tabs button {
+  padding: 10px 22px;
+  font-size: 14px;
+}
+.fastship-step-intro {
+  padding: 17px 21px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+}
+.fastship-step-intro>div b {
+  font-size: 17px;
+}
+.fastship-step-intro ol {
+  padding-top: 16px;
+  margin-top: 15px;
+}
+.fastship-step-intro li {
+  gap: 10px;
+}
+.fastship-step-intro li i {
+  width: 31px;
+  height: 31px;
+}
+.fastship-create form {
+  gap: 13px;
+}
+.fastship-form-card {
+  border-radius: 14px;
+}
+.fastship-form-card>h2 {
+  padding: 14px 19px;
+  font-size: 16px;
+}
+.fastship-card-body {
+  padding: 17px 21px;
+}
+.fastship-grid,
+.fastship-card-body.three-col {
+  gap: 15px 12px;
+}
+.fastship-create label {
+  gap: 6px;
+  font-size: 11px;
+}
+.fastship-create input,
+.fastship-create select,
+.fastship-create textarea {
+  min-height: 40px;
+  padding: 8px 13px;
+  border-radius: 18px;
+  font-size: 14px;
+}
+.saved-address {
+  margin-bottom: 16px;
+}
+.saved-address button,
+.clone-outline-button {
+  border-radius: 10px;
+}
+.weight-panel,
+.minimum-note,
+.box-entry,
+.fastship-invoice {
+  border-radius: 12px;
+  padding: 12px;
+}
+.weight-panel article,
+.box-stat {
+  padding: 13px;
+}
+.weight-panel article b,
+.box-stat b {
+  font-size: 22px;
+}
+.fastship-next {
+  padding: 12px 16px;
+}
+.fastship-next button {
+  padding: 12px 32px;
+}
+@media (max-width: 1100px) {
+  .clone-sidebar {
+    width: 280px;
+  }
+  .clone-main,
+  .clone-app.collapsed .clone-main {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+@media (max-width: 760px) {
+  .clone-topbar {
+    height: auto;
+    min-height: 66px;
+  }
+  .clone-content {
+    padding: 18px 14px;
+  }
+  .home-welcome,
+  .orders-head,
+  .fastship-create-head {
+    align-items: stretch;
+  }
+  .orders-head {
+    flex-direction: column;
+  }
+  .orders-head > div:last-child {
+    flex-wrap: wrap;
+  }
+  .fastship-step-intro ol {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+}
