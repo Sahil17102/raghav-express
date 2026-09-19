@@ -57,13 +57,33 @@ const api = axios.create({
 let refreshPromise = null
 
 const isLocalAdminSession = () => {
+  if (typeof window === 'undefined') return false
   const token = localStorage.getItem('accessToken') || ''
   return token.endsWith('.local')
 }
 
 const isRaghavAdminHost = () => {
+  if (typeof window === 'undefined') return false
   const host = window.location.hostname.toLowerCase()
   return host === 'raghav-express-admin.onrender.com' || host === 'localhost' || host === '127.0.0.1'
+}
+
+const LOCAL_ADMIN_DATA_ROUTES = [
+  '/admin/b2b/',
+  '/admin/couriers/credentials',
+  '/admin/couriers/shipping-rate',
+  '/admin/couriers/shipping-rates',
+  '/admin/zones/',
+  '/couriers/',
+  '/plans',
+  '/serviceability/',
+]
+
+const shouldUseLocalAdminData = (config = {}) => {
+  const rawUrl = String(config.url || '')
+  const url = rawUrl.split('?')[0]
+
+  return isRaghavAdminHost() && LOCAL_ADMIN_DATA_ROUTES.some((route) => url.startsWith(route))
 }
 
 const LOCATION_STORAGE_KEY = 'raghavAdminLocations'
@@ -480,7 +500,19 @@ const localAdapter = async (config) => {
   const url = rawUrl.split('?')[0]
   const queryParams = Object.fromEntries(new URLSearchParams(rawUrl.split('?')[1] || '').entries())
   config.params = { ...queryParams, ...(config.params || {}) }
-  const payload = typeof config.data === 'string' ? JSON.parse(config.data || '{}') : (config.data || {})
+  let payload = {}
+  if (typeof config.data === 'string') {
+    try {
+      payload = JSON.parse(config.data || '{}')
+    } catch {
+      payload = {}
+    }
+  } else if (
+    config.data &&
+    (typeof FormData === 'undefined' || !(config.data instanceof FormData))
+  ) {
+    payload = config.data
+  }
   let locations = readLocations()
   let couriers = readCouriers()
   let b2cZones = readB2CZones()
@@ -728,7 +760,7 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`
   }
 
-  if (isLocalAdminSession() && isRaghavAdminHost()) {
+  if (shouldUseLocalAdminData(config) || (isLocalAdminSession() && isRaghavAdminHost())) {
     config.adapter = localAdapter
   }
   return config
