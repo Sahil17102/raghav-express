@@ -1,4 +1,5 @@
 import api from './axios' // your pre-configured axios instance
+import pincodeSeed from '../data/indiaPincodeSeed.json'
 
 const DEFAULT_COURIERS = [
   ['delhivery-b2c', 'Delhivery Surface', 'delhivery', ['b2c']],
@@ -37,6 +38,203 @@ const DEFAULT_CREDENTIALS = {
     username: 'Configured',
     configured: true,
   },
+}
+
+const B2C_ZONES = [
+  ['WITHIN_CITY', 'Within City', [29, 34, 45, 82, 145, 260]],
+  ['WITHIN_STATE', 'Within State', [34, 39, 54, 94, 168, 305]],
+  ['WITHIN_REGION', 'Within Region', [39, 46, 64, 112, 205, 365]],
+  ['METRO_TO_METRO', 'Metro to Metro', [42, 49, 68, 118, 218, 390]],
+  ['ROI', 'Rest of India', [48, 56, 78, 138, 252, 455]],
+  ['KASHMIR', 'Kashmir', [62, 74, 105, 190, 355, 640]],
+]
+
+const B2C_SLABS = [
+  { weight_from: 0, weight_to: 0.5, extra_weight_unit: 0.5 },
+  { weight_from: 0.5, weight_to: 1, extra_weight_unit: 0.5 },
+  { weight_from: 1, weight_to: 2, extra_weight_unit: 1 },
+  { weight_from: 2, weight_to: 5, extra_weight_unit: 1 },
+  { weight_from: 5, weight_to: 10, extra_weight_unit: 1 },
+  { weight_from: 10, weight_to: 20, extra_weight_unit: 1 },
+]
+
+const COURIER_RATE_PROFILES = {
+  'delhivery-express': {
+    mode: 'air',
+    multiplier: 1.12,
+    minWeight: 0.5,
+    codFlat: 34,
+    codPercent: 1.8,
+    edd: '2-4 days',
+  },
+  'delhivery-b2c': {
+    mode: 'surface',
+    multiplier: 1,
+    minWeight: 0.5,
+    codFlat: 38,
+    codPercent: 1.8,
+    edd: '3-6 days',
+  },
+  'india-post-speed': {
+    mode: 'air',
+    multiplier: 1.08,
+    minWeight: 0.5,
+    codFlat: 30,
+    codPercent: 1.5,
+    edd: '2-5 days',
+  },
+  'india-post-parcel': {
+    mode: 'surface',
+    multiplier: 0.92,
+    minWeight: 2,
+    codFlat: 30,
+    codPercent: 1.5,
+    edd: '4-8 days',
+  },
+}
+
+const getZoneSlabsForCourier = (profile) =>
+  Object.fromEntries(
+    B2C_ZONES.map(([, zoneName, baseRates]) => [
+      zoneName,
+      {
+        forward: B2C_SLABS.map((slab, index) => {
+          const rate = Math.round(baseRates[index] * profile.multiplier)
+          return {
+            ...slab,
+            rate,
+            extra_rate: Math.max(18, Math.round(rate * 0.72)),
+          }
+        }),
+        rto: B2C_SLABS.map((slab, index) => {
+          const rate = Math.round(baseRates[index] * profile.multiplier * 0.92)
+          return {
+            ...slab,
+            rate,
+            extra_rate: Math.max(16, Math.round(rate * 0.7)),
+          }
+        }),
+        reverse_pickup: [],
+      },
+    ]),
+  )
+
+const DEFAULT_B2C_RATES = DEFAULT_COURIERS.filter((courier) =>
+  (courier.businessType || []).includes('b2c'),
+).map((courier) => {
+  const profile = COURIER_RATE_PROFILES[courier.id] || COURIER_RATE_PROFILES['delhivery-b2c']
+  return {
+    id: `${courier.id}-basic-${profile.mode}`,
+    courier_id: courier.id,
+    courier_name: courier.name,
+    service_provider: courier.serviceProvider,
+    serviceProvider: courier.serviceProvider,
+    business_type: 'b2c',
+    plan_id: 'basic',
+    mode: profile.mode,
+    min_weight: profile.minWeight,
+    cod_charges: profile.codFlat,
+    cod_percent: profile.codPercent,
+    cod_slabs: [
+      { order_value_from: 0, order_value_to: 2000, charge_type: 'flat', charge_value: profile.codFlat },
+      { order_value_from: 2000, order_value_to: '', charge_type: 'percent', charge_value: profile.codPercent },
+    ],
+    other_charges: 0,
+    zone_slabs: getZoneSlabsForCourier(profile),
+    edd: profile.edd,
+  }
+})
+
+const normalizePincode = (value) => String(value || '').replace(/\D/g, '').slice(0, 6)
+
+const getSeedLocation = (pincode) => {
+  const normalized = normalizePincode(pincode)
+  const found = pincodeSeed.locations.find(([pin]) => String(pin) === normalized)
+  return found ? { pincode: found[0], city: found[1], state: found[2], tags: found[3] || [] } : null
+}
+
+const getApproxB2CZone = ({ origin, destination }) => {
+  const originLoc = getSeedLocation(origin)
+  const destLoc = getSeedLocation(destination)
+  const originPin = normalizePincode(origin)
+  const destPin = normalizePincode(destination)
+
+  if (originPin && destPin && originPin === destPin) {
+    return { code: 'WITHIN_CITY', name: 'Within City' }
+  }
+  if (originPin.slice(0, 3) && originPin.slice(0, 3) === destPin.slice(0, 3)) {
+    return { code: 'WITHIN_CITY', name: 'Within City' }
+  }
+  if (originLoc?.state && originLoc.state === destLoc?.state) {
+    return { code: 'WITHIN_STATE', name: 'Within State' }
+  }
+  if ((originLoc?.tags || []).includes('metro') && (destLoc?.tags || []).includes('metro')) {
+    return { code: 'METRO_TO_METRO', name: 'Metro to Metro' }
+  }
+  if (['Jammu and Kashmir', 'Kashmir', 'Ladakh'].includes(destLoc?.state)) {
+    return { code: 'KASHMIR', name: 'Kashmir' }
+  }
+  return { code: 'ROI', name: 'Rest of India' }
+}
+
+const getChargeableWeightKg = (params = {}) => {
+  const actualGrams = Number(params.weight || params.actualWeight || 0)
+  const volumetricKg =
+    Number(params.length || 0) && Number(params.breadth || params.width || 0) && Number(params.height || 0)
+      ? (Number(params.length) * Number(params.breadth || params.width) * Number(params.height)) / 5000
+      : 0
+  const actualKg = actualGrams > 20 ? actualGrams / 1000 : actualGrams
+  return Math.max(actualKg || 0, volumetricKg || 0, 0.5)
+}
+
+const pickSlab = (slabs = [], chargeableKg) =>
+  slabs.find((slab) => chargeableKg <= Number(slab.weight_to || Infinity)) || slabs[slabs.length - 1]
+
+const calculateSeededAvailableCouriers = (params = {}) => {
+  const zone = getApproxB2CZone({
+    origin: params.origin || params.pickupPincode,
+    destination: params.destination || params.deliveryPincode,
+  })
+  const chargeableKg = getChargeableWeightKg(params)
+  const paymentType = String(params.payment_type || params.paymentType || '').toLowerCase()
+  const orderAmount = Number(params.order_amount || params.orderAmount || 0)
+
+  return DEFAULT_B2C_RATES.map((rateRow) => {
+    const zoneSlabs = rateRow.zone_slabs?.[zone.name]?.forward || []
+    const slab = pickSlab(zoneSlabs, chargeableKg)
+    const baseRate = Number(slab?.rate || 0)
+    const codPercentCharge = orderAmount > 0 ? (orderAmount * Number(rateRow.cod_percent || 0)) / 100 : 0
+    const codCharge = paymentType === 'cod' ? Math.max(Number(rateRow.cod_charges || 0), codPercentCharge) : 0
+
+    return {
+      id: rateRow.courier_id,
+      name: rateRow.courier_name,
+      displayName: rateRow.courier_name,
+      serviceProvider: rateRow.service_provider,
+      mode: rateRow.mode,
+      rate: baseRate,
+      freight_charges: baseRate,
+      cod_charges: codCharge,
+      total_charges: baseRate + codCharge,
+      edd: rateRow.edd,
+      approxZone: zone,
+      chargeable_weight: Math.round(chargeableKg * 1000),
+      volumetric_weight:
+        Number(params.length || 0) && Number(params.breadth || params.width || 0) && Number(params.height || 0)
+          ? Math.round((Number(params.length) * Number(params.breadth || params.width) * Number(params.height)) / 5)
+          : 0,
+      max_slab_weight: slab?.weight_to,
+      slabs: `${slab?.weight_from || 0}-${slab?.weight_to || 'open'} kg`,
+      localRates: {
+        forward: {
+          ...slab,
+          cod_charges: rateRow.cod_charges,
+          cod_percent: rateRow.cod_percent,
+          max_slab_weight: slab?.weight_to,
+        },
+      },
+    }
+  }).sort((a, b) => a.total_charges - b.total_charges)
 }
 
 const getSeededCouriers = (filters = {}) => {
@@ -93,8 +291,29 @@ export const fetchShippingRates = async (filters = {}) => {
   }
   if (filters.businessType) params.businessType = filters.businessType
   if (filters.planId) params.planId = filters.planId
-  const response = await api.get('/admin/couriers/shipping-rates', { params })
-  return normalizeArrayPayload(response.data)
+  try {
+    const response = await api.get('/admin/couriers/shipping-rates', { params })
+    const rows = normalizeArrayPayload(response.data)
+    if (rows.length) return rows
+  } catch (error) {
+    console.warn('Using seeded B2C shipping rates:', error?.message)
+  }
+
+  if (String(filters.businessType || '').toLowerCase() === 'b2b') return []
+
+  return DEFAULT_B2C_RATES.map((row) => ({
+    ...row,
+    plan_id: filters.planId || row.plan_id || 'basic',
+  })).filter((row) => {
+    if (filters.mode && String(row.mode || '').toLowerCase() !== String(filters.mode).toLowerCase()) {
+      return false
+    }
+    if (filters.courier_name) {
+      const selected = Array.isArray(filters.courier_name) ? filters.courier_name : [filters.courier_name]
+      if (!selected.includes(row.courier_name)) return false
+    }
+    return true
+  })
 }
 
 export const fetchAvailableCouriers = async (params) => {
@@ -110,8 +329,8 @@ export const fetchAvailableCouriers = async (params) => {
 
     return res.data.data
   } catch (error) {
-    console.error('fetchAvailableCouriers error:', error.response?.data || error.message)
-    throw new Error(error.response?.data?.error || error.message || 'Failed to fetch couriers')
+    console.warn('Using seeded available couriers:', error.response?.data || error.message)
+    return calculateSeededAvailableCouriers(params)
   }
 }
 

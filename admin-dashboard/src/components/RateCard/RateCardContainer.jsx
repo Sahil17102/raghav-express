@@ -85,7 +85,7 @@ const findMatchingRateRow = (existingRows = [], courier = {}, businessType = '',
     (row) =>
       row.business_type === businessType &&
       (!planId || row.plan_id === planId) &&
-      Number(row.courier_id) === Number(courier.id) &&
+      String(row.courier_id ?? '') === String(courier.id ?? '') &&
       normalizeProvider(row.service_provider || row.serviceProvider || '') ===
         normalizeProvider(courier.serviceProvider || courier.service_provider || ''),
   )
