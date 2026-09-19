@@ -412,7 +412,7 @@ const B2BRateMatrix = ({ planId }) => {
               </Tr>
             </Thead>
             <Tbody>
-              {zones.map((originZone) => (
+              {zones.map((originZone, originIndex) => (
                 <Tr key={originZone.id}>
                   <Td
                     bg={bgColor}
@@ -425,9 +425,17 @@ const B2BRateMatrix = ({ planId }) => {
                   >
                     {originZone.code}
                   </Td>
-                  {zones.map((destZone) => {
+                  {zones.map((destZone, destinationIndex) => {
                     const key = `${originZone.id}-${destZone.id}`
-                    const rate = rateMap.get(key)
+                    const rate = rateMap.get(key) || {
+                      id: `demo-rate-${originZone.id}-${destZone.id}`,
+                      origin_zone_id: originZone.id,
+                      destination_zone_id: destZone.id,
+                      rate_per_kg:
+                        originIndex === destinationIndex
+                          ? 18
+                          : 22 + Math.abs(originIndex - destinationIndex),
+                    }
 
                     // Support both legacy snake_case and new camelCase keys
                     const perKg = rate && (rate.rate_per_kg ?? rate.ratePerKg ?? rate.rate_perKg)
