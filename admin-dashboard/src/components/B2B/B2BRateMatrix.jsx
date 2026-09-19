@@ -106,7 +106,9 @@ const B2BRateMatrix = ({ planId }) => {
   // Create a map for quick lookup
   const rateMap = new Map()
   rates.forEach((rate) => {
-    const key = `${rate.originZoneId}-${rate.destinationZoneId}`
+    const originZoneId = rate.originZoneId || rate.origin_zone_id
+    const destinationZoneId = rate.destinationZoneId || rate.destination_zone_id
+    const key = `${originZoneId}-${destinationZoneId}`
     rateMap.set(key, rate)
   })
 
